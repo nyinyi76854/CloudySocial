@@ -20,6 +20,37 @@
     </style>
 </head>
 <body>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Check if user is signed in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                window.location.href = 'main_layout.html';
+            } else {
+                // No user is signed in
+                console.log('No user signed in.');
+            }
+        });
+    </script>
+
     <p>If you already have an account, <a href="signin.html">sign in</a>. If you don't have, <a href="signup.html">sign up</a>.</p>
 </body>
 </html>
