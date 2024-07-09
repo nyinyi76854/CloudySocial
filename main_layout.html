@@ -12,15 +12,6 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-        }
-        .container {
-            background: #fff;
-            padding: 20px 40px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
             position: relative;
         }
         .user-info {
@@ -57,16 +48,13 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="slidebar">
-            <img src="https://img.icons8.com/ios-glyphs/30/000000/menu.png" id="menu-icon"/>
-            <div class="slidebar-menu" id="slidebar-menu">
-                <a href="profile.html">Profile</a>
-            </div>
+    <div class="slidebar">
+        <img src="https://img.icons8.com/ios-glyphs/30/000000/menu.png" id="menu-icon"/>
+        <div class="slidebar-menu" id="slidebar-menu">
+            <a href="profile.html">Profile</a>
         </div>
-       
-        <p class="user-info" id="user-email">Loading...</p>
     </div>
+    <p class="user-info" id="user-email">Loading...</p>
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -92,7 +80,7 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = `Welcome, ${user.email}`;
+                document.getElementById('user-email').textContent = `${user.email}`;
             } else {
                 window.location.href = 'index.html';
             }
