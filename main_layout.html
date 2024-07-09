@@ -4,42 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Layout</title>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             text-align: center;
-            margin-top: 50px;
-        }
-        .user-info {
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 10px;
-            background-color: blue;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: darkblue;
+            max-width: 400px;
+            width: 100%;
         }
     </style>
 </head>
 <body>
-    <h1>Welcome</h1>
-    <div class="user-info" id="user-info">
-        <!-- User information will be displayed here -->
+    <div class="container">
+        <h2>Welcome</h2>
+        <p id="user-email">Loading...</p>
+        <button id="logout-button">Logout</button>
     </div>
-    <button id="logout-button">Logout</button>
+
+    <!-- Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <script>
         // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
             projectId: "cloudysocial-2cf2f",
             storageBucket: "cloudysocial-2cf2f.appspot.com",
             messagingSenderId: "423797592083",
@@ -51,22 +53,16 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // Function to display user information
-        function displayUserInfo(user) {
-            const userInfoDiv = document.getElementById('user-info');
-            if (user) {
-                userInfoDiv.innerHTML = `<p>Welcome, ${user.email}</p>`;
-            } else {
-                userInfoDiv.innerHTML = '<p>No user signed in</p>';
-            }
-        }
-
-        // Listen for auth state changes
+        // Display current user's email
         auth.onAuthStateChanged((user) => {
-            displayUserInfo(user);
+            if (user) {
+                document.getElementById('user-email').textContent = `Welcome, ${user.email}`;
+            } else {
+                window.location.href = 'index.html';
+            }
         });
 
-        // Logout functionality
+        // Handle logout
         document.getElementById('logout-button').addEventListener('click', () => {
             auth.signOut().then(() => {
                 window.location.href = 'index.html';
