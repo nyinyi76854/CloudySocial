@@ -23,13 +23,76 @@
             max-width: 400px;
             width: 100%;
         }
+        #user-email {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        #logout-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logout-button:hover {
+            background-color: #0056b3;
+        }
+        .menu-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
     </style>
 </head>
 <body>
+    <div class="menu-btn" onclick="openNav()">&#9776;</div>
+    <div id="user-email">Loading...</div>
     <div class="container">
         <h2>Welcome</h2>
-        <p id="user-email">Loading...</p>
         <button id="logout-button">Logout</button>
+    </div>
+
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="profile.html">Profile</a>
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -38,7 +101,7 @@
 
     <script>
         // Your web app's Firebase configuration
-        const firebaseConfig = {
+       const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -70,6 +133,15 @@
                 console.error('Error signing out:', error);
             });
         });
+
+        // Functions to open and close the sidebar
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+        }
     </script>
 </body>
 </html>
