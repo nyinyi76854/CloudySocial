@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        form {
+            display: inline-block;
+            text-align: left;
+        }
+        input {
+            display: block;
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sign Up</h1>
+    <form id="signup-form">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        document.getElementById('signup-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+
+                    // Save user data to the database
+                    const userRef = database.ref('users/' + user.uid);
+                    userRef.set({
+                        email: email,
+                        password: password,
+                        timestamp: new Date().toISOString()
+                    });
+
+                    // Redirect to main_layout.html
+                    window.location.href = 'main_layout.html';
+                })
+                .catch((error) => {
+                    console.error('Error signing up:', error);
+                });
+        });
+    </script>
+</body>
+</html>
