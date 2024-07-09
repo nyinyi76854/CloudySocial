@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Layout</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .user-info {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkblue;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome</h1>
+    <div class="user-info" id="user-info">
+        <!-- User information will be displayed here -->
+    </div>
+    <button id="logout-button">Logout</button>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Function to display user information
+        function displayUserInfo(user) {
+            const userInfoDiv = document.getElementById('user-info');
+            if (user) {
+                userInfoDiv.innerHTML = `<p>Welcome, ${user.email}</p>`;
+            } else {
+                userInfoDiv.innerHTML = '<p>No user signed in</p>';
+            }
+        }
+
+        // Listen for auth state changes
+        auth.onAuthStateChanged((user) => {
+            displayUserInfo(user);
+        });
+
+        // Logout functionality
+        document.getElementById('logout-button').addEventListener('click', () => {
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error('Error signing out:', error);
+            });
+        });
+    </script>
+</body>
+</html>
