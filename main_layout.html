@@ -8,91 +8,64 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
             margin: 0;
+            display: flex;
+            flex-direction: column;
         }
         .container {
             background: #fff;
             padding: 20px 40px;
-            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             width: 100%;
+            position: relative;
         }
-        #user-email {
+        .user-info {
             position: absolute;
             top: 10px;
-            right: 10px;
-            background: #fff;
-            padding: 5px 10px;
-            border-radius: 8px;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            right: 20px;
         }
-        #logout-button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
+        .slidebar {
+            position: absolute;
+            top: 10px;
+            left: 20px;
             cursor: pointer;
         }
-        #logout-button:hover {
-            background-color: #0056b3;
-        }
-        .menu-btn {
+        .slidebar-menu {
+            display: none;
             position: absolute;
-            top: 10px;
+            top: 40px;
             left: 10px;
-            font-size: 30px;
-            cursor: pointer;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
         }
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-        }
-        .sidebar a {
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 25px;
-            color: #818181;
+        .slidebar-menu a {
             display: block;
-            transition: 0.3s;
+            padding: 10px;
+            text-decoration: none;
+            color: #000;
         }
-        .sidebar a:hover {
-            color: #f1f1f1;
-        }
-        .sidebar .closebtn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-            font-size: 36px;
-            margin-left: 50px;
+        .slidebar-menu a:hover {
+            background-color: #f4f4f4;
         }
     </style>
 </head>
 <body>
-    <div class="menu-btn" onclick="openNav()">&#9776;</div>
-    <div id="user-email">Loading...</div>
     <div class="container">
+        <div class="slidebar">
+            <img src="https://img.icons8.com/ios-glyphs/30/000000/menu.png" id="menu-icon"/>
+            <div class="slidebar-menu" id="slidebar-menu">
+                <a href="profile.html">Profile</a>
+            </div>
+        </div>
         <h2>Welcome</h2>
-        <button id="logout-button">Logout</button>
-    </div>
-
-    <div id="mySidebar" class="sidebar">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <a href="profile.html">Profile</a>
+        <p class="user-info" id="user-email">Loading...</p>
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -101,7 +74,7 @@
 
     <script>
         // Your web app's Firebase configuration
-       const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -125,23 +98,11 @@
             }
         });
 
-        // Handle logout
-        document.getElementById('logout-button').addEventListener('click', () => {
-            auth.signOut().then(() => {
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Error signing out:', error);
-            });
+        // Handle slide bar menu toggle
+        document.getElementById('menu-icon').addEventListener('click', () => {
+            const menu = document.getElementById('slidebar-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         });
-
-        // Functions to open and close the sidebar
-        function openNav() {
-            document.getElementById("mySidebar").style.width = "250px";
-        }
-
-        function closeNav() {
-            document.getElementById("mySidebar").style.width = "0";
-        }
     </script>
 </body>
 </html>
