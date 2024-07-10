@@ -63,7 +63,7 @@
 
     <script>
         // Your web app's Firebase configuration
-        const firebaseConfig = {
+         const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -73,6 +73,7 @@
             appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
             measurementId: "G-0LP83EFY37"
         };
+
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -102,8 +103,8 @@
                 gender: gender,
                 timestamp: timestamp
             }).then(() => {
-                // Redirect to main_layout.html
-                window.location.href = 'main_layout.html';
+                // Redirect to code_confirmation.html with email parameter
+                window.location.href = `code_confirmation.html?email=${encodeURIComponent(email)}`;
             }).catch((error) => {
                 console.error("Error saving gender:", error);
             });
