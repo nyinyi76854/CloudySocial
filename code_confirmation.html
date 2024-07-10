@@ -34,14 +34,14 @@
             font-size: 24px;
             letter-spacing: 10px;
         }
-        .save-button {
-            display: none;
+        .save-button, .stop-button {
             background-color: #000;
             color: #fff;
             border: none;
             padding: 10px 20px;
             border-radius: 4px;
             cursor: pointer;
+            margin-top: 10px;
         }
         .save-button.show {
             display: inline-block;
@@ -53,6 +53,7 @@
         <h2>Enter Confirmation Code</h2>
         <input type="text" id="confirmation-code" maxlength="6" placeholder="XXXXXX">
         <button class="save-button" id="save-button">Save</button>
+        <button class="stop-button" id="stop-button">Stop</button>
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -61,8 +62,8 @@
     <script src="https://smtpjs.com/v3/smtp.js"></script>
 
     <script>
-       
- const firebaseConfig = {
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -72,6 +73,7 @@
             appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
             measurementId: "G-0LP83EFY37"
         };
+
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -82,6 +84,7 @@
 
         // Generate and send confirmation code
         const confirmationCode = Math.floor(100000 + Math.random() * 900000);
+        console.log("Generated confirmation code:", confirmationCode);
 
         Email.send({
             SecureToken: "cea8dac9-445b-4796-8c1b-18302134fe4a",
@@ -89,8 +92,8 @@
             From: "cloudysocialchange@gmail.com",
             Subject: "Your Confirmation Code for CloudySocial",
             Body: `Your confirmation code for CloudySocial is ${confirmationCode}. Have a nice day...`
-        }).then(() => {
-            console.log("Email sent successfully.");
+        }).then((message) => {
+            console.log("Email sent successfully:", message);
         }).catch((error) => {
             console.error("Error sending email:", error);
         });
@@ -98,10 +101,17 @@
         // Handle save button visibility based on input
         const confirmationCodeInput = document.getElementById('confirmation-code');
         const saveButton = document.getElementById('save-button');
+        const stopButton = document.getElementById('stop-button');
 
         confirmationCodeInput.addEventListener('input', () => {
             saveButton.classList.toggle('show', confirmationCodeInput.value.length === 6);
         });
+
+        const completeConfirmationProcess = () => {
+            localStorage.removeItem('confirmationPending');
+            console.log("Confirmation process completed.");
+            window.location.href = 'main_layout.html';
+        };
 
         // Handle save button click
         saveButton.addEventListener('click', () => {
@@ -109,12 +119,21 @@
 
             if (inputCode === confirmationCode.toString()) {
                 console.log("Code confirmed successfully.");
-                // Redirect to main_layout.html
-                window.location.href = 'main_layout.html';
+                completeConfirmationProcess();
             } else {
                 alert("Incorrect confirmation code. Please try again.");
             }
         });
+
+        // Handle stop button click
+        stopButton.addEventListener('click', () => {
+            localStorage.removeItem('confirmationPending');
+            console.log("Confirmation process stopped.");
+            window.location.href = 'index.html';
+        });
+
+        // Set the flag to indicate that the confirmation process is pending
+        localStorage.setItem('confirmationPending', 'true');
     </script>
 </body>
 </html>
