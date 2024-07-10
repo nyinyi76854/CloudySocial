@@ -35,15 +35,15 @@
             letter-spacing: 10px;
         }
         .save-button, .stop-button {
+            display: none;
             background-color: #000;
             color: #fff;
             border: none;
             padding: 10px 20px;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
         }
-        .save-button.show {
+        .save-button.show, .stop-button.show {
             display: inline-block;
         }
     </style>
@@ -54,17 +54,15 @@
         <input type="text" id="confirmation-code" maxlength="6" placeholder="XXXXXX">
         <button class="save-button" id="save-button">Save</button>
         <button class="stop-button" id="stop-button">Stop</button>
-        <p id="message"></p> <!-- Add message area -->
     </div>
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <script>
-        // Your web app's Firebase configuration
-       const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -85,23 +83,28 @@
 
         // Generate and send confirmation code
         const confirmationCode = Math.floor(100000 + Math.random() * 900000);
-        console.log("Generated confirmation code:", confirmationCode);
+        
+        // Using MailSlurp to send the email
+        const sendEmail = async () => {
+            try {
+                await axios.post('https://api.mailslurp.com/sendEmail', {
+                    inboxId: 'user-3102e3a6-38ce-4afd-8888-ac553e38cc70@mailslurp.net',
+                    to: [email],
+                    subject: 'Your Confirmation Code for CloudySocial',
+                    body: `Your confirmation code for CloudySocial is ${confirmationCode}. Have a nice day...`,
+                }, {
+                    headers: {
+                        'x-api-key': 'a230bdcfa5ee5cc12b6e543dfc63e4b53901d9dbfea26bdcd5ecac763bd452d5',
+                        'Content-Type': 'application/json',
+                    }
+                });
+                console.log("Email sent successfully.");
+            } catch (error) {
+                console.error("Error sending email:", error);
+            }
+        };
 
-        const messageElement = document.getElementById('message');
-
-        Email.send({
-            SecureToken: "cea8dac9-445b-4796-8c1b-18302134fe4a",
-            To: email,
-            From: "cloudysocialchange@gmail.com",
-            Subject: "Your Confirmation Code for CloudySocial",
-            Body: `Your confirmation code for CloudySocial is ${confirmationCode}. Have a nice day...`
-        }).then((message) => {
-            console.log("Email sent successfully:", message);
-            messageElement.textContent = "Email sent successfully.";
-        }).catch((error) => {
-            console.error("Error sending email:", error);
-            messageElement.textContent = "Error sending email: " + error.message;
-        });
+        sendEmail();
 
         // Handle save button visibility based on input
         const confirmationCodeInput = document.getElementById('confirmation-code');
@@ -112,33 +115,32 @@
             saveButton.classList.toggle('show', confirmationCodeInput.value.length === 6);
         });
 
-        const completeConfirmationProcess = () => {
-            localStorage.removeItem('confirmationPending');
-            console.log("Confirmation process completed.");
-            window.location.href = 'main_layout.html';
-        };
-
         // Handle save button click
         saveButton.addEventListener('click', () => {
             const inputCode = confirmationCodeInput.value.trim();
 
             if (inputCode === confirmationCode.toString()) {
                 console.log("Code confirmed successfully.");
-                completeConfirmationProcess();
+                localStorage.removeItem('pendingEmailVerification');
+                // Redirect to main_layout.html
+                window.location.href = 'main_layout.html';
             } else {
                 alert("Incorrect confirmation code. Please try again.");
             }
         });
 
-        // Handle stop button click
         stopButton.addEventListener('click', () => {
-            localStorage.removeItem('confirmationPending');
-            console.log("Confirmation process stopped.");
+            localStorage.removeItem('pendingEmailVerification');
             window.location.href = 'index.html';
         });
 
-        // Set the flag to indicate that the confirmation process is pending
-        localStorage.setItem('confirmationPending', 'true');
+        // Check if there's a pending email verification
+        if (localStorage.getItem('pendingEmailVerification')) {
+            window.location.href = 'code_confirmation.html';
+        } else {
+            localStorage.setItem('pendingEmailVerification', email);
+            stopButton.classList.add('show');
+        }
     </script>
 </body>
 </html>
