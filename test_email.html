@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        p {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Send Test Email</h2>
+        <button id="send-email-button">Send Email</button>
+        <p id="message"></p>
+    </div>
+
+    <!-- SMTPJS Script -->
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+
+    <script>
+        document.getElementById('send-email-button').addEventListener('click', function() {
+            Email.send({
+                SecureToken: "cea8dac9-445b-4796-8c1b-18302134fe4a",
+                To: "nyinyilinnhtet399@gmail.com",
+                From: "cloudysocialchange@gmail.com",
+                Subject: "Test Email",
+                Body: "Who are you?"
+            }).then((message) => {
+                console.log("Email sent successfully:", message);
+                document.getElementById('message').textContent = "Email sent successfully.";
+            }).catch((error) => {
+                console.error("Error sending email:", error);
+                document.getElementById('message').textContent = "Error sending email: " + error.message;
+            });
+        });
+    </script>
+</body>
+</html>
