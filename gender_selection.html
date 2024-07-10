@@ -29,89 +29,85 @@
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border
--box;
-}
-.save-button {
-display: none;
-background-color: #000;
-color: #fff;
-border: none;
-padding: 10px 20px;
-border-radius: 4px;
-cursor: pointer;
-}
-.save-button.show {
-display: inline-block;
-}
-</style>
-
+            box-sizing: border-box;
+        }
+        .save-button {
+            display: none;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .save-button.show {
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h2>Select Your Gender</h2>
         <select id="gender">
             <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
         </select>
         <button class="save-button" id="save-button">Save</button>
     </div>
-php
-Copy code
-<!-- Firebase JavaScript SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<script>
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
-        authDomain: "cloudysocial-2cf2f.firebaseapp.com",
-        databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
-        projectId: "cloudysocial-2cf2f",
-        storageBucket: "cloudysocial-2cf2f.appspot.com",
-        messagingSenderId: "423797592083",
-        appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
-        measurementId: "G-0LP83EFY37"
-    };
+    <!-- Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
+        };
 
-    // Handle save button visibility based on selection
-    const genderSelect = document.getElementById('gender');
-    const saveButton = document.getElementById('save-button');
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-    genderSelect.addEventListener('change', () => {
-        saveButton.classList.toggle('show', genderSelect.value !== '');
-    });
+        // Get email from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
 
-    // Handle save button click
-    saveButton.addEventListener('click', () => {
-        const user = firebase.auth().currentUser;
-        if (user) {
+        // Handle save button visibility based on selection
+        const genderSelect = document.getElementById('gender');
+        const saveButton = document.getElementById('save-button');
+
+        genderSelect.addEventListener('change', () => {
+            saveButton.classList.toggle('show', genderSelect.value !== '');
+        });
+
+        // Handle save button click
+        saveButton.addEventListener('click', () => {
             const timestamp = Date.now();
             const gender = genderSelect.value;
 
             // Save gender to Firebase
-            const newGenderRef = database.ref('gender').push();
+            const newGenderRef = database.ref('genders').push();
             newGenderRef.set({
-                email: user.email,
+                email: email,
                 gender: gender,
                 timestamp: timestamp
             }).then(() => {
-                // Redirect to main_layout.html after successful gender selection
+                // Redirect to main_layout.html
                 window.location.href = 'main_layout.html';
             }).catch((error) => {
                 console.error("Error saving gender:", error);
             });
-        } else {
-            console.error("User not authenticated.");
-        }
-    });
-</script>
+        });
+    </script>
 </body>
 </html>
