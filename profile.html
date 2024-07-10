@@ -17,8 +17,9 @@
         }
         .profile-section {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
+            margin-bottom: 20px;
         }
         .profile-image {
             width: 150px;
@@ -30,29 +31,12 @@
             justify-content: center;
             overflow: hidden;
             cursor: pointer; /* Add cursor pointer for interaction */
-            margin-right: 20px;
+            margin-bottom: 10px;
         }
         .profile-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-        .upload-button {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .upload-button img {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
         }
         .profile-info {
             display: flex;
@@ -70,6 +54,7 @@
             width: 200px;
         }
         .save-button {
+            display: none;
             cursor: pointer;
             background-color: #000;
             color: white;
@@ -78,6 +63,7 @@
             border-radius: 4px;
             width: 100px;
             text-align: center;
+            margin-top: 10px;
         }
         .save-button:hover {
             background-color: #555;
@@ -102,10 +88,7 @@
         </div>
     </div>
 
-    <div class="upload-button" id="upload-button">
-        <img src="https://img.icons8.com/material-rounded/24/000000/upload--v1.png" alt="Upload">
-        Upload Photo
-    </div>
+   
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -161,7 +144,12 @@
                 fetchLatestInfo('gender', user.email, genderSelect, 'gender');
                 fetchLatestInfo('borndate', user.email, bornDateInput, 'borndate');
 
-                // Save profile info on button click
+                // Save profile info on input change
+                nameInput.addEventListener('input', toggleSaveButton);
+                genderSelect.addEventListener('change', toggleSaveButton);
+                bornDateInput.addEventListener('input', toggleSaveButton);
+
+                // Save button click handler
                 saveButton.addEventListener('click', () => {
                     const name = nameInput.value.trim();
                     const gender = genderSelect.value;
@@ -173,38 +161,48 @@
                         saveProfileInfo(user.email, bornDate, 'borndate');
                     }
                 });
+
+                // Function to fetch latest info from database
+                function fetchLatestInfo(node, email, element, field) {
+                    db.ref(node).orderByChild('email').equalTo(email).limitToLast(1).once('value').then(snapshot => {
+                        snapshot.forEach(childSnapshot => {
+                            const data = childSnapshot.val();
+                            if (data && data[field]) {
+                                element.value = data[field];
+                                element.dataset.key = childSnapshot.key; // Store key for updates
+                            }
+                        });
+                    }).catch(error => {
+                        console.error(`Error fetching ${field}:`, error);
+                    });
+                }
+
+                // Function to save profile info to database
+                function saveProfileInfo(email, value, node) {
+                    const timestamp = Date.now();
+                    const key = document.getElementById(node).dataset.key || db.ref(node).push().key;
+                    const updates = {};
+                    updates[`${node}/${key}`] = { email, [node === 'borndate' ? 'borndate' : node]: value, timestamp };
+                    db.ref().update(updates).then(() => {
+                        console.log(`${node} updated successfully.`);
+                    }).catch(error => {
+                        console.error(`Error updating ${node}:`, error);
+                    });
+                }
+
+                // Function to toggle save button visibility
+                function toggleSaveButton() {
+                    const name = nameInput.value.trim();
+                    const gender = genderSelect.value;
+                    const bornDate = bornDateInput.value;
+
+                    saveButton.style.display = (name || gender || bornDate) ? 'block' : 'none';
+                }
+
             } else {
                 window.location.href = 'index.html';
             }
         });
-
-        // Function to fetch latest info from database
-        function fetchLatestInfo(node, email, element, field) {
-            db.ref(node).orderByChild('email').equalTo(email).limitToLast(1).once('value').then(snapshot => {
-                snapshot.forEach(childSnapshot => {
-                    const data = childSnapshot.val();
-                    if (data && data[field]) {
-                        element.value = data[field];
-                        element.dataset.key = childSnapshot.key; // Store key for updates
-                    }
-                });
-            }).catch(error => {
-                console.error(`Error fetching ${field}:`, error);
-            });
-        }
-
-        // Function to save profile info to database
-        function saveProfileInfo(email, value, node) {
-            const timestamp = Date.now();
-            const key = document.getElementById(node).dataset.key || db.ref(node).push().key;
-            const updates = {};
-            updates[`${node}/${key}`] = { email, [node === 'borndate' ? 'borndate' : node]: value, timestamp };
-            db.ref().update(updates).then(() => {
-                console.log(`${node} updated successfully.`);
-            }).catch(error => {
-                console.error(`Error updating ${node}:`, error);
-            });
-        }
 
         // Handle click on profile image to trigger file input click
         profileImage.addEventListener('click', () => {
