@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .save-button {
+            display: none;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .save-button.show {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Select Your Age</h2>
+        <input type="date" id="age" required>
+        <button class="save-button" id="save-button">Save</button>
+    </div>
+
+    <!-- Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Handle save button visibility based on selection
+        const ageInput = document.getElementById('age');
+        const saveButton = document.getElementById('save-button');
+
+        ageInput.addEventListener('input', () => {
+            saveButton.classList.toggle('show', ageInput.value !== '');
+        });
+
+        // Handle save button click
+        saveButton.addEventListener('click', () => {
+            const user = firebase.auth().currentUser;
+            if (user) {
+                const timestamp = Date.now();
+                const selectedDate = new Date(ageInput.value);
+                const age = calculateAge(selectedDate);
+
+                // Save age to Firebase
+                const newAgeRef = database.ref('age').push();
+                newAgeRef.set({
+                    email: user.email,
+                    age: age,
+                    timestamp: timestamp
+                }).then(() => {
+                    // Redirect to gender_selection.html
+                    window.location.href = 'gender_selection.html';
+                }).catch((error) => {
+                    console.error("Error saving age:", error);
+                });
+            } else {
+                console.error("User not authenticated.");
+            }
+        });
+
+        // Function to calculate age based on birthdate
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const diff = today - birthDate;
+            const ageDate = new Date(diff); // miliseconds from epoch
+            return Math.abs(ageDate.getUTCFullYear() - 1970);
+        }
+    </script>
+</body>
+</html>
