@@ -52,6 +52,7 @@
         <img src="https://img.icons8.com/ios-glyphs/30/000000/menu.png" id="menu-icon"/>
         <div class="slidebar-menu" id="slidebar-menu">
             <a href="profile.html">Profile</a>
+            <a href="#" id="logout">Logout</a>
         </div>
     </div>
     <p class="user-info" id="user-email">Loading...</p>
@@ -90,6 +91,14 @@
         document.getElementById('menu-icon').addEventListener('click', () => {
             const menu = document.getElementById('slidebar-menu');
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        });
+        document.getElementById('logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error('Error signing out:', error);
+            });
         });
     </script>
 </body>
