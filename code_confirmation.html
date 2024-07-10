@@ -54,6 +54,7 @@
         <input type="text" id="confirmation-code" maxlength="6" placeholder="XXXXXX">
         <button class="save-button" id="save-button">Save</button>
         <button class="stop-button" id="stop-button">Stop</button>
+        <p id="message"></p> <!-- Add message area -->
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -63,7 +64,7 @@
 
     <script>
         // Your web app's Firebase configuration
-        const firebaseConfig = {
+       const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -86,6 +87,8 @@
         const confirmationCode = Math.floor(100000 + Math.random() * 900000);
         console.log("Generated confirmation code:", confirmationCode);
 
+        const messageElement = document.getElementById('message');
+
         Email.send({
             SecureToken: "cea8dac9-445b-4796-8c1b-18302134fe4a",
             To: email,
@@ -94,8 +97,10 @@
             Body: `Your confirmation code for CloudySocial is ${confirmationCode}. Have a nice day...`
         }).then((message) => {
             console.log("Email sent successfully:", message);
+            messageElement.textContent = "Email sent successfully.";
         }).catch((error) => {
             console.error("Error sending email:", error);
+            messageElement.textContent = "Error sending email: " + error.message;
         });
 
         // Handle save button visibility based on input
