@@ -15,47 +15,21 @@
             justify-content: center;
             height: 100vh;
         }
-        .profile-container {
+        .profile-section {
             display: flex;
+            flex-direction: row;
             align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 600px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .profile-info {
-            flex: 1;
-            padding-right: 20px;
-        }
-        .profile-info div {
-            margin-bottom: 10px;
-        }
-        .profile-info input, .profile-info select {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .profile-info button {
-            background-color: #000;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
         }
         .profile-image {
             width: 150px;
             height: 150px;
             border-radius: 50%;
             background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
+            cursor: pointer; /* Add cursor pointer for interaction */
             margin-right: 20px;
         }
         .profile-image img {
@@ -63,33 +37,74 @@
             height: 100%;
             object-fit: cover;
         }
+        .upload-button {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .upload-button img {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .profile-info input[type="text"], 
+        .profile-info select,
+        .profile-info input[type="date"] {
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 200px;
+        }
+        .save-button {
+            cursor: pointer;
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            width: 100px;
+            text-align: center;
+        }
+        .save-button:hover {
+            background-color: #555;
+        }
     </style>
 </head>
 <body>
-    <div class="profile-container">
-        <div class="profile-info" id="profile-info">
-            <div>
-                <div id="name-display">Loading...</div>
-                <input type="text" id="name-input" placeholder="Name" style="display: none;">
-            </div>
-            <div>
-                <div id="gender-display">Loading...</div>
-                <select id="gender-input" style="display: none;">
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div>
-                <div id="born-date-display">Loading...</div>
-                <input type="date" id="born-date-input" style="display: none;">
-            </div>
-            <button class="save-button" id="save-button" style="display: none;">Save</button>
-        </div>
+    <div class="profile-section">
         <div class="profile-image" id="profile-image">
             <img src="https://img.icons8.com/ios-filled/100/000000/user.png" alt="Profile">
         </div>
+        <div class="profile-info" id="profile-info">
+            <input type="text" id="name" placeholder="Name">
+            <select id="gender">
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="date" id="born-date">
+            <button class="save-button" id="save-button">Save</button>
+        </div>
+    </div>
+
+    <div class="upload-button" id="upload-button">
+        <img src="https://img.icons8.com/material-rounded/24/000000/upload--v1.png" alt="Upload">
+        Upload Photo
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -117,156 +132,111 @@
         const db = firebase.database();
         const storage = firebase.storage();
 
-        // Profile elements
+        // Profile image element
         const profileImage = document.getElementById('profile-image').firstElementChild;
-        const nameDisplay = document.getElementById('name-display');
-        const nameInput = document.getElementById('name-input');
-        const genderDisplay = document.getElementById('gender-display');
-        const genderInput = document.getElementById('gender-input');
-        const bornDateDisplay = document.getElementById('born-date-display');
-        const bornDateInput = document.getElementById('born-date-input');
+
+        // Profile info elements
+        const nameInput = document.getElementById('name');
+        const genderSelect = document.getElementById('gender');
+        const bornDateInput = document.getElementById('born-date');
         const saveButton = document.getElementById('save-button');
 
         // Check if user is authenticated
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Fetch profile information from Firebase
-                fetchProfileInfo(user.email);
+                // Fetch latest profile photo URL from database
+                db.ref('profilesphoto').orderByChild('uploaderEmail').equalTo(user.email).limitToLast(1).once('value').then(snapshot => {
+                    snapshot.forEach(childSnapshot => {
+                        const data = childSnapshot.val();
+                        if (data && data.photoUrl) {
+                            profileImage.src = data.photoUrl;
+                        }
+                    });
+                }).catch(error => {
+                    console.error("Error fetching profile photo:", error);
+                });
+
+                // Fetch latest name, gender, and birthdate from respective nodes
+                fetchLatestInfo('names', user.email, nameInput, 'name');
+                fetchLatestInfo('gender', user.email, genderSelect, 'gender');
+                fetchLatestInfo('borndate', user.email, bornDateInput, 'borndate');
+
+                // Save profile info on button click
+                saveButton.addEventListener('click', () => {
+                    const name = nameInput.value.trim();
+                    const gender = genderSelect.value;
+                    const bornDate = bornDateInput.value;
+
+                    if (name || gender || bornDate) {
+                        saveProfileInfo(user.email, name, 'names');
+                        saveProfileInfo(user.email, gender, 'gender');
+                        saveProfileInfo(user.email, bornDate, 'borndate');
+                    }
+                });
             } else {
                 window.location.href = 'index.html';
             }
         });
 
-        // Function to fetch and display profile information
-        function fetchProfileInfo(email) {
-            // Fetch latest name
-            db.ref('names').orderByChild('email').equalTo(email).limitToLast(1).once('value').then(snapshot => {
+        // Function to fetch latest info from database
+        function fetchLatestInfo(node, email, element, field) {
+            db.ref(node).orderByChild('email').equalTo(email).limitToLast(1).once('value').then(snapshot => {
                 snapshot.forEach(childSnapshot => {
                     const data = childSnapshot.val();
-                    if (data && data.name) {
-                        nameDisplay.textContent = data.name;
-                        nameInput.value = data.name;
-                    } else {
-                        nameDisplay.textContent = 'No Name Found';
+                    if (data && data[field]) {
+                        element.value = data[field];
+                        element.dataset.key = childSnapshot.key; // Store key for updates
                     }
                 });
             }).catch(error => {
-                console.error("Error fetching name:", error);
-            });
-
-            // Fetch latest gender
-            db.ref('gender').orderByChild('email').equalTo(email).limitToLast(1).once('value').then(snapshot => {
-                snapshot.forEach(childSnapshot => {
-                    const data = childSnapshot.val();
-                    if (data && data.gender) {
-                        genderDisplay.textContent = data.gender;
-                        genderInput.value = data.gender;
-                    } else {
-                        genderDisplay.textContent = 'No Gender Found';
-                    }
-                });
-            }).catch(error => {
-                console.error("Error fetching gender:", error);
-            });
-
-            // Fetch latest birthdate
-            db.ref('borndate').orderByChild('email').equalTo(email).limitToLast(1).once('value').then(snapshot => {
-                snapshot.forEach(childSnapshot => {
-                    const data = childSnapshot.val();
-                    if (data && data.borndate) {
-                        bornDateDisplay.textContent = data.borndate;
-                        bornDateInput.value = data.borndate;
-                    } else {
-                        bornDateDisplay.textContent = 'No Birthdate Found';
-                    }
-                });
-            }).catch(error => {
-                console.error("Error fetching birthdate:", error);
+                console.error(`Error fetching ${field}:`, error);
             });
         }
 
-        // Toggle editable mode for name, gender, and birthdate
-        nameDisplay.addEventListener('click', () => {
-            toggleEditMode(nameDisplay, nameInput);
-        });
-
-        genderDisplay.addEventListener('click', () => {
-            toggleEditMode(genderDisplay, genderInput);
-        });
-
-        bornDateDisplay.addEventListener('click', () => {
-            toggleEditMode(bornDateDisplay, bornDateInput);
-        });
-
-        // Function to toggle between display and edit mode
-        function toggleEditMode(displayElement, inputElement) {
-            displayElement.style.display = 'none';
-            inputElement.style.display = 'block';
-            saveButton.style.display = 'block';
+        // Function to save profile info to database
+        function saveProfileInfo(email, value, node) {
+            const timestamp = Date.now();
+            const key = document.getElementById(node).dataset.key || db.ref(node).push().key;
+            const updates = {};
+            updates[`${node}/${key}`] = { email, [node === 'borndate' ? 'borndate' : node]: value, timestamp };
+            db.ref().update(updates).then(() => {
+                console.log(`${node} updated successfully.`);
+            }).catch(error => {
+                console.error(`Error updating ${node}:`, error);
+            });
         }
 
-        // Handle save button click to update profile information
-        saveButton.addEventListener('click', () => {
-            const user = auth.currentUser;
-            if (user) {
-                const timestamp = Date.now();
-
-                // Update name if input is not empty
-                const newName = nameInput.value.trim();
-                if (newName) {
-                    const newNameRef = db.ref('names').push();
-                    newNameRef.set({
-                        email: user.email,
-                        name: newName,
-                        timestamp: timestamp
-                    }).then(() => {
-                        console.log('Name updated successfully');
-                    }).catch(error => {
-                        console.error('Error updating name:', error);
-                    });
+        // Handle click on profile image to trigger file input click
+        profileImage.addEventListener('click', () => {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const user = auth.currentUser;
+                    if (user) {
+                        const timestamp = Date.now();
+                        const storageRef = storage.ref(`profilesphoto/${timestamp}-${file.name}`);
+                        storageRef.put(file).then(snapshot => {
+                            return snapshot.ref.getDownloadURL();
+                        }).then(url => {
+                            // Save photo URL to database
+                            const newPhotoRef = db.ref('profilesphoto').push();
+                            newPhotoRef.set({
+                                uploaderEmail: user.email,
+                                photoUrl: url,
+                                timestamp: timestamp
+                            });
+                            // Update profile image
+                            profileImage.src = url;
+                        }).catch(error => {
+                            console.error("Error uploading file:", error);
+                        });
+                    }
                 }
-
-                // Update gender if selected
-                const newGender = genderInput.value;
-                if (newGender) {
-                    const newGenderRef = db.ref('gender').push();
-                    newGenderRef.set({
-                        email: user.email,
-                        gender: newGender,
-                        timestamp: timestamp
-                    }).then(() => {
-                        console.log('Gender updated successfully');
-                    }).catch(error => {
-                        console.error('Error updating gender:', error);
-                    });
-                }
-
-                // Update birthdate if input is not empty
-                const newBornDate = bornDateInput.value;
-                if (newBornDate) {
-                    const newBornDateRef = db.ref('borndate').push();
-                    newBornDateRef.set({
-                        email: user.email,
-                        borndate: newBornDate,
-                        timestamp: timestamp
-                    }).then(() => {
-                        console.log('Birthdate updated successfully');
-                    }).catch(error => {
-                        console.error('Error updating birthdate:', error);
-                    });
-                }
-
-                // Hide input fields and save button after saving
-                nameInput.style.display = 'none';
-                genderInput.style.display = 'none';
-                bornDateInput.style.display = 'none';
-                saveButton.style.display = 'none';
-
-                // Display updated values in display elements
-                nameDisplay.textContent = newName || 'No Name Found';
-                genderDisplay.textContent = newGender || 'No Gender Found';
-                bornDateDisplay.textContent = newBornDate || 'No Birthdate Found';
-            }
+            };
+            fileInput.click();
         });
     </script>
 </body>
