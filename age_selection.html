@@ -23,6 +23,14 @@
             max-width: 400px;
             width: 100%;
         }
+        input[type="date"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
         .save-button {
             display: none;
             background-color: #000;
@@ -40,13 +48,14 @@
 <body>
     <div class="container">
         <h2>Select Your Age</h2>
-        <input type="date" id="age" required>
+        <input type="date" id="birthdate">
         <button class="save-button" id="save-button">Save</button>
     </div>
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <script>
         // Your web app's Firebase configuration
@@ -65,46 +74,36 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Handle save button visibility based on selection
-        const ageInput = document.getElementById('age');
+        // Get email from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+
+        // Handle save button visibility based on input
+        const birthdateInput = document.getElementById('birthdate');
         const saveButton = document.getElementById('save-button');
 
-        ageInput.addEventListener('input', () => {
-            saveButton.classList.toggle('show', ageInput.value !== '');
+        birthdateInput.addEventListener('input', () => {
+            saveButton.classList.toggle('show', birthdateInput.value !== '');
         });
 
         // Handle save button click
         saveButton.addEventListener('click', () => {
-            const user = firebase.auth().currentUser;
-            if (user) {
-                const timestamp = Date.now();
-                const selectedDate = new Date(ageInput.value);
-                const age = calculateAge(selectedDate);
+            const birthdate = birthdateInput.value;
+            const timestamp = Date.now();
 
-                // Save age to Firebase
-                const newAgeRef = database.ref('age').push();
-                newAgeRef.set({
-                    email: user.email,
-                    age: age,
-                    timestamp: timestamp
-                }).then(() => {
-                    // Redirect to gender_selection.html
-                    window.location.href = 'gender_selection.html';
-                }).catch((error) => {
-                    console.error("Error saving age:", error);
-                });
-            } else {
-                console.error("User not authenticated.");
-            }
+            // Save birthdate to Firebase
+            const newAgeRef = database.ref('ages').push();
+            newAgeRef.set({
+                email: email,
+                birthdate: birthdate,
+                timestamp: timestamp
+            }).then(() => {
+                // Redirect to gender_selection.html with email parameter
+                window.location.href = `gender_selection.html?email=${encodeURIComponent(email)}`;
+            }).catch((error) => {
+                console.error("Error saving birthdate:", error);
+            });
         });
-
-        // Function to calculate age based on birthdate
-        function calculateAge(birthDate) {
-            const today = new Date();
-            const diff = today - birthDate;
-            const ageDate = new Date(diff); // miliseconds from epoch
-            return Math.abs(ageDate.getUTCFullYear() - 1970);
-        }
     </script>
 </body>
 </html>
