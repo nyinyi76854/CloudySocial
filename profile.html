@@ -8,87 +8,55 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
-            margin: 0;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            margin: 0;
         }
-        .profile-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .profile-image {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            background-color: #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            cursor: pointer; /* Add cursor pointer for interaction */
-            margin-bottom: 10px;
-        }
-        .profile-image img {
+        .container {
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
             width: 100%;
-            height: 100%;
+        }
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
             object-fit: cover;
+            cursor: pointer;
+        }
+        .profile-icon {
+            font-size: 100px;
+            color: black;
+            cursor: pointer;
         }
         .profile-info {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 20px;
+            margin-top: 20px;
         }
-        .profile-info input[type="text"], 
-        .profile-info select,
-        .profile-info input[type="date"] {
-            margin-bottom: 10px;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 200px;
-        }
-        .save-button {
-            display: none;
-            cursor: pointer;
-            background-color: #000;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            width: 100px;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .save-button:hover {
-            background-color: #555;
+        .profile-info div {
+            margin: 10px 0;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-    <div class="profile-section">
-        <div class="profile-image" id="profile-image">
-            <img src="https://img.icons8.com/ios-filled/100/000000/user.png" alt="Profile">
+    <div class="container">
+        <input type="file" id="file-input" style="display: none;">
+        <div id="profile-pic-container">
+            <i id="profile-icon" class="fas fa-user-circle profile-icon"></i>
+            <img id="profile-pic" class="profile-pic" style="display: none;">
         </div>
-        <div class="profile-info" id="profile-info">
-            <input type="text" id="name" placeholder="Name">
-            <select id="gender">
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-            </select>
-            <input type="date" id="born-date">
-            <button class="save-button" id="save-button">Save</button>
+        <div class="profile-info">
+            <div id="profile-name">Loading...</div>
+            <div id="profile-age">Loading...</div>
+            <div id="profile-gender">Loading...</div>
         </div>
     </div>
-
-   
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -98,7 +66,7 @@
 
     <script>
         // Your web app's Firebase configuration
-        const firebaseConfig = {
+      const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -108,133 +76,109 @@
             appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
             measurementId: "G-0LP83EFY37"
         };
-
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const db = firebase.database();
+        const database = firebase.database();
         const storage = firebase.storage();
 
-        // Profile image element
-        const profileImage = document.getElementById('profile-image').firstElementChild;
-
-        // Profile info elements
-        const nameInput = document.getElementById('name');
-        const genderSelect = document.getElementById('gender');
-        const bornDateInput = document.getElementById('born-date');
-        const saveButton = document.getElementById('save-button');
-
-        // Check if user is authenticated
+        // Load profile info
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // Fetch latest profile photo URL from database
-                db.ref('profilesphoto').orderByChild('uploaderEmail').equalTo(user.email).limitToLast(1).once('value').then(snapshot => {
-                    snapshot.forEach(childSnapshot => {
-                        const data = childSnapshot.val();
-                        if (data && data.photoUrl) {
-                            profileImage.src = data.photoUrl;
-                        }
-                    });
-                }).catch(error => {
-                    console.error("Error fetching profile photo:", error);
-                });
-
-                // Fetch latest name, gender, and birthdate from respective nodes
-                fetchLatestInfo('names', user.email, nameInput, 'name');
-                fetchLatestInfo('gender', user.email, genderSelect, 'gender');
-                fetchLatestInfo('borndate', user.email, bornDateInput, 'borndate');
-
-                // Save profile info on input change
-                nameInput.addEventListener('input', toggleSaveButton);
-                genderSelect.addEventListener('change', toggleSaveButton);
-                bornDateInput.addEventListener('input', toggleSaveButton);
-
-                // Save button click handler
-                saveButton.addEventListener('click', () => {
-                    const name = nameInput.value.trim();
-                    const gender = genderSelect.value;
-                    const bornDate = bornDateInput.value;
-
-                    if (name || gender || bornDate) {
-                        saveProfileInfo(user.email, name, 'names');
-                        saveProfileInfo(user.email, gender, 'gender');
-                        saveProfileInfo(user.email, bornDate, 'borndate');
-                    }
-                });
-
-                // Function to fetch latest info from database
-                function fetchLatestInfo(node, email, element, field) {
-                    db.ref(node).orderByChild('email').equalTo(email).limitToLast(1).once('value').then(snapshot => {
-                        snapshot.forEach(childSnapshot => {
-                            const data = childSnapshot.val();
-                            if (data && data[field]) {
-                                element.value = data[field];
-                                element.dataset.key = childSnapshot.key; // Store key for updates
-                            }
-                        });
-                    }).catch(error => {
-                        console.error(`Error fetching ${field}:`, error);
-                    });
-                }
-
-                // Function to save profile info to database
-                function saveProfileInfo(email, value, node) {
-                    const timestamp = Date.now();
-                    const key = document.getElementById(node).dataset.key || db.ref(node).push().key;
-                    const updates = {};
-                    updates[`${node}/${key}`] = { email, [node === 'borndate' ? 'borndate' : node]: value, timestamp };
-                    db.ref().update(updates).then(() => {
-                        console.log(`${node} updated successfully.`);
-                    }).catch(error => {
-                        console.error(`Error updating ${node}:`, error);
-                    });
-                }
-
-                // Function to toggle save button visibility
-                function toggleSaveButton() {
-                    const name = nameInput.value.trim();
-                    const gender = genderSelect.value;
-                    const bornDate = bornDateInput.value;
-
-                    saveButton.style.display = (name || gender || bornDate) ? 'block' : 'none';
-                }
-
+                loadProfileInfo(user.uid);
+                loadProfilePicture(user.email);
             } else {
                 window.location.href = 'index.html';
             }
         });
 
-        // Handle click on profile image to trigger file input click
-        profileImage.addEventListener('click', () => {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.onchange = (event) => {
+        function loadProfileInfo(uid) {
+            // Load latest name
+            database.ref('names').orderByChild('timestamp').limitToLast(1).once('value', snapshot => {
+                const nameData = snapshot.val();
+                if (nameData) {
+                    const latestName = Object.values(nameData)[0].name;
+                    document.getElementById('profile-name').textContent = latestName;
+                } else {
+                    document.getElementById('profile-name').textContent = 'Name not set';
+                }
+            });
+
+            // Load latest age
+            database.ref('ages').orderByChild('timestamp').limitToLast(1).once('value', snapshot => {
+                const ageData = snapshot.val();
+                if (ageData) {
+                    const latestAge = Object.values(ageData)[0].birthdate;
+                    document.getElementById('profile-age').textContent = latestAge;
+                } else {
+                    document.getElementById('profile-age').textContent = 'Age not set';
+                }
+            });
+
+            // Load latest gender
+            database.ref('genders').orderByChild('timestamp').limitToLast(1).once('value', snapshot => {
+                const genderData = snapshot.val();
+                if (genderData) {
+                    const latestGender = Object.values(genderData)[0].gender;
+                    document.getElementById('profile-gender').textContent = latestGender;
+                } else {
+                    document.getElementById('profile-gender').textContent = 'Gender not set';
+                }
+            });
+        }
+
+        function loadProfilePicture(email) {
+            database.ref('profilesphoto').orderByChild('timestamp').limitToLast(1).once('value', snapshot => {
+                const photoData = snapshot.val();
+                if (photoData) {
+                    const latestPhoto = Object.values(photoData)[0].photoUrl;
+                    document.getElementById('profile-icon').style.display = 'none';
+                    const profilePic = document.getElementById('profile-pic');
+                    profilePic.src = latestPhoto;
+                    profilePic.style.display = 'block';
+                }
+            });
+        }
+
+        // Handle profile picture upload
+        const profilePicContainer = document.getElementById('profile-pic-container');
+        const fileInput = document.getElementById('file-input');
+
+        profilePicContainer.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            const user = firebase.auth().currentUser;
+            if (user) {
                 const file = event.target.files[0];
                 if (file) {
-                    const user = auth.currentUser;
-                    if (user) {
-                        const timestamp = Date.now();
-                        const storageRef = storage.ref(`profilesphoto/${timestamp}-${file.name}`);
-                        storageRef.put(file).then(snapshot => {
-                            return snapshot.ref.getDownloadURL();
-                        }).then(url => {
-                            // Save photo URL to database
-                            const newPhotoRef = db.ref('profilesphoto').push();
-                            newPhotoRef.set({
-                                uploaderEmail: user.email,
-                                photoUrl: url,
-                                timestamp: timestamp
-                            });
-                            // Update profile image
-                            profileImage.src = url;
-                        }).catch(error => {
+                    const storageRef = storage.ref('profilesphoto/' + file.name);
+                    const uploadTask = storageRef.put(file);
+
+                    uploadTask.on('state_changed', 
+                        (snapshot) => {
+                            // Handle progress
+                        }, 
+                        (error) => {
                             console.error("Error uploading file:", error);
-                        });
-                    }
+                        }, 
+                        () => {
+                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                const timestamp = Date.now();
+                                const photoData = {
+                                    uploaderEmail: user.email,
+                                    photoUrl: downloadURL,
+                                    timestamp: timestamp
+                                };
+                                database.ref('profilesphoto').push(photoData).then(() => {
+                                    loadProfilePicture(user.email);
+                                });
+                            });
+                        }
+                    );
                 }
-            };
-            fileInput.click();
+            }
         });
     </script>
 </body>
