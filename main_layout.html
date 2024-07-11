@@ -57,6 +57,7 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             z-index: 1001;
             width: 320px;
+            display: none;
         }
         #video-thumbnail {
             position: relative;
@@ -95,6 +96,16 @@
             cursor: pointer;
             width: 100%;
         }
+        .dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -108,6 +119,18 @@
         </div>
     </div>
     <p class="user-info" id="user-email">Loading...</p>
+
+    <!-- Video upload dialog and overlay -->
+    <div class="dialog-overlay" id="dialog-overlay"></div>
+    <div id="video-upload-dialog">
+        <input type="file" id="video-input" accept="video/*" style="display: none;">
+        <div id="video-thumbnail">
+            <i id="video-play-icon" class="fas fa-play"></i>
+            <video id="video-preview"></video>
+        </div>
+        <input type="text" id="video-title" placeholder="Enter title (optional)">
+        <button id="upload-button">Send</button>
+    </div>
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -159,88 +182,81 @@
 
         // Upload Video functionality
         document.getElementById('upload-video').addEventListener('click', () => {
-            // Create a dialog for video upload
-            const dialog = document.createElement('div');
-            dialog.innerHTML = `
-                <div id="video-upload-dialog">
-                    <input type="file" id="video-input" accept="video/*" style="display: none;">
-                    <div id="video-thumbnail">
-                        <i id="video-play-icon" class="fas fa-play"></i>
-                        <video id="video-preview"></video>
-                    </div>
-                    <input type="text" id="video-title" placeholder="Enter title (optional)">
-                    <button id="upload-button">Send</button>
-                </div>
-            `;
-            document.body.appendChild(dialog);
+            document.getElementById('video-input').click();
+        });
 
-            const videoInput = document.getElementById('video-input');
-            const videoThumbnail = document.getElementById('video-thumbnail');
-            const videoPreview = document.getElementById('video-preview');
-            const videoPlayIcon = document.getElementById('video-play-icon');
-            const uploadButton = document.getElementById('upload-button');
-            let selectedFile = null;
+        const dialogOverlay = document.getElementById('dialog-overlay');
+        const videoUploadDialog = document.getElementById('video-upload-dialog');
+        const videoInput = document.getElementById('video-input');
+        const videoThumbnail = document.getElementById('video-thumbnail');
+        const videoPreview = document.getElementById('video-preview');
+        const videoPlayIcon = document.getElementById('video-play-icon');
+        const uploadButton = document.getElementById('upload-button');
+        let selectedFile = null;
 
-            videoThumbnail.addEventListener('click', () => {
-                videoInput.click();
-            });
+        videoInput.addEventListener('change', (event) => {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                const videoURL = URL.createObjectURL(selectedFile);
+                videoPreview.src = videoURL;
+                videoPreview.style.display = 'block';
+                videoPlayIcon.style.display = 'none';
+                videoUploadDialog.style.display = 'block';
+                dialogOverlay.style.display = 'block';
+            }
+        });
 
-            videoInput.addEventListener('change', (event) => {
-                selectedFile = event.target.files[0];
-                if (selectedFile) {
-                    const videoURL = URL.createObjectURL(selectedFile);
-                    videoPreview.src = videoURL;
-                    videoPreview.style.display = 'block';
-                    videoPlayIcon.style.display = 'none';
-                }
-            });
+        videoThumbnail.addEventListener('click', () => {
+            if (videoPreview.paused) {
+                videoPreview.play();
+                videoPlayIcon.className = 'fas fa-pause';
+            } else {
+                videoPreview.pause();
+                videoPlayIcon.className = 'fas fa-play';
+            }
+        });
 
-            videoThumbnail.addEventListener('click', () => {
-                if (videoPreview.paused) {
-                    videoPreview.play();
-                    videoPlayIcon.className = 'fas fa-pause';
-                } else {
-                    videoPreview.pause();
-                    videoPlayIcon.className = 'fas fa-play';
-                }
-            });
+        uploadButton.addEventListener('click', () => {
+            if (selectedFile) {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    const storageRef = firebase.storage().ref('videopost/' + selectedFile.name);
+                    const uploadTask = storageRef.put(selectedFile);
 
-            uploadButton.addEventListener('click', () => {
-                if (selectedFile) {
-                    const user = firebase.auth().currentUser;
-                    if (user) {
-                        const storageRef = firebase.storage().ref('videopost/' + selectedFile.name);
-                        const uploadTask = storageRef.put(selectedFile);
-
-                        uploadTask.on('state_changed', 
-                            (snapshot) => {
-                                // Handle progress
-                            }, 
-                            (error) => {
-                                console.error("Error uploading video:", error);
-                            }, 
-                            () => {
-                                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                    const timestamp = Date.now();
-                                    const videoTitle = document.getElementById('video-title').value;
-                                    const videoData = {
-                                        uploaderEmail: user.email,
-                                        videoUrl: downloadURL,
-                                        timestamp: timestamp
-                                    };
-                                    if (videoTitle) {
-                                        videoData.title = videoTitle;
-                                    }
-                                    firebase.database().ref('videopost').push(videoData).then(() => {
-                                        alert('Video uploaded successfully');
-                                        document.body.removeChild(dialog);
-                                    });
+                    uploadTask.on('state_changed', 
+                        (snapshot) => {
+                            // Handle progress
+                        }, 
+                        (error) => {
+                            console.error("Error uploading video:", error);
+                        }, 
+                        () => {
+                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                const timestamp = Date.now();
+                                const videoTitle = document.getElementById('video-title').value;
+                                const videoData = {
+                                    uploaderEmail: user.email,
+                                    videoUrl: downloadURL,
+                                    timestamp: timestamp
+                                };
+                                if (videoTitle) {
+                                    videoData.title = videoTitle;
+                                }
+                                firebase.database().ref('videopost').push(videoData).then(() => {
+                                    alert('Video uploaded successfully');
+                                    videoUploadDialog.style.display = 'none';
+                                    dialogOverlay.style.display = 'none';
                                 });
-                            }
-                        );
-                    }
+                            });
+                        }
+                    );
                 }
-            });
+            }
+        });
+
+        dialogOverlay.addEventListener('click', () => {
+            videoUploadDialog.style.display = 'none';
+            dialogOverlay.style.display = 'none';
         });
     </script>
 </body>
