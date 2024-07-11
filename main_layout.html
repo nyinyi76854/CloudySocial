@@ -240,7 +240,7 @@
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('user-email').textContent = `${user.email}`;
-                loadVideos(); // Load videos on authentication state change
+                loadVideoPosts(); // Load videos on authentication state change
             } else {
                 window.location.href = 'index.html';
             }
@@ -328,7 +328,7 @@
                                     .then(() => {
                                         console.log('Video metadata saved successfully.');
                                         document.getElementById('progress-bar-container').style.display = 'none';
-                                        loadVideos(); // Reload videos after upload
+                                        loadVideoPosts(); // Reload videos after upload
                                     })
                                     .catch((error) => {
                                         console.error('Error saving video metadata:', error);
