@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Layout</title>
-     <style>
+    <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -12,7 +12,6 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
             position: relative;
         }
         .user-info {
@@ -63,22 +62,12 @@
         #video-thumbnail {
             position: relative;
             width: 100%;
-            height: 180px; /* Fixed height for thumbnail */
+            height: 180px;
             background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            overflow: hidden;
-        }
-        #video-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        #video-thumbnail:hover img {
-            transform: scale(1.1); /* Scale up on hover */
         }
         #video-thumbnail i {
             font-size: 50px;
@@ -134,40 +123,18 @@
         .video-box-container {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px; /* Adjusted margin */
-            padding: 0 10px; /* Adjusted padding */
+            margin-top: 50px;
+            margin-left: 20px;
+            margin-right: 20px;
         }
         .video-box {
-            width: 300px; /* Adjusted width */
-            margin: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-        .video-box img {
             width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-        .play-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 40px;
-            color: #fff;
-            opacity: 0.8;
-            cursor: pointer;
-            display: none;
-        }
-        .video-box:hover .play-overlay {
-            display: block;
-        }
-        .video-box:hover img {
-            transform: scale(1.1); /* Scale up on hover */
+            padding: 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+            margin: 5px;
+            border-radius: 4px;
+            word-wrap: break-word;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -231,7 +198,7 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = `${user.email}`;
+                document.getElementById('user-email').textContent = ${user.email};
                 loadVideoUrls();
             } else {
                 window.location.href = 'index.html';
@@ -295,14 +262,14 @@
         uploadButton.addEventListener('click', () => {
             if (selectedFile) {
                 const storageRef = firebase.storage().ref();
-                const videoRef = storageRef.child(`videopost/${selectedFile.name}`);
+                const videoRef = storageRef.child(videopost/${selectedFile.name});
                 const uploadTask = videoRef.put(selectedFile);
 
                 progressBarContainer.style.display = 'block';
 
                 uploadTask.on('state_changed', (snapshot) => {
                     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    progressBar.style.width = `${progress}%`;
+                    progressBar.style.width = ${progress}%;
                 }, (error) => {
                     console.error('Upload failed:', error);
                     progressBarContainer.style.display = 'none';
@@ -332,7 +299,6 @@
         });
 
         dialogOverlay.addEventListener('click', () => {
-            videoPreview.pause(); // Pause video when dialog closes
             videoUploadDialog.style.display = 'none';
             dialogOverlay.style.display = 'none';
         });
@@ -343,49 +309,13 @@
                 videoBoxContainer.innerHTML = ''; // Clear the container first
                 snapshot.forEach((childSnapshot) => {
                     const videoData = childSnapshot.val();
-                    
-                    // Create video box element
                     const videoBox = document.createElement('div');
                     videoBox.classList.add('video-box');
-
-                    // Create image element for thumbnail
-                    const thumbnailImg = document.createElement('img');
-                    thumbnailImg.src = videoData.videoUrl; // Set video URL as image source
-                    thumbnailImg.alt = 'Video Thumbnail';
-
-                    // Create play overlay
-                    const playOverlay = document.createElement('div');
-                    playOverlay.classList.add('play-overlay');
-                    playOverlay.innerHTML = '<i class="fas fa-play"></i>';
-                    playOverlay.addEventListener('click', () => {
-                        playVideoInContainer(videoData.videoUrl, videoBox);
-                    });
-
-                    // Append thumbnail and play overlay to video box
-                    videoBox.appendChild(thumbnailImg);
-                    videoBox.appendChild(playOverlay);
-
-                    // Append video box to container
+                    videoBox.textContent = Title: ${videoData.title || 'No Title'}\nURL: ${videoData.videoUrl};
                     videoBoxContainer.appendChild(videoBox);
                 });
             });
         }
-
-        function playVideoInContainer(videoUrl, container) {
-            // Clear previous content of container
-            container.innerHTML = '';
-
-            // Create video element
-            const videoElement = document.createElement('video');
-            videoElement.src = videoUrl;
-            videoElement.controls = true;
-            videoElement.style.width = '100%';
-            videoElement.style.height = '100%';
-
-            // Append video element to container
-            container.appendChild(videoElement);
-        }
     </script>
 </body>
 </html>
-
