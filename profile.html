@@ -46,6 +46,7 @@
             top: 0;
             left: 0;
             cursor: pointer;
+            display: none; /* Initially hidden, will be shown if no profile picture is available */
         }
         .profile-info {
             margin-top: 20px;
@@ -145,12 +146,17 @@
         function loadProfilePicture(email) {
             database.ref('profilesphoto').orderByChild('timestamp').limitToLast(1).once('value', snapshot => {
                 const photoData = snapshot.val();
+                const profileIcon = document.getElementById('profile-icon');
+                const profilePic = document.getElementById('profile-pic');
+
                 if (photoData) {
                     const latestPhoto = Object.values(photoData)[0].photoUrl;
-                    document.getElementById('profile-icon').style.display = 'none';
-                    const profilePic = document.getElementById('profile-pic');
+                    profileIcon.style.display = 'none';
                     profilePic.src = latestPhoto;
                     profilePic.style.display = 'block';
+                } else {
+                    profileIcon.style.display = 'block';
+                    profilePic.style.display = 'none';
                 }
             });
         }
