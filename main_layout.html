@@ -334,15 +334,12 @@
             videoUploadDialog.style.display = 'none';
             dialogOverlay.style.display = 'none';
         });
-        // Fetch video posts from Firebase
+  // Fetch video posts from Firebase
 const videoPostsRef = firebase.database().ref('videopost');
 videoPostsRef.once('value', (snapshot) => {
     snapshot.forEach((childSnapshot) => {
         const videoData = childSnapshot.val();
         const videoId = childSnapshot.key;
-
-        // Generate random thumbnail (placeholder)
-        const thumbnailUrl = `https://via.placeholder.com/300x200.png?text=Video+Thumbnail`;
 
         // Create video post element
         const videoPostElement = document.createElement('div');
@@ -351,49 +348,55 @@ videoPostsRef.once('value', (snapshot) => {
         // Create thumbnail with play icon
         const thumbnailDiv = document.createElement('div');
         thumbnailDiv.classList.add('video-thumbnail');
-        thumbnailDiv.style.backgroundImage = `url('${thumbnailUrl}')`;
         thumbnailDiv.setAttribute('data-video-id', videoId);
-        
-        const playIcon = document.createElement('i');
-        playIcon.classList.add('fas', 'fa-play', 'play-icon');
 
-        thumbnailDiv.appendChild(playIcon);
-        videoPostElement.appendChild(thumbnailDiv);
+        // Create video element for capturing thumbnail
+        const videoElement = document.createElement('video');
+        videoElement.src = videoData.videoUrl;
 
-        // Add click event to play/pause video
-        thumbnailDiv.addEventListener('click', () => {
-            const videoElement = document.createElement('video');
-            videoElement.src = videoData.videoUrl;
+        // Capture thumbnail after video metadata is loaded
+        videoElement.addEventListener('loadedmetadata', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-            // Replace thumbnail with video player
-            thumbnailDiv.innerHTML = '';
-            thumbnailDiv.appendChild(videoElement);
+            // Convert canvas to data URL and set as background image
+            const thumbnailUrl = canvas.toDataURL();
+            thumbnailDiv.style.backgroundImage = `url('${thumbnailUrl}')`;
+            thumbnailDiv.appendChild(playIcon); // Add play icon
 
-            videoElement.play();
+            // Add click event to play/pause video
+            thumbnailDiv.addEventListener('click', () => {
+                // Replace thumbnail with video player
+                thumbnailDiv.innerHTML = '';
+                thumbnailDiv.appendChild(videoElement);
 
-            videoElement.addEventListener('click', () => {
-                if (videoElement.paused) {
-                    videoElement.play();
-                } else {
-                    videoElement.pause();
-                }
+                videoElement.play();
+
+                videoElement.addEventListener('click', () => {
+                    if (videoElement.paused) {
+                        videoElement.play();
+                    } else {
+                        videoElement.pause();
+                    }
+                });
             });
 
-            // Auto-hide controls after 3 seconds of inactivity
-            let timeout;
-            videoElement.addEventListener('mousemove', () => {
-                thumbnailDiv.classList.add('active');
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    thumbnailDiv.classList.remove('active');
-                }, 3000);
-            });
+            // Append thumbnail to video post element
+            videoPostElement.appendChild(thumbnailDiv);
+
+            // Append video post to container
+            document.getElementById('video-posts-container').appendChild(videoPostElement);
         });
 
-        // Append video post to container
-        document.getElementById('video-posts-container').appendChild(videoPostElement);
+        // Handle errors loading the video
+        videoElement.addEventListener('error', (error) => {
+            console.error('Error loading video:', error);
+        });
     });
 });
+
 
     </script>
 </body>
