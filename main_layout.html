@@ -303,19 +303,20 @@
             dialogOverlay.style.display = 'none';
         });
 
-        function loadVideoUrls() {
-            const videoBoxContainer = document.getElementById('video-box-container');
-            firebase.database().ref('videopost').on('value', (snapshot) => {
-                videoBoxContainer.innerHTML = ''; // Clear the container first
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoBox = document.createElement('div');
-                    videoBox.classList.add('video-box');
-                    videoBox.textContent = `Title: ${videoData.title || 'No Title'}\nURL: ${videoData.videoUrl}`;
-                    videoBoxContainer.appendChild(videoBox);
-                });
-            });
-        }
+       function loadVideoUrls() {
+    const videoBoxContainer = document.getElementById('video-box-container');
+    firebase.database().ref('videopost').on('value', (snapshot) => {
+        videoBoxContainer.innerHTML = ''; // Clear the container first
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoBox = document.createElement('div');
+            videoBox.classList.add('video-box');
+            videoBox.textContent = `${videoData.videoUrl}`;
+            videoBoxContainer.appendChild(videoBox);
+        });
+    });
+}
+
     </script>
 </body>
 </html>
