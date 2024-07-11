@@ -144,13 +144,16 @@
         }
 
         function loadProfilePicture(email) {
-            database.ref('profilesphoto').orderByChild('timestamp').limitToLast(1).once('value', snapshot => {
+            database.ref('profilesphoto').orderByChild('uploaderEmail').equalTo(email).once('value', snapshot => {
                 const photoData = snapshot.val();
                 const profileIcon = document.getElementById('profile-icon');
                 const profilePic = document.getElementById('profile-pic');
 
                 if (photoData) {
-                    const latestPhoto = Object.values(photoData)[0].photoUrl;
+                    const photos = Object.values(photoData);
+                    photos.sort((a, b) => b.timestamp - a.timestamp);
+                    const latestPhoto = photos[0].photoUrl;
+
                     profileIcon.style.display = 'none';
                     profilePic.src = latestPhoto;
                     profilePic.style.display = 'block';
