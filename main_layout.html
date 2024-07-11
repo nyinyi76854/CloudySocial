@@ -96,38 +96,60 @@
             cursor: pointer;
             width: 100%;
         }
-         .video-thumbnail {
-            position: relative;
-            width: 240px;
-            height: 135px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            overflow: hidden;
-        }
-        .video-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .play-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 40px;
-            color: #fff;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
-        }
-        .play-button:hover {
-            opacity: 1;
-        }
-        #videos-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 60px;
-        }
+        #video-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+    margin-top: 20px;
+}
+
+/* Style for each video item */
+.video-item {
+    width: 320px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Video thumbnail styling */
+.video-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: #000;
+    cursor: pointer;
+}
+
+/* Play icon styling */
+.video-thumbnail i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 50px;
+    color: #fff;
+    pointer-events: none;
+}
+
+/* Video element styling */
+.video-thumbnail video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Video title styling */
+.video-item p {
+    margin: 0;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+}
         .dialog-overlay {
             position: fixed;
             top: 0;
@@ -166,7 +188,7 @@
         </div>
     </div>
     <p class="user-info" id="user-email">Loading...</p>
-<div id="videos-container"></div>
+  <div id="video-list-container"></div>
     <!-- Video upload dialog and overlay -->
     <div class="dialog-overlay" id="dialog-overlay"></div>
     <div id="video-upload-dialog">
@@ -305,6 +327,7 @@
                                     .then(() => {
                                         console.log('Video metadata saved successfully.');
                                         progressBarContainer.style.display = 'none';
+                                        loadVideos();
                                     })
                                     .catch((error) => {
                                         console.error('Error saving video metadata:', error);
@@ -315,65 +338,48 @@
                 }
             }
         });
+ function loadVideos() {
+            const videoListContainer = document.getElementById('video-list-container');
+            videoListContainer.innerHTML = ''; // Clear any existing content
 
+            database.ref('videopost').once('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const videoData = childSnapshot.val();
+                    const videoUrl = videoData.videoUrl;
+                    const videoTitle = videoData.title || 'Untitled';
+
+                    // Create video thumbnail element
+                    const videoElement = document.createElement('div');
+                    videoElement.classList.add('video-item');
+                    videoElement.innerHTML = `
+                        <div class="video-thumbnail" style="position: relative; width: 320px; height: 180px; background: #000; margin-bottom: 10px;">
+                            <i class="fas fa-play" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; color: #fff; pointer-events: none;"></i>
+                            <video style="width: 100%; height: 100%; object-fit: cover;" src="${videoUrl}" muted></video>
+                        </div>
+                        <p style="margin: 0; padding: 5px;">${videoTitle}</p>
+                    `;
+
+                    // Add event listener to play video on click
+                    const videoThumbnail = videoElement.querySelector('.video-thumbnail');
+                    const videoPreview = videoThumbnail.querySelector('video');
+                    videoThumbnail.addEventListener('click', () => {
+                        if (videoPreview.paused) {
+                            videoPreview.play();
+                        } else {
+                            videoPreview.pause();
+                        }
+                    });
+
+                    // Append video element to container
+                    videoListContainer.appendChild(videoElement);
+                });
+            });
+        }
         dialogOverlay.addEventListener('click', () => {
             videoUploadDialog.style.display = 'none';
             dialogOverlay.style.display = 'none';
         });
-         const videosContainer = document.getElementById('videos-container');
-        firebase.database().ref('videopost').once('value', (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-                const videoData = childSnapshot.val();
-                const videoURL = videoData.videoUrl;
-                const videoThumbnail = createVideoThumbnail(videoURL);
-                videosContainer.appendChild(videoThumbnail);
-            });
-        });
-
-        function createVideoThumbnail(videoURL) {
-            const videoThumbnail = document.createElement('div');
-            videoThumbnail.classList.add('video-thumbnail');
-
-            const video = document.createElement('video');
-            video.src = videoURL;
-            video.crossOrigin = "anonymous";
-            video.setAttribute('muted', true);
-            video.setAttribute('preload', 'metadata');
-            video.setAttribute('playsinline', true);
-            video.setAttribute('controls', false);
-            video.addEventListener('loadeddata', () => {
-                video.currentTime = 2; // Capture frame at 2 seconds
-            });
-            video.addEventListener('seeked', () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const thumbnailURL = canvas.toDataURL('image/png');
-                
-                const img = document.createElement('img');
-                img.setAttribute('data-src', thumbnailURL);
-                img.classList.add('lazyload');
-                img.alt = 'Video Thumbnail';
-
-                videoThumbnail.appendChild(img);
-                videoThumbnail.appendChild(playButton);
-
-                videoThumbnail.addEventListener('click', () => {
-                    // Handle video playback or open modal with video player
-                    console.log('Play video:', videoURL);
-                });
-
-                // Remove the video element after capturing the thumbnail
-                video.remove();
-            });
-
-            const playButton = document.createElement('i');
-            playButton.classList.add('fas', 'fa-play', 'play-button');
-
-            return videoThumbnail;
-        }
+        
     </script>
 </body>
 </html>
