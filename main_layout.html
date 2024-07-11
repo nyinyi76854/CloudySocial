@@ -47,11 +47,20 @@
         }
         /* Video List styling */
         .video-list {
-            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            padding: 10px;
+        }
+        .video-list-container {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            padding: 10px;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
         .video-item {
             position: relative;
@@ -164,7 +173,9 @@
     <p class="user-info" id="user-email">Loading...</p>
 
     <!-- Video List -->
-    <div class="video-list" id="video-list"></div>
+    <div class="video-list">
+        <div class="video-list-container" id="video-list"></div>
+    </div>
 
     <!-- Video upload dialog and overlay -->
     <div class="dialog-overlay" id="dialog-overlay"></div>
@@ -250,100 +261,129 @@
             videoDialog.style.top = '50%';
             videoDialog.style.left = '50%';
             videoDialog.style.transform = 'translate(-50%, -50%)';
-            videoDialog.style.background = '#000';
+            videoDialog.style.backgroundColor = '#fff';
             videoDialog.style.padding = '20px';
-            videoDialog.style.borderRadius = '8px';
-            videoDialog.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+            videoDialog.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+            videoDialog.style.zIndex = '1001';
             videoDialog.appendChild(videoPlayer);
-            document.body.appendChild(videoDialog);
-
-            videoDialog.addEventListener('click', () => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            overlay.style.zIndex = '1000';
+            overlay.addEventListener('click', () => {
                 document.body.removeChild(videoDialog);
+                document.body.removeChild(overlay);
             });
+            document.body.appendChild(videoDialog);
+            document.body.appendChild(overlay);
         }
 
         // Slidebar toggle
-        document.getElementById('menu-icon').addEventListener('click', () => {
-            const menu = document.getElementById('slidebar-menu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        const menuIcon = document.getElementById('menu-icon');
+        const slidebarMenu = document.getElementById('slidebar-menu');
+        menuIcon.addEventListener('click', () => {
+            slidebarMenu.style.display = slidebarMenu.style.display === 'none' || slidebarMenu.style.display === '' ? 'block' : 'none';
         });
 
-        // Show video upload dialog
-        document.getElementById('upload-video').addEventListener('click', () => {
-            document.getElementById('dialog-overlay').style.display = 'block';
-            document.getElementById('video-upload-dialog').style.display = 'block';
+        // Upload video dialog
+        const uploadVideoButton = document.getElementById('upload-video');
+        const dialogOverlay = document.getElementById('dialog-overlay');
+        const videoUploadDialog = document.getElementById('video-upload-dialog');
+        const videoInput = document.getElementById('video-input');
+        const videoThumbnail = document.getElementById('video-thumbnail');
+        const videoPreview = document.getElementById('video-preview');
+        const videoPlayIcon = document.getElementById('video-play-icon');
+        const videoTitle = document.getElementById('video-title');
+        const uploadButton = document.getElementById('upload-button');
+
+        uploadVideoButton.addEventListener('click', () => {
+            dialogOverlay.style.display = 'block';
+            videoUploadDialog.style.display = 'block';
         });
 
-        // Close video upload dialog
-        document.getElementById('dialog-overlay').addEventListener('click', () => {
-            document.getElementById('dialog-overlay').style.display = 'none';
-            document.getElementById('video-upload-dialog').style.display = 'none';
+        dialogOverlay.addEventListener('click', () => {
+            dialogOverlay.style.display = 'none';
+            videoUploadDialog.style.display = 'none';
         });
 
-        // Video upload functionality
-        document.getElementById('video-thumbnail').addEventListener('click', () => {
-            document.getElementById('video-input').click();
+        videoThumbnail.addEventListener('click', () => {
+            videoInput.click();
         });
 
-        document.getElementById('video-input').addEventListener('change', (event) => {
+        videoInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
-            const videoUrl = URL.createObjectURL(file);
-            const videoPreview = document.getElementById('video-preview');
-            videoPreview.src = videoUrl;
-            videoPreview.style.display = 'block';
-            document.getElementById('video-play-icon').style.display = 'none';
-        });
-
-        document.getElementById('upload-button').addEventListener('click', () => {
-            const file = document.getElementById('video-input').files[0];
-            const title = document.getElementById('video-title').value.trim();
-            if (!file) {
-                alert('Please select a video file.');
-                return;
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    videoPreview.src = e.target.result;
+                    videoPreview.style.display = 'block';
+                    videoPlayIcon.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
             }
-            uploadVideo(file, title);
         });
 
-        function uploadVideo(file, title) {
-            const user = auth.currentUser;
-            const videoRef = storage.ref().child(`videopost/${Date.now()}_${file.name}`);
-            const uploadTask = videoRef.put(file);
-            document.getElementById('progress-bar-container').style.display = 'block';
+        videoPreview.addEventListener('click', () => {
+            if (videoPreview.paused) {
+                videoPreview.play();
+                videoPlayIcon.style.display = 'none';
+            } else {
+                videoPreview.pause();
+                videoPlayIcon.style.display = 'block';
+            }
+        });
 
-            uploadTask.on('state_changed', (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                document.getElementById('progress-bar').style.width = `${progress}%`;
-            }, (error) => {
-                alert('Upload failed: ' + error.message);
-                document.getElementById('progress-bar-container').style.display = 'none';
-            }, () => {
-                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                    const videoData = {
-                        uploaderEmail: user.email,
-                        videoUrl: downloadURL,
-                        title: title,
-                        timestamp: Date.now()
-                    };
-                    db.ref('videopost').push(videoData, (error) => {
-                        if (error) {
-                            alert('Failed to save video metadata: ' + error.message);
-                        } else {
-                            alert('Video uploaded successfully!');
-                            document.getElementById('dialog-overlay').style.display = 'none';
-                            document.getElementById('video-upload-dialog').style.display = 'none';
-                            document.getElementById('progress-bar-container').style.display = 'none';
-                        }
+        uploadButton.addEventListener('click', () => {
+            const file = videoInput.files[0];
+            if (file) {
+                const uploaderEmail = auth.currentUser.email;
+                const videoTitleText = videoTitle.value;
+                const videoFileName = `${Date.now()}_${file.name}`;
+                const videoRef = storage.ref().child(`videopost/${videoFileName}`);
+                const uploadTask = videoRef.put(file);
+
+                // Show progress bar
+                const progressBarContainer = document.getElementById('progress-bar-container');
+                const progressBar = document.getElementById('progress-bar');
+                progressBarContainer.style.display = 'block';
+
+                uploadTask.on('state_changed', (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    progressBar.style.width = `${progress}%`;
+                }, (error) => {
+                    console.error('Upload failed:', error);
+                }, () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        db.ref('videopost').push({
+                            uploaderEmail,
+                            videoUrl: downloadURL,
+                            title: videoTitleText,
+                            timestamp: Date.now()
+                        });
+                        progressBarContainer.style.display = 'none';
+                        dialogOverlay.style.display = 'none';
+                        videoUploadDialog.style.display = 'none';
+                        videoInput.value = '';
+                        videoPreview.style.display = 'none';
+                        videoPlayIcon.style.display = 'block';
+                        videoTitle.value = '';
+                        loadVideos();
                     });
                 });
-            });
-        }
+            }
+        });
 
-        // Logout functionality
-        document.getElementById('logout').addEventListener('click', () => {
+        // Logout
+        const logoutButton = document.getElementById('logout');
+        logoutButton.addEventListener('click', () => {
             auth.signOut().then(() => {
                 window.location.href = 'index.html';
             }).catch((error) => {
-                alert('Logout failed: ' + error.message);
+                console.error('Sign out error:', error);
             });
         });
     </script>
