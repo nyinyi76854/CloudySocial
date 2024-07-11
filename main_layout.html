@@ -240,7 +240,7 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = ${user.email};
+                document.getElementById('user-email').textContent = `${user.email}`;
                 loadVideos(); // Load videos on authentication state change
             } else {
                 window.location.href = 'index.html';
@@ -304,13 +304,13 @@
                 const user = firebase.auth().currentUser;
                 if (user) {
                     const title = document.getElementById('video-title').value;
-                    const storageRef = firebase.storage().ref(videopost/${selectedFile.name});
+                    const storageRef = firebase.storage().ref(`videopost/${selectedFile.name}`);
                     const uploadTask = storageRef.put(selectedFile);
 
                     uploadTask.on('state_changed', 
                         (snapshot) => {
                             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            document.getElementById('progress-bar').style.width = ${progress}%;
+                            document.getElementById('progress-bar').style.width = `${progress}%`;
                         }, 
                         (error) => {
                             console.error('Upload failed:', error);
@@ -341,7 +341,8 @@
             }
         });
 
-      function loadVideos() {
+        // Function to load videos from Firebase
+        function loadVideos() {
             const videoListContainer = document.getElementById('video-list-container');
             videoListContainer.innerHTML = ''; // Clear any existing content
 
@@ -354,13 +355,13 @@
                     // Create video thumbnail element
                     const videoElement = document.createElement('div');
                     videoElement.classList.add('video-item');
-                    videoElement.innerHTML = 
+                    videoElement.innerHTML = `
                         <div class="video-thumbnail" style="position: relative; width: 320px; height: 180px; background: #000; margin-bottom: 10px;">
                             <i class="fas fa-play" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; color: #fff; pointer-events: none;"></i>
                             <video style="width: 100%; height: 100%; object-fit: cover;" src="${videoUrl}" muted></video>
                         </div>
                         <p style="margin: 0; padding: 5px;">${videoTitle}</p>
-                    ;
+                    `;
 
                     // Add event listener to play video on click
                     const videoThumbnail = videoElement.querySelector('.video-thumbnail');
@@ -378,7 +379,6 @@
                 });
             });
         }
-
 
         // Call loadVideos immediately to load videos when the page loads
         loadVideos();
