@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Layout</title>
-    <style>
+     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -62,12 +62,22 @@
         #video-thumbnail {
             position: relative;
             width: 100%;
-            height: 180px;
+            height: 150px; /* Adjusted height */
             background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            overflow: hidden; /* Ensure thumbnail overflow is hidden */
+        }
+        #video-thumbnail img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        #video-thumbnail:hover img {
+            transform: scale(1.1); /* Scale up on hover */
         }
         #video-thumbnail i {
             font-size: 50px;
@@ -123,47 +133,39 @@
         .video-box-container {
             display: flex;
             flex-wrap: wrap;
-            margin-top: 50px;
-            margin-left: 20px;
-            margin-right: 20px;
+            justify-content: center;
+            margin-top: 20px; /* Adjusted margin */
+            padding: 0 10px; /* Adjusted padding */
         }
         .video-box {
-            width: 100%;
-            padding: 10px;
+            width: 250px; /* Adjusted width */
+            margin: 10px;
             border: 1px solid #ccc;
-            background: #fff;
-            margin: 5px;
             border-radius: 4px;
-            word-wrap: break-word;
-            position: relative; /* Added */
-            cursor: pointer; /* Added */
+            overflow: hidden; /* Ensure thumbnail overflow is hidden */
         }
         .video-box img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
             display: block;
-            border-radius: 4px;
+            transition: transform 0.3s ease;
         }
         .play-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: opacity 0.3s ease;
-        }
-        .play-overlay i {
-            font-size: 50px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
             color: #fff;
-        }
-        .play-overlay:hover {
             opacity: 0.8;
+            cursor: pointer;
+            display: none;
+        }
+        .video-box:hover .play-overlay {
+            display: block;
+        }
+        .video-box:hover img {
+            transform: scale(1.1); /* Scale up on hover */
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
