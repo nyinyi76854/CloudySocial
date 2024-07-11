@@ -120,22 +120,6 @@
             background: #000;
             width: 0%;
         }
-        .video-box-container {
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: 50px;
-            margin-left: 20px;
-            margin-right: 20px;
-        }
-        .video-box {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            background: #fff;
-            margin: 5px;
-            border-radius: 4px;
-            word-wrap: break-word;
-        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -149,11 +133,6 @@
         </div>
     </div>
     <p class="user-info" id="user-email">Loading...</p>
-
-    <!-- Container for video URLs -->
-    <div class="video-box-container" id="video-box-container">
-        <!-- Video boxes will be appended here -->
-    </div>
 
     <!-- Video upload dialog and overlay -->
     <div class="dialog-overlay" id="dialog-overlay"></div>
@@ -198,8 +177,7 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = ${user.email};
-                loadVideoUrls();
+                document.getElementById('user-email').textContent = `${user.email}`;
             } else {
                 window.location.href = 'index.html';
             }
@@ -252,49 +230,56 @@
         videoThumbnail.addEventListener('click', () => {
             if (videoPreview.paused) {
                 videoPreview.play();
-                videoPlayIcon.style.display = 'none';
+                videoPlayIcon.className = 'fas fa-pause';
             } else {
                 videoPreview.pause();
-                videoPlayIcon.style.display = 'block';
+                videoPlayIcon.className = 'fas fa-play';
             }
         });
 
         uploadButton.addEventListener('click', () => {
             if (selectedFile) {
-                const storageRef = firebase.storage().ref();
-                const videoRef = storageRef.child(videopost/${selectedFile.name});
-                const uploadTask = videoRef.put(selectedFile);
-
+                videoUploadDialog.style.display = 'none';
+                dialogOverlay.style.display = 'none';
                 progressBarContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    const title = document.getElementById('video-title').value;
+                    const storageRef = firebase.storage().ref(`videopost/${selectedFile.name}`);
+                    const uploadTask = storageRef.put(selectedFile);
 
-                uploadTask.on('state_changed', (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    progressBar.style.width = ${progress}%;
-                }, (error) => {
-                    console.error('Upload failed:', error);
-                    progressBarContainer.style.display = 'none';
-                }, () => {
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        const user = firebase.auth().currentUser;
-                        const videoTitle = document.getElementById('video-title').value;
-                        const videoData = {
-                            uploaderEmail: user.email,
-                            videoUrl: downloadURL,
-                            title: videoTitle,
-                            timestamp: firebase.database.ServerValue.TIMESTAMP
-                        };
-                        firebase.database().ref('videopost').push(videoData);
-                        videoUploadDialog.style.display = 'none';
-                        dialogOverlay.style.display = 'none';
-                        progressBarContainer.style.display = 'none';
-                        progressBar.style.width = '0%';
-                        selectedFile = null;
-                        videoPreview.src = '';
-                        videoPreview.style.display = 'none';
-                        videoPlayIcon.style.display = 'block';
-                        document.getElementById('video-title').value = '';
-                    });
-                });
+                    uploadTask.on('state_changed', 
+                        (snapshot) => {
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            progressBar.style.width = `${progress}%`;
+                        }, 
+                        (error) => {
+                            console.error('Upload failed:', error);
+                        }, 
+                        () => {
+                            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                const videoData = {
+                                    uploader: user.email,
+                                    videoUrl: downloadURL,
+                                    timestamp: new Date().toISOString()
+                                };
+                                if (title) {
+                                    videoData.title = title;
+                                }
+                                firebase.database().ref('videopost').push(videoData)
+                                    .then(() => {
+                                        console.log('Video metadata saved successfully.');
+                                        progressBarContainer.style.display = 'none';
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error saving video metadata:', error);
+                                    });
+                            });
+                        }
+                    );
+                }
             }
         });
 
@@ -302,21 +287,6 @@
             videoUploadDialog.style.display = 'none';
             dialogOverlay.style.display = 'none';
         });
-
-       function loadVideoUrls() {
-    const videoBoxContainer = document.getElementById('video-box-container');
-    firebase.database().ref('videopost').on('value', (snapshot) => {
-        videoBoxContainer.innerHTML = ''; // Clear the container first
-        snapshot.forEach((childSnapshot) => {
-            const videoData = childSnapshot.val();
-            const videoBox = document.createElement('div');
-            videoBox.classList.add('video-box');
-            videoBox.textContent = ${videoData.videoUrl};
-            videoBoxContainer.appendChild(videoBox);
-        });
-    });
-}
-
     </script>
 </body>
 </html>
