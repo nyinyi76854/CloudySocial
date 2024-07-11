@@ -45,13 +45,65 @@
         .slidebar-menu a:hover {
             background-color: #f4f4f4;
         }
+        /* Dialog styling */
+        #video-upload-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1001;
+            width: 320px;
+        }
+        #video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        #video-thumbnail i {
+            font-size: 50px;
+            color: #fff;
+        }
+        #video-preview {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #video-title {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #upload-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     <div class="slidebar">
         <img src="https://img.icons8.com/ios-glyphs/30/000000/menu.png" id="menu-icon"/>
         <div class="slidebar-menu" id="slidebar-menu">
             <a href="profile.html">Profile</a>
+            <a href="#" id="upload-video">Upload Video</a>
             <a href="#" id="logout">Logout</a>
         </div>
     </div>
@@ -60,6 +112,8 @@
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <script>
         // Your web app's Firebase configuration
@@ -92,12 +146,100 @@
             const menu = document.getElementById('slidebar-menu');
             menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         });
+
+        // Logout functionality
         document.getElementById('logout').addEventListener('click', (e) => {
             e.preventDefault();
             auth.signOut().then(() => {
                 window.location.href = 'index.html';
             }).catch((error) => {
                 console.error('Error signing out:', error);
+            });
+        });
+
+        // Upload Video functionality
+        document.getElementById('upload-video').addEventListener('click', () => {
+            // Create a dialog for video upload
+            const dialog = document.createElement('div');
+            dialog.innerHTML = `
+                <div id="video-upload-dialog">
+                    <input type="file" id="video-input" accept="video/*" style="display: none;">
+                    <div id="video-thumbnail">
+                        <i id="video-play-icon" class="fas fa-play"></i>
+                        <video id="video-preview"></video>
+                    </div>
+                    <input type="text" id="video-title" placeholder="Enter title (optional)">
+                    <button id="upload-button">Send</button>
+                </div>
+            `;
+            document.body.appendChild(dialog);
+
+            const videoInput = document.getElementById('video-input');
+            const videoThumbnail = document.getElementById('video-thumbnail');
+            const videoPreview = document.getElementById('video-preview');
+            const videoPlayIcon = document.getElementById('video-play-icon');
+            const uploadButton = document.getElementById('upload-button');
+            let selectedFile = null;
+
+            videoThumbnail.addEventListener('click', () => {
+                videoInput.click();
+            });
+
+            videoInput.addEventListener('change', (event) => {
+                selectedFile = event.target.files[0];
+                if (selectedFile) {
+                    const videoURL = URL.createObjectURL(selectedFile);
+                    videoPreview.src = videoURL;
+                    videoPreview.style.display = 'block';
+                    videoPlayIcon.style.display = 'none';
+                }
+            });
+
+            videoThumbnail.addEventListener('click', () => {
+                if (videoPreview.paused) {
+                    videoPreview.play();
+                    videoPlayIcon.className = 'fas fa-pause';
+                } else {
+                    videoPreview.pause();
+                    videoPlayIcon.className = 'fas fa-play';
+                }
+            });
+
+            uploadButton.addEventListener('click', () => {
+                if (selectedFile) {
+                    const user = firebase.auth().currentUser;
+                    if (user) {
+                        const storageRef = firebase.storage().ref('videopost/' + selectedFile.name);
+                        const uploadTask = storageRef.put(selectedFile);
+
+                        uploadTask.on('state_changed', 
+                            (snapshot) => {
+                                // Handle progress
+                            }, 
+                            (error) => {
+                                console.error("Error uploading video:", error);
+                            }, 
+                            () => {
+                                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                    const timestamp = Date.now();
+                                    const videoTitle = document.getElementById('video-title').value;
+                                    const videoData = {
+                                        uploaderEmail: user.email,
+                                        videoUrl: downloadURL,
+                                        timestamp: timestamp
+                                    };
+                                    if (videoTitle) {
+                                        videoData.title = videoTitle;
+                                    }
+                                    firebase.database().ref('videopost').push(videoData).then(() => {
+                                        alert('Video uploaded successfully');
+                                        document.body.removeChild(dialog);
+                                    });
+                                });
+                            }
+                        );
+                    }
+                }
             });
         });
     </script>
