@@ -96,60 +96,7 @@
             cursor: pointer;
             width: 100%;
         }
-        #video-list-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #f0f0f0;
-    margin-top: 20px;
-}
-
-/* Style for each video item */
-.video-item {
-    width: 320px;
-    margin-bottom: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
-
-/* Video thumbnail styling */
-.video-thumbnail {
-    position: relative;
-    width: 100%;
-    height: 180px;
-    background: #000;
-    cursor: pointer;
-}
-
-/* Play icon styling */
-.video-thumbnail i {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 50px;
-    color: #fff;
-    pointer-events: none;
-}
-
-/* Video element styling */
-.video-thumbnail video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* Video title styling */
-.video-item p {
-    margin: 0;
-    padding: 10px;
-    font-size: 16px;
-    color: #333;
-    text-align: center;
-}
+        
         .dialog-overlay {
             position: fixed;
             top: 0;
@@ -175,6 +122,63 @@
             background: #000;
             width: 0%;
         }
+        /* Container for the video list */
+        #video-list-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            margin-top: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 80px);
+        }
+
+        /* Style for each video item */
+        .video-item {
+            width: 320px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Video thumbnail styling */
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: #000;
+            cursor: pointer;
+        }
+
+        /* Play icon styling */
+        .video-thumbnail i {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            color: #fff;
+            pointer-events: none;
+        }
+
+        /* Video element styling */
+        .video-thumbnail video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Video title styling */
+        .video-item p {
+            margin: 0;
+            padding: 10px;
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -188,7 +192,7 @@
         </div>
     </div>
     <p class="user-info" id="user-email">Loading...</p>
-  <div id="video-list-container"></div>
+
     <!-- Video upload dialog and overlay -->
     <div class="dialog-overlay" id="dialog-overlay"></div>
     <div id="video-upload-dialog">
@@ -205,6 +209,9 @@
     <div class="progress-bar-container" id="progress-bar-container">
         <div class="progress-bar" id="progress-bar"></div>
     </div>
+
+    <!-- Video list container -->
+    <div id="video-list-container"></div>
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -228,12 +235,13 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const database = firebase.database();
 
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('user-email').textContent = `${user.email}`;
-                loadVideos();
+                loadVideos(); // Load videos on authentication state change
             } else {
                 window.location.href = 'index.html';
             }
@@ -257,48 +265,41 @@
 
         // Upload Video functionality
         document.getElementById('upload-video').addEventListener('click', () => {
-            document.getElementById('video-input').click();
+            document.getElementById('video-upload-dialog').style.display = 'block';
+            document.getElementById('dialog-overlay').style.display = 'block';
         });
 
-        const dialogOverlay = document.getElementById('dialog-overlay');
-        const videoUploadDialog = document.getElementById('video-upload-dialog');
+        document.getElementById('dialog-overlay').addEventListener('click', () => {
+            document.getElementById('video-upload-dialog').style.display = 'none';
+            document.getElementById('dialog-overlay').style.display = 'none';
+        });
+
         const videoInput = document.getElementById('video-input');
         const videoThumbnail = document.getElementById('video-thumbnail');
         const videoPreview = document.getElementById('video-preview');
-        const videoPlayIcon = document.getElementById('video-play-icon');
-        const uploadButton = document.getElementById('upload-button');
-        const progressBarContainer = document.getElementById('progress-bar-container');
-        const progressBar = document.getElementById('progress-bar');
         let selectedFile = null;
 
-        videoInput.addEventListener('change', (event) => {
-            selectedFile = event.target.files[0];
-            if (selectedFile) {
-                const videoURL = URL.createObjectURL(selectedFile);
-                videoPreview.src = videoURL;
-                videoPreview.style.display = 'block';
-                videoPlayIcon.style.display = 'none';
-                videoUploadDialog.style.display = 'block';
-                dialogOverlay.style.display = 'block';
-            }
-        });
-
         videoThumbnail.addEventListener('click', () => {
-            if (videoPreview.paused) {
-                videoPreview.play();
-                videoPlayIcon.className = 'fas fa-pause';
-            } else {
-                videoPreview.pause();
-                videoPlayIcon.className = 'fas fa-play';
+            videoInput.click();
+        });
+
+        videoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const fileURL = URL.createObjectURL(file);
+                videoPreview.src = fileURL;
+                videoPreview.style.display = 'block';
+                document.getElementById('video-play-icon').style.display = 'none';
             }
         });
 
-        uploadButton.addEventListener('click', () => {
+        document.getElementById('upload-button').addEventListener('click', () => {
             if (selectedFile) {
-                videoUploadDialog.style.display = 'none';
-                dialogOverlay.style.display = 'none';
-                progressBarContainer.style.display = 'block';
-                progressBar.style.width = '0%';
+                document.getElementById('video-upload-dialog').style.display = 'none';
+                document.getElementById('dialog-overlay').style.display = 'none';
+                document.getElementById('progress-bar-container').style.display = 'block';
+                document.getElementById('progress-bar').style.width = '0%';
                 
                 const user = firebase.auth().currentUser;
                 if (user) {
@@ -309,7 +310,7 @@
                     uploadTask.on('state_changed', 
                         (snapshot) => {
                             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            progressBar.style.width = `${progress}%`;
+                            document.getElementById('progress-bar').style.width = `${progress}%`;
                         }, 
                         (error) => {
                             console.error('Upload failed:', error);
@@ -327,8 +328,8 @@
                                 firebase.database().ref('videopost').push(videoData)
                                     .then(() => {
                                         console.log('Video metadata saved successfully.');
-                                        progressBarContainer.style.display = 'none';
-                                       
+                                        document.getElementById('progress-bar-container').style.display = 'none';
+                                        loadVideos(); // Reload videos after upload
                                     })
                                     .catch((error) => {
                                         console.error('Error saving video metadata:', error);
@@ -339,7 +340,9 @@
                 }
             }
         });
- function loadVideos() {
+
+        // Function to load videos from Firebase
+        function loadVideos() {
             const videoListContainer = document.getElementById('video-list-container');
             videoListContainer.innerHTML = ''; // Clear any existing content
 
@@ -376,11 +379,9 @@
                 });
             });
         }
-        dialogOverlay.addEventListener('click', () => {
-            videoUploadDialog.style.display = 'none';
-            dialogOverlay.style.display = 'none';
-        });
-        
+
+        // Call loadVideos immediately to load videos when the page loads
+        loadVideos();
     </script>
 </body>
 </html>
