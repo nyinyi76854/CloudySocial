@@ -106,6 +106,52 @@
             display: none;
             z-index: 1000;
         }
+        /* Video post styles */
+.video-posts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.video-post {
+    position: relative;
+    width: 300px;
+    height: 200px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.video-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-thumbnail .play-icon {
+    font-size: 50px;
+    color: white;
+    display: none;
+}
+
+.video-thumbnail.active .play-icon {
+    display: block;
+}
+
+.video-thumbnail video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
         .progress-bar-container {
             position: fixed;
             bottom: 0;
@@ -145,6 +191,7 @@
         <input type="text" id="video-title" placeholder="Enter title (optional)">
         <button id="upload-button">Send</button>
     </div>
+<div id="video-posts-container" class="video-posts-container"></div>
 
     <!-- Progress bar -->
     <div class="progress-bar-container" id="progress-bar-container">
@@ -287,6 +334,67 @@
             videoUploadDialog.style.display = 'none';
             dialogOverlay.style.display = 'none';
         });
+        // Fetch video posts from Firebase
+const videoPostsRef = firebase.database().ref('videopost');
+videoPostsRef.once('value', (snapshot) => {
+    snapshot.forEach((childSnapshot) => {
+        const videoData = childSnapshot.val();
+        const videoId = childSnapshot.key;
+
+        // Generate random thumbnail (placeholder)
+        const thumbnailUrl = `https://via.placeholder.com/300x200.png?text=Video+Thumbnail`;
+
+        // Create video post element
+        const videoPostElement = document.createElement('div');
+        videoPostElement.classList.add('video-post');
+
+        // Create thumbnail with play icon
+        const thumbnailDiv = document.createElement('div');
+        thumbnailDiv.classList.add('video-thumbnail');
+        thumbnailDiv.style.backgroundImage = `url('${thumbnailUrl}')`;
+        thumbnailDiv.setAttribute('data-video-id', videoId);
+        
+        const playIcon = document.createElement('i');
+        playIcon.classList.add('fas', 'fa-play', 'play-icon');
+
+        thumbnailDiv.appendChild(playIcon);
+        videoPostElement.appendChild(thumbnailDiv);
+
+        // Add click event to play/pause video
+        thumbnailDiv.addEventListener('click', () => {
+            const videoElement = document.createElement('video');
+            videoElement.src = videoData.videoUrl;
+
+            // Replace thumbnail with video player
+            thumbnailDiv.innerHTML = '';
+            thumbnailDiv.appendChild(videoElement);
+
+            videoElement.play();
+
+            videoElement.addEventListener('click', () => {
+                if (videoElement.paused) {
+                    videoElement.play();
+                } else {
+                    videoElement.pause();
+                }
+            });
+
+            // Auto-hide controls after 3 seconds of inactivity
+            let timeout;
+            videoElement.addEventListener('mousemove', () => {
+                thumbnailDiv.classList.add('active');
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    thumbnailDiv.classList.remove('active');
+                }, 3000);
+            });
+        });
+
+        // Append video post to container
+        document.getElementById('video-posts-container').appendChild(videoPostElement);
+    });
+});
+
     </script>
 </body>
 </html>
