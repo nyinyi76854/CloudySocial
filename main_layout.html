@@ -353,7 +353,8 @@
                 const thumbnailURL = canvas.toDataURL('image/png');
                 
                 const img = document.createElement('img');
-                img.src = thumbnailURL;
+                img.setAttribute('data-src', thumbnailURL);
+                img.classList.add('lazyload');
                 img.alt = 'Video Thumbnail';
 
                 videoThumbnail.appendChild(img);
