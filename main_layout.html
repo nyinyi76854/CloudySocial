@@ -319,7 +319,7 @@
             videoUploadDialog.style.display = 'none';
             dialogOverlay.style.display = 'none';
         });
-        const videosContainer = document.getElementById('videos-container');
+         const videosContainer = document.getElementById('videos-container');
         firebase.database().ref('videopost').once('value', (snapshot) => {
             snapshot.forEach((childSnapshot) => {
                 const videoData = childSnapshot.val();
@@ -333,20 +333,42 @@
             const videoThumbnail = document.createElement('div');
             videoThumbnail.classList.add('video-thumbnail');
 
-            const videoImage = document.createElement('img');
-            videoImage.src = videoURL;
-            videoImage.alt = 'Video Thumbnail';
+            const video = document.createElement('video');
+            video.src = videoURL;
+            video.crossOrigin = "anonymous";
+            video.setAttribute('muted', true);
+            video.setAttribute('preload', 'metadata');
+            video.setAttribute('playsinline', true);
+            video.setAttribute('controls', false);
+            video.addEventListener('loadeddata', () => {
+                video.currentTime = 2; // Capture frame at 2 seconds
+            });
+            video.addEventListener('seeked', () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const thumbnailURL = canvas.toDataURL('image/png');
+                
+                const img = document.createElement('img');
+                img.src = thumbnailURL;
+                img.alt = 'Video Thumbnail';
+
+                videoThumbnail.appendChild(img);
+                videoThumbnail.appendChild(playButton);
+
+                videoThumbnail.addEventListener('click', () => {
+                    // Handle video playback or open modal with video player
+                    console.log('Play video:', videoURL);
+                });
+
+                // Remove the video element after capturing the thumbnail
+                video.remove();
+            });
 
             const playButton = document.createElement('i');
             playButton.classList.add('fas', 'fa-play', 'play-button');
-
-            videoThumbnail.appendChild(videoImage);
-            videoThumbnail.appendChild(playButton);
-
-            videoThumbnail.addEventListener('click', () => {
-                // Handle video playback or open modal with video player
-                console.log('Play video:', videoURL);
-            });
 
             return videoThumbnail;
         }
