@@ -134,49 +134,47 @@
             height: calc(100vh - 80px);
         }
 
-        /* Style for each video item */
         .video-item {
-            margin-bottom: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: fit-content;
-        }
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 320px; /* Optional: Define a maximum width for each video item */
+}
 
-        /* Video thumbnail styling */
-        .video-thumbnail {
-            position: relative;
-            background: #000;
-            cursor: pointer;
-        }
+.video-thumbnail {
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    overflow: hidden;
+}
 
-        /* Play icon styling */
-        .video-thumbnail i {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 50px;
-            color: #fff;
-            pointer-events: none;
-        }
+.video-thumbnail video {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
 
-        /* Video element styling */
-        .video-thumbnail video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+.video-thumbnail .play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 50px;
+    color: #fff;
+    pointer-events: none;
+}
 
-        /* Video title styling */
-        .video-item p {
-            margin: 0;
-            padding: 10px;
-            font-size: 16px;
-            color: #333;
-            text-align: center;
-        }
+.video-item p {
+    margin: 0;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+}
+
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -339,44 +337,57 @@
             }
         });
 
-        // Function to load videos from Firebase
-        function loadVideos() {
-            const videoListContainer = document.getElementById('video-list-container');
-            videoListContainer.innerHTML = ''; // Clear any existing content
+       function loadVideos() {
+    const videoListContainer = document.getElementById('video-list-container');
+    videoListContainer.innerHTML = ''; // Clear any existing content
 
-            database.ref('videopost').once('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoUrl = videoData.videoUrl;
-                    const videoTitle = videoData.title || 'Untitled';
+    database.ref('videopost').once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoUrl = videoData.videoUrl;
+            const videoTitle = videoData.title || 'Untitled';
 
-                    // Create video thumbnail element
-                    const videoElement = document.createElement('div');
-                    videoElement.classList.add('video-item');
-                    videoElement.innerHTML = `
-                        <div class="video-thumbnail">
-                            <i class="fas fa-play"></i>
-                            <video src="${videoUrl}" muted></video>
-                        </div>
-                        <p>${videoTitle}</p>
-                    `;
+            // Create video thumbnail element
+            const videoElement = document.createElement('div');
+            videoElement.classList.add('video-item');
 
-                    // Add event listener to play video on click
-                    const videoThumbnail = videoElement.querySelector('.video-thumbnail');
-                    const videoPreview = videoThumbnail.querySelector('video');
-                    videoThumbnail.addEventListener('click', () => {
-                        if (videoPreview.paused) {
-                            videoPreview.play();
-                        } else {
-                            videoPreview.pause();
-                        }
-                    });
+            const videoThumbnail = document.createElement('div');
+            videoThumbnail.classList.add('video-thumbnail');
 
-                    // Append video element to container
-                    videoListContainer.appendChild(videoElement);
-                });
+            const videoPlayer = document.createElement('video');
+            videoPlayer.src = videoUrl;
+            videoPlayer.muted = true;
+            videoPlayer.setAttribute('playsinline', ''); // Ensure consistent playback behavior
+            videoPlayer.setAttribute('preload', 'metadata'); // Preload video metadata for better performance
+
+            videoThumbnail.appendChild(videoPlayer);
+
+            const playIcon = document.createElement('i');
+            playIcon.classList.add('fas', 'fa-play', 'play-icon');
+
+            videoThumbnail.appendChild(playIcon);
+
+            videoElement.appendChild(videoThumbnail);
+
+            const videoTitleElement = document.createElement('p');
+            videoTitleElement.textContent = videoTitle;
+            videoElement.appendChild(videoTitleElement);
+
+            // Add event listener to play video on click
+            videoThumbnail.addEventListener('click', () => {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                } else {
+                    videoPlayer.pause();
+                }
             });
-        }
+
+            // Append video element to container
+            videoListContainer.appendChild(videoElement);
+        });
+    });
+}
+
 
         // Call loadVideos immediately to load videos when the page loads
         loadVideos();
