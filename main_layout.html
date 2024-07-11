@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Layout</title>
     <style>
-       body {
+        body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             height: 100vh;
@@ -62,6 +62,7 @@
         #video-thumbnail {
             position: relative;
             width: 100%;
+            height: 180px;
             background: #000;
             display: flex;
             justify-content: center;
@@ -69,7 +70,7 @@
             cursor: pointer;
         }
         #video-thumbnail i {
-            font-size: 30px;
+            font-size: 50px;
             color: #fff;
         }
         #video-preview {
@@ -124,8 +125,8 @@
         /* Container for the video list */
         #video-list-container {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
             background-color: #f0f0f0;
             margin-top: 20px;
@@ -136,7 +137,7 @@
         /* Style for each video item */
         .video-item {
             width: 320px;
-            margin: 0 10px 20px;
+            margin-bottom: 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -147,7 +148,7 @@
         .video-thumbnail {
             position: relative;
             width: 100%;
-            height: auto;
+            height: 180px;
             background: #000;
             cursor: pointer;
         }
@@ -158,7 +159,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 30px;
+            font-size: 50px;
             color: #fff;
             pointer-events: none;
         }
@@ -239,8 +240,8 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = `${user.email}`;
-                loadVideoPosts(); // Load videos on authentication state change
+                document.getElementById('user-email').textContent = ${user.email};
+                loadVideos(); // Load videos on authentication state change
             } else {
                 window.location.href = 'index.html';
             }
@@ -303,13 +304,13 @@
                 const user = firebase.auth().currentUser;
                 if (user) {
                     const title = document.getElementById('video-title').value;
-                    const storageRef = firebase.storage().ref(`videopost/${selectedFile.name}`);
+                    const storageRef = firebase.storage().ref(videopost/${selectedFile.name});
                     const uploadTask = storageRef.put(selectedFile);
 
                     uploadTask.on('state_changed', 
                         (snapshot) => {
                             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            document.getElementById('progress-bar').style.width = `${progress}%`;
+                            document.getElementById('progress-bar').style.width = ${progress}%;
                         }, 
                         (error) => {
                             console.error('Upload failed:', error);
@@ -328,7 +329,7 @@
                                     .then(() => {
                                         console.log('Video metadata saved successfully.');
                                         document.getElementById('progress-bar-container').style.display = 'none';
-                                        loadVideoPosts(); // Reload videos after upload
+                                        loadVideos(); // Reload videos after upload
                                     })
                                     .catch((error) => {
                                         console.error('Error saving video metadata:', error);
@@ -340,46 +341,47 @@
             }
         });
 
-     const videoPostsRef = firebase.database().ref('videoposts');
+      function loadVideos() {
+            const videoListContainer = document.getElementById('video-list-container');
+            videoListContainer.innerHTML = ''; // Clear any existing content
 
-        // Function to load video posts from Firebase
-        function loadVideoPosts() {
-            videoPostsRef.once('value', (snapshot) => {
-                const videoListContainer = document.getElementById('video-list-container');
-                videoListContainer.innerHTML = ''; // Clear previous content
-
+            database.ref('videopost').once('value', (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
-                    const { uploaderEmail, videoUrl, title, timestamp } = childSnapshot.val();
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
+                    const videoData = childSnapshot.val();
+                    const videoUrl = videoData.videoUrl;
+                    const videoTitle = videoData.title || 'Untitled';
 
-                    const videoThumbnail = document.createElement('div');
-                    videoThumbnail.classList.add('video-thumbnail');
+                    // Create video thumbnail element
+                    const videoElement = document.createElement('div');
+                    videoElement.classList.add('video-item');
+                    videoElement.innerHTML = 
+                        <div class="video-thumbnail" style="position: relative; width: 320px; height: 180px; background: #000; margin-bottom: 10px;">
+                            <i class="fas fa-play" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; color: #fff; pointer-events: none;"></i>
+                            <video style="width: 100%; height: 100%; object-fit: cover;" src="${videoUrl}" muted></video>
+                        </div>
+                        <p style="margin: 0; padding: 5px;">${videoTitle}</p>
+                    ;
 
-                    const playIcon = document.createElement('i');
-                    playIcon.classList.add('fas', 'fa-play');
+                    // Add event listener to play video on click
+                    const videoThumbnail = videoElement.querySelector('.video-thumbnail');
+                    const videoPreview = videoThumbnail.querySelector('video');
+                    videoThumbnail.addEventListener('click', () => {
+                        if (videoPreview.paused) {
+                            videoPreview.play();
+                        } else {
+                            videoPreview.pause();
+                        }
+                    });
 
-                    const videoElement = document.createElement('video');
-                    videoElement.src = videoUrl;
-                    videoElement.setAttribute('controls', true);
-
-                    videoThumbnail.appendChild(videoElement);
-                    videoThumbnail.appendChild(playIcon);
-                    videoItem.appendChild(videoThumbnail);
-
-                    if (title) {
-                        const videoTitle = document.createElement('p');
-                        videoTitle.textContent = title;
-                        videoItem.appendChild(videoTitle);
-                    }
-
-                    videoListContainer.appendChild(videoItem);
+                    // Append video element to container
+                    videoListContainer.appendChild(videoElement);
                 });
             });
         }
-         
-            loadVideoPosts();
-        
+
+
+        // Call loadVideos immediately to load videos when the page loads
+        loadVideos();
     </script>
 </body>
 </html>
