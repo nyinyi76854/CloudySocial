@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Layout</title>
     <style>
-        body {
+       body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             height: 100vh;
@@ -62,7 +62,6 @@
         #video-thumbnail {
             position: relative;
             width: 100%;
-            height: 180px;
             background: #000;
             display: flex;
             justify-content: center;
@@ -70,7 +69,7 @@
             cursor: pointer;
         }
         #video-thumbnail i {
-            font-size: 50px;
+            font-size: 30px;
             color: #fff;
         }
         #video-preview {
@@ -125,8 +124,8 @@
         /* Container for the video list */
         #video-list-container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
             padding: 20px;
             background-color: #f0f0f0;
             margin-top: 20px;
@@ -137,7 +136,7 @@
         /* Style for each video item */
         .video-item {
             width: 320px;
-            margin-bottom: 20px;
+            margin: 0 10px 20px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -148,7 +147,7 @@
         .video-thumbnail {
             position: relative;
             width: 100%;
-            height: 180px;
+            height: auto;
             background: #000;
             cursor: pointer;
         }
@@ -159,7 +158,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 50px;
+            font-size: 30px;
             color: #fff;
             pointer-events: none;
         }
@@ -341,47 +340,46 @@
             }
         });
 
-      function loadVideos() {
-            const videoListContainer = document.getElementById('video-list-container');
-            videoListContainer.innerHTML = ''; // Clear any existing content
+     const videoPostsRef = firebase.database().ref('videoposts');
 
-            database.ref('videopost').once('value', (snapshot) => {
+        // Function to load video posts from Firebase
+        function loadVideoPosts() {
+            videoPostsRef.once('value', (snapshot) => {
+                const videoListContainer = document.getElementById('video-list-container');
+                videoListContainer.innerHTML = ''; // Clear previous content
+
                 snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoUrl = videoData.videoUrl;
-                    const videoTitle = videoData.title || 'Untitled';
+                    const { uploaderEmail, videoUrl, title, timestamp } = childSnapshot.val();
+                    const videoItem = document.createElement('div');
+                    videoItem.classList.add('video-item');
 
-                    // Create video thumbnail element
-                    const videoElement = document.createElement('div');
-                    videoElement.classList.add('video-item');
-                    videoElement.innerHTML = `
-                        <div class="video-thumbnail" style="position: relative; width: 320px; height: 180px; background: #000; margin-bottom: 10px;">
-                            <i class="fas fa-play" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 50px; color: #fff; pointer-events: none;"></i>
-                            <video style="width: 100%; height: 100%; object-fit: cover;" src="${videoUrl}" muted></video>
-                        </div>
-                        <p style="margin: 0; padding: 5px;">${videoTitle}</p>
-                    `;
+                    const videoThumbnail = document.createElement('div');
+                    videoThumbnail.classList.add('video-thumbnail');
 
-                    // Add event listener to play video on click
-                    const videoThumbnail = videoElement.querySelector('.video-thumbnail');
-                    const videoPreview = videoThumbnail.querySelector('video');
-                    videoThumbnail.addEventListener('click', () => {
-                        if (videoPreview.paused) {
-                            videoPreview.play();
-                        } else {
-                            videoPreview.pause();
-                        }
-                    });
+                    const playIcon = document.createElement('i');
+                    playIcon.classList.add('fas', 'fa-play');
 
-                    // Append video element to container
-                    videoListContainer.appendChild(videoElement);
+                    const videoElement = document.createElement('video');
+                    videoElement.src = videoUrl;
+                    videoElement.setAttribute('controls', true);
+
+                    videoThumbnail.appendChild(videoElement);
+                    videoThumbnail.appendChild(playIcon);
+                    videoItem.appendChild(videoThumbnail);
+
+                    if (title) {
+                        const videoTitle = document.createElement('p');
+                        videoTitle.textContent = title;
+                        videoItem.appendChild(videoTitle);
+                    }
+
+                    videoListContainer.appendChild(videoItem);
                 });
             });
         }
-
-
-        // Call loadVideos immediately to load videos when the page loads
-        loadVideos();
+         window.onload = function() {
+            loadVideoPosts();
+        };
     </script>
 </body>
 </html>
