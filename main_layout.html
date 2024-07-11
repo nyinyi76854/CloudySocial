@@ -106,6 +106,20 @@
             display: none;
             z-index: 1000;
         }
+        .progress-bar-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #f4f4f4;
+            border-top: 1px solid #ccc;
+            display: none;
+        }
+        .progress-bar {
+            height: 5px;
+            background: #000;
+            width: 0%;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -130,6 +144,11 @@
         </div>
         <input type="text" id="video-title" placeholder="Enter title (optional)">
         <button id="upload-button">Send</button>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-container" id="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -192,6 +211,8 @@
         const videoPreview = document.getElementById('video-preview');
         const videoPlayIcon = document.getElementById('video-play-icon');
         const uploadButton = document.getElementById('upload-button');
+        const progressBarContainer = document.getElementById('progress-bar-container');
+        const progressBar = document.getElementById('progress-bar');
         let selectedFile = null;
 
         videoInput.addEventListener('change', (event) => {
@@ -218,35 +239,43 @@
 
         uploadButton.addEventListener('click', () => {
             if (selectedFile) {
+                videoUploadDialog.style.display = 'none';
+                dialogOverlay.style.display = 'none';
+                progressBarContainer.style.display = 'block';
+                progressBar.style.width = '0%';
+                
                 const user = firebase.auth().currentUser;
                 if (user) {
-                    const storageRef = firebase.storage().ref('videopost/' + selectedFile.name);
+                    const title = document.getElementById('video-title').value;
+                    const storageRef = firebase.storage().ref(`videopost/${selectedFile.name}`);
                     const uploadTask = storageRef.put(selectedFile);
 
                     uploadTask.on('state_changed', 
                         (snapshot) => {
-                            // Handle progress
+                            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            progressBar.style.width = `${progress}%`;
                         }, 
                         (error) => {
-                            console.error("Error uploading video:", error);
+                            console.error('Upload failed:', error);
                         }, 
                         () => {
                             uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                                const timestamp = Date.now();
-                                const videoTitle = document.getElementById('video-title').value;
                                 const videoData = {
-                                    uploaderEmail: user.email,
+                                    uploader: user.email,
                                     videoUrl: downloadURL,
-                                    timestamp: timestamp
+                                    timestamp: new Date().toISOString()
                                 };
-                                if (videoTitle) {
-                                    videoData.title = videoTitle;
+                                if (title) {
+                                    videoData.title = title;
                                 }
-                                firebase.database().ref('videopost').push(videoData).then(() => {
-                                    alert('Video uploaded successfully');
-                                    videoUploadDialog.style.display = 'none';
-                                    dialogOverlay.style.display = 'none';
-                                });
+                                firebase.database().ref('videopost').push(videoData)
+                                    .then(() => {
+                                        console.log('Video metadata saved successfully.');
+                                        progressBarContainer.style.display = 'none';
+                                    })
+                                    .catch((error) => {
+                                        console.error('Error saving video metadata:', error);
+                                    });
                             });
                         }
                     );
