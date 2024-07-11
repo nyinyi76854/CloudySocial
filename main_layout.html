@@ -177,7 +177,7 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = ${user.email};
+                document.getElementById('user-email').textContent = `${user.email}`;
             } else {
                 window.location.href = 'index.html';
             }
@@ -247,13 +247,13 @@
                 const user = firebase.auth().currentUser;
                 if (user) {
                     const title = document.getElementById('video-title').value;
-                    const storageRef = firebase.storage().ref(videopost/${selectedFile.name});
+                    const storageRef = firebase.storage().ref(`videopost/${selectedFile.name}`);
                     const uploadTask = storageRef.put(selectedFile);
 
                     uploadTask.on('state_changed', 
                         (snapshot) => {
                             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            progressBar.style.width = ${progress}%;
+                            progressBar.style.width = `${progress}%`;
                         }, 
                         (error) => {
                             console.error('Upload failed:', error);
