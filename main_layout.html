@@ -357,7 +357,7 @@
     videoListContainer.innerHTML = '';
 
     database.ref('videopost').orderByChild('timestamp').on('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
+        snapshot.forEach((childSnapshot, index) => { // Added index parameter
             const videoData = childSnapshot.val();
             const uploaderEmail = videoData.uploaderEmail;
 
@@ -463,6 +463,16 @@
                             profilePhotoContainer.appendChild(profilePhoto);
                             profilePhotoContainer.appendChild(timestamp);
                             videoItem.appendChild(profilePhotoContainer);
+
+                            // Add divider line between video items
+                            if (index < snapshot.numChildren() - 1) {
+                                const divider = document.createElement('hr');
+                                divider.style.width = '90%';
+                                divider.style.margin = '10px auto';
+                                divider.style.border = 'none';
+                                divider.style.borderTop = '1px solid #000';
+                                videoListContainer.appendChild(divider);
+                            }
                         })
                         .catch((error) => {
                             console.error('Error fetching profile photo:', error);
@@ -474,6 +484,7 @@
         });
     });
 }
+
 
 // Helper function to format the timestamp to a Facebook-style format
 function getFacebookStyleTimestamp(date) {
