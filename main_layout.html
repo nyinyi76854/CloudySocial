@@ -459,6 +459,14 @@
                             } else {
                                 profilePhoto.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
                             }
+profilePhoto.addEventListener('click', () => {
+                                const currentUserEmail = firebase.auth().currentUser.email;
+                                if (uploaderEmail === currentUserEmail) {
+                                    window.location.href = 'profile.html';
+                                } else {
+                                    window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(uploaderEmail)}`;
+                                }
+                            });
 
                             profilePhotoContainer.appendChild(profilePhoto);
                             profilePhotoContainer.appendChild(timestamp);
