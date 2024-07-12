@@ -122,63 +122,64 @@
             background: #000;
             width: 0%;
         }
-        /* Container for the video list */
-        #video-list-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            background-color: #f0f0f0;
-            margin-top: 20px;
-            overflow-y: auto;
-            height: calc(100vh - 80px);
-        }
+       /* Container for the video list */
+#video-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f0f0f0;
+    margin-top: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 80px);
+}
 
-        /* Style for each video item */
-        .video-item {
-            width: 320px;
-            margin-bottom: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
+/* Style for each video item */
+.video-item {
+    width: 320px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
 
-        /* Video thumbnail styling */
-        .video-thumbnail {
-            position: relative;
-            width: 100%;
-            height: auto;
-            background: #000;
-            cursor: pointer;
-        }
+/* Video thumbnail styling */
+.video-thumbnail {
+    position: relative;
+    width: 100%;
+    height: auto;
+    background: #000;
+    cursor: pointer;
+}
 
-        /* Play icon styling */
-        .video-thumbnail i {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 50px;
-            color: #fff;
-            pointer-events: none;
-        }
+/* Play icon styling */
+.video-thumbnail i {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 50px;
+    color: #fff;
+    pointer-events: none;
+}
 
-        /* Video element styling */
-        .video-thumbnail video {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-        }
+/* Video element styling */
+.video-thumbnail video {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
 
-        /* Video title styling */
-        .video-item p {
-            margin: 0;
-            padding: 5px;
-            font-size: 16px;
-            color: #333;
-            text-align: center;
-        }
+/* Video title styling */
+.video-item p {
+    margin: 0;
+    padding: 5px;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+}
+
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -356,40 +357,42 @@
             }
         });
 
-        function loadVideos() {
-            const videoListContainer = document.getElementById('video-list-container');
-            videoListContainer.innerHTML = ''; // Clear the container before loading new videos
+       function loadVideos() {
+    const videoListContainer = document.getElementById('video-list-container');
+    videoListContainer.innerHTML = ''; // Clear the container before loading new videos
 
-            database.ref('videopost').orderByChild('timestamp').once('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
+    database.ref('videopost').orderByChild('timestamp').once('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const videoData = childSnapshot.val();
+            const videoItem = document.createElement('div');
+            videoItem.classList.add('video-item');
 
-                    const videoThumbnail = document.createElement('div');
-                    videoThumbnail.classList.add('video-thumbnail');
-                    const videoElement = document.createElement('video');
-                    videoElement.src = videoData.videoUrl;
-                    videoElement.controls = true;
+            const videoThumbnail = document.createElement('div');
+            videoThumbnail.classList.add('video-thumbnail');
+            const videoElement = document.createElement('video');
+            videoElement.src = videoData.videoUrl;
+            videoElement.controls = true;
 
-                    videoThumbnail.appendChild(videoElement);
-                    videoItem.appendChild(videoThumbnail);
+            videoThumbnail.appendChild(videoElement);
+            videoItem.appendChild(videoThumbnail);
 
-                    if (videoData.title) {
-                        const titleElement = document.createElement('p');
-                        titleElement.textContent = videoData.title;
-                        videoItem.appendChild(titleElement);
-                    }
+            if (videoData.title) {
+                const titleElement = document.createElement('p');
+                titleElement.textContent = videoData.title;
+                videoItem.appendChild(titleElement);
+            }
 
-                    videoListContainer.appendChild(videoItem);
+            videoListContainer.appendChild(videoItem);
 
-                    videoElement.addEventListener('loadedmetadata', () => {
-                        const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-                        videoElement.style.height = `${320 / aspectRatio}px`;
-                    });
-                });
+            videoElement.addEventListener('loadedmetadata', () => {
+                // Ensure the video's height is proportional to its width and does not interfere with other videos
+                const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+                videoElement.style.height = `${320 / aspectRatio}px`;
             });
-        }
+        });
+    });
+}
+
     </script>
 </body>
 </html>
