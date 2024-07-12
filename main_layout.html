@@ -364,12 +364,13 @@ function loadVideos() {
             const videoItem = document.createElement('div');
             videoItem.classList.add('video-item');
             videoItem.innerHTML = `
+                  <p>${videoData.uploaderEmail}</p>
                 <div class="video-thumbnail">
                     <i class="fas fa-play"></i>
                     <video src="${videoData.videoUrl}" controls></video>
                 </div>
                 <p>${videoData.title}</p>
-                <p>${videoData.uploaderEmail}</p>
+               
             `;
             // Append the video item to the container
             videoListContainer.appendChild(videoItem);
