@@ -388,14 +388,14 @@ function loadVideos() {
                     // Create HTML for video item
                     const videoItem = document.createElement('div');
                     videoItem.classList.add('video-item');
-                    videoItem.innerHTML = 
-                        <p>${videoData.uploaderName}</p>
+                    videoItem.innerHTML = `
+                        <p>Uploader: ${videoData.uploaderName}</p>
                         <div class="video-thumbnail">
                             <i class="fas fa-play"></i>
                             <video src="${videoData.videoUrl}" controls></video>
                         </div>
                         <p>${videoData.title}</p>
-                    ;
+                    `;
                     
                     // Append the video item to the container
                     videoListContainer.appendChild(videoItem);
@@ -405,7 +405,7 @@ function loadVideos() {
                     const video = videoThumbnail.querySelector('video');
                     video.addEventListener('loadedmetadata', () => {
                         const aspectRatio = video.videoWidth / video.videoHeight;
-                        videoThumbnail.style.paddingBottom = ${(1 / aspectRatio) * 100}%;
+                        videoThumbnail.style.paddingBottom = `${(1 / aspectRatio) * 100}%`;
                     });
                 })
                 .catch((error) => {
