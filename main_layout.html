@@ -14,27 +14,6 @@
             flex-direction: column;
             position: relative;
         }
-        .profile-photo {
-    width: 40px; /* Adjust size as needed */
-    height: 40px; /* Adjust size as needed */
-    border-radius: 50%; /* Creates circular shape */
-    overflow: hidden;
-    margin-right: 10px; /* Adjust spacing between photo and video */
-}
-
-.profile-photo img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Maintain aspect ratio */
-}
-
-/* Video item container */
-.video-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
         .user-info {
             position: absolute;
             top: 10px;
@@ -263,7 +242,7 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = `${user.email}`;
+                document.getElementById('user-email').textContent = ${user.email};
                 loadVideos(); // Load videos on authentication state change
             } else {
                 window.location.href = 'index.html';
@@ -400,92 +379,34 @@ function loadVideos() {
                             }
                         });
                         // Update videoData with uploaderName
-                        videoData.uploaderName = latestName.name || uploaderEmail; // Use email if name not found
+                        videoData.uploaderName = latestName.name;
                     } else {
                         // If no name found, use uploaderEmail as uploaderName
                         videoData.uploaderName = uploaderEmail;
                     }
 
-                    // Fetch profile photo based on uploaderEmail from 'profilesphoto' node
-                    database.ref('profilesphoto')
-                        .orderByChild('uploaderEmail')
-                        .equalTo(uploaderEmail)
-                        .limitToLast(1)
-                        .once('value')
-                        .then((photoSnapshot) => {
-                            if (photoSnapshot.exists()) {
-                                let latestPhotoUrl = '';
-                                photoSnapshot.forEach((photoChild) => {
-                                    const photoData = photoChild.val();
-                                    if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
-                                        latestPhotoUrl = photoData.photoUrl;
-                                    }
-                                });
-                                // Display profile photo next to video item
-                                const profilePhotoContainer = document.createElement('div');
-                                profilePhotoContainer.classList.add('profile-photo');
-                                const profileImg = document.createElement('img');
-                                profileImg.src = latestPhotoUrl || 'https://img.icons8.com/ios/50/000000/person-male.png'; // Default icon if no photoUrl found
-                                profileImg.alt = 'Profile Photo';
-                                profilePhotoContainer.appendChild(profileImg);
+                    // Create HTML for video item
+                    const videoItem = document.createElement('div');
+                    videoItem.classList.add('video-item');
+                    videoItem.innerHTML = 
+                        <p>${videoData.uploaderName}</p>
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play"></i>
+                            <video src="${videoData.videoUrl}" controls></video>
+                        </div>
+                        <p>${videoData.title}</p>
+                    ;
+                    
+                    // Append the video item to the container
+                    videoListContainer.appendChild(videoItem);
 
-                                // Create HTML for video item
-                                const videoItem = document.createElement('div');
-                                videoItem.classList.add('video-item');
-                                videoItem.innerHTML = `
-                                    <div class="profile-photo-container">
-                                        ${profilePhotoContainer.outerHTML}
-                                    </div>
-                                    <p>${videoData.uploaderName}</p>
-                                    <div class="video-thumbnail">
-                                        <i class="fas fa-play"></i>
-                                        <video src="${videoData.videoUrl}" controls></video>
-                                    </div>
-                                    <p>${videoData.title}</p>
-                                `;
-                                
-                                // Append the video item to the container
-                                videoListContainer.appendChild(videoItem);
-
-                                // Set aspect ratio dynamically based on video metadata after appending
-                                const videoThumbnail = videoItem.querySelector('.video-thumbnail');
-                                const video = videoThumbnail.querySelector('video');
-                                video.addEventListener('loadedmetadata', () => {
-                                    const aspectRatio = video.videoWidth / video.videoHeight;
-                                    videoThumbnail.style.paddingBottom = `${(1 / aspectRatio) * 100}%`;
-                                });
-                            } else {
-                                // If no profile photo found, create video item without profile photo
-                                const videoItem = document.createElement('div');
-                                videoItem.classList.add('video-item');
-                                videoItem.innerHTML = `
-                                    <div class="profile-photo">
-                                        <img src="https://img.icons8.com/ios/50/000000/person-male.png" alt="Profile Photo">
-                                    </div>
-                                    <p>${videoData.uploaderName}</p>
-                                    <div class="video-thumbnail">
-                                        <i class="fas fa-play"></i>
-                                        <video src="${videoData.videoUrl}" controls></video>
-                                    </div>
-                                    <p>${videoData.title}</p>
-                                `;
-                                
-                                // Append the video item to the container
-                                videoListContainer.appendChild(videoItem);
-
-                                // Set aspect ratio dynamically based on video metadata after appending
-                                const videoThumbnail = videoItem.querySelector('.video-thumbnail');
-                                const video = videoThumbnail.querySelector('video');
-                                video.addEventListener('loadedmetadata', () => {
-                                    const aspectRatio = video.videoWidth / video.videoHeight;
-                                    videoThumbnail.style.paddingBottom = `${(1 / aspectRatio) * 100}%`;
-                                });
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('Error fetching profile photo:', error);
-                        });
-
+                    // Set aspect ratio dynamically based on video metadata after appending
+                    const videoThumbnail = videoItem.querySelector('.video-thumbnail');
+                    const video = videoThumbnail.querySelector('video');
+                    video.addEventListener('loadedmetadata', () => {
+                        const aspectRatio = video.videoWidth / video.videoHeight;
+                        videoThumbnail.style.paddingBottom = ${(1 / aspectRatio) * 100}%;
+                    });
                 })
                 .catch((error) => {
                     console.error('Error fetching name:', error);
@@ -493,7 +414,6 @@ function loadVideos() {
         });
     });
 }
-
 
 
 
