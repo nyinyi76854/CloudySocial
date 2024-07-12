@@ -148,9 +148,10 @@
         .video-thumbnail {
             position: relative;
             width: 100%;
-            height: auto;
+            height: 180px;
             background: #000;
             cursor: pointer;
+            overflow: hidden; /* Ensure the video does not overflow */
         }
 
         /* Play icon styling */
@@ -167,14 +168,14 @@
         /* Video element styling */
         .video-thumbnail video {
             width: 100%;
-            height: auto;
-            object-fit: cover;
+            height: 100%;
+            object-fit: cover; /* Maintain aspect ratio */
         }
 
         /* Video title styling */
         .video-item p {
             margin: 0;
-            padding: 5px;
+            padding: 10px;
             font-size: 16px;
             color: #333;
             text-align: center;
@@ -259,134 +260,137 @@
             auth.signOut().then(() => {
                 window.location.href = 'index.html';
             }).catch((error) => {
-                console.error('Error logging out:', error);
+                console.error('Logout error:', error);
             });
         });
 
-        // Show video upload dialog
-        document.getElementById('upload-video').addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('dialog-overlay').style.display = 'block';
-            document.getElementById('video-upload-dialog').style.display = 'block';
+        // Upload video dialog functionality
+        const uploadVideoButton = document.getElementById('upload-video');
+        const dialogOverlay = document.getElementById('dialog-overlay');
+        const videoUploadDialog = document.getElementById('video-upload-dialog');
+        const videoInput = document.getElementById('video-input');
+        const videoThumbnail = document.getElementById('video-thumbnail');
+        const videoPreview = document.getElementById('video-preview');
+        const videoPlayIcon = document.getElementById('video-play-icon');
+        const uploadButton = document.getElementById('upload-button');
+        const progressBarContainer = document.getElementById('progress-bar-container');
+        const progressBar = document.getElementById('progress-bar');
+
+        uploadVideoButton.addEventListener('click', () => {
+            dialogOverlay.style.display = 'block';
+            videoUploadDialog.style.display = 'block';
         });
 
-        // Hide video upload dialog
-        document.getElementById('dialog-overlay').addEventListener('click', () => {
-            document.getElementById('dialog-overlay').style.display = 'none';
-            document.getElementById('video-upload-dialog').style.display = 'none';
-            document.getElementById('video-input').value = '';
-            document.getElementById('video-title').value = '';
-            document.getElementById('video-preview').style.display = 'none';
-            document.getElementById('video-play-icon').style.display = 'block';
+        dialogOverlay.addEventListener('click', () => {
+            dialogOverlay.style.display = 'none';
+            videoUploadDialog.style.display = 'none';
+            videoPreview.pause();
+            videoPreview.src = '';
+            videoPreview.style.display = 'none';
+            videoPlayIcon.style.display = 'block';
         });
 
-        // Handle video input change
-        document.getElementById('video-thumbnail').addEventListener('click', () => {
-            document.getElementById('video-input').click();
+        videoThumbnail.addEventListener('click', () => {
+            videoInput.click();
         });
 
-        document.getElementById('video-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
+        videoInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
             if (file) {
-                const videoElement = document.getElementById('video-preview');
-                videoElement.src = URL.createObjectURL(file);
-                videoElement.style.display = 'block';
-                document.getElementById('video-play-icon').style.display = 'none';
-                videoElement.addEventListener('loadedmetadata', () => {
-                    videoElement.currentTime = 0;
-                });
+                const url = URL.createObjectURL(file);
+                videoPreview.src = url;
+                videoPreview.style.display = 'block';
+                videoPlayIcon.style.display = 'none';
+                videoPreview.play();
             }
         });
 
-        document.getElementById('video-preview').addEventListener('click', (e) => {
-            const videoElement = e.target;
-            if (videoElement.paused) {
-                videoElement.play();
+        videoPreview.addEventListener('click', () => {
+            if (videoPreview.paused) {
+                videoPreview.play();
+                videoPlayIcon.style.display = 'none';
             } else {
-                videoElement.pause();
+                videoPreview.pause();
+                videoPlayIcon.style.display = 'block';
             }
         });
 
-        // Handle video upload
-        document.getElementById('upload-button').addEventListener('click', () => {
-            const file = document.getElementById('video-input').files[0];
+        uploadButton.addEventListener('click', () => {
+            const file = videoInput.files[0];
             const title = document.getElementById('video-title').value;
+            if (!file) return;
+
             const user = auth.currentUser;
+            if (!user) return;
 
-            if (file && user) {
-                const storageRef = firebase.storage().ref();
-                const videoRef = storageRef.child('videopost/' + file.name);
-                const uploadTask = videoRef.put(file);
+            const storageRef = firebase.storage().ref();
+            const videoRef = storageRef.child(`videopost/${file.name}`);
+            const uploadTask = videoRef.put(file);
 
-                // Show progress bar
-                document.getElementById('progress-bar-container').style.display = 'block';
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        document.getElementById('progress-bar').style.width = progress + '%';
-                    },
-                    (error) => {
-                        console.error('Upload failed:', error);
-                        alert('Upload failed. Please try again.');
-                    },
-                    () => {
-                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                            const videoData = {
-                                uploaderEmail: user.email,
-                                videoUrl: downloadURL,
-                                title: title,
-                                timestamp: firebase.database.ServerValue.TIMESTAMP
-                            };
-                            database.ref('videopost').push(videoData, (error) => {
-                                if (error) {
-                                    console.error('Error saving video data:', error);
-                                } else {
-                                    alert('Video uploaded successfully!');
-                                    document.getElementById('dialog-overlay').click(); // Hide dialog
-                                    document.getElementById('progress-bar-container').style.display = 'none';
-                                    document.getElementById('progress-bar').style.width = '0%';
-                                    loadVideos(); // Reload videos after upload
-                                }
-                            });
-                        });
-                    }
-                );
-            } else {
-                alert('Please select a video file.');
-            }
+            progressBarContainer.style.display = 'block';
+
+            uploadTask.on('state_changed', (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                progressBar.style.width = `${progress}%`;
+            }, (error) => {
+                console.error('Upload failed:', error);
+                progressBarContainer.style.display = 'none';
+            }, () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    const postData = {
+                        uploaderEmail: user.email,
+                        videoUrl: downloadURL,
+                        title: title || 'Untitled',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+
+                    database.ref('videopost').push(postData).then(() => {
+                        dialogOverlay.style.display = 'none';
+                        videoUploadDialog.style.display = 'none';
+                        videoPreview.pause();
+                        videoPreview.src = '';
+                        videoPreview.style.display = 'none';
+                        videoPlayIcon.style.display = 'block';
+                        videoInput.value = '';
+                        document.getElementById('video-title').value = '';
+                        progressBarContainer.style.display = 'none';
+                        progressBar.style.width = '0%';
+                        loadVideos(); // Reload videos after upload
+                    }).catch((error) => {
+                        console.error('Error saving video post:', error);
+                        progressBarContainer.style.display = 'none';
+                    });
+                });
+            });
         });
 
         function loadVideos() {
             const videoListContainer = document.getElementById('video-list-container');
-            videoListContainer.innerHTML = ''; // Clear the container before loading new videos
+            videoListContainer.innerHTML = ''; // Clear existing videos
 
-            database.ref('videopost').orderByChild('timestamp').once('value', (snapshot) => {
+            database.ref('videopost').once('value', (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
                     const videoData = childSnapshot.val();
                     const videoItem = document.createElement('div');
                     videoItem.classList.add('video-item');
-
-                    const videoThumbnail = document.createElement('div');
-                    videoThumbnail.classList.add('video-thumbnail');
-                    const videoElement = document.createElement('video');
-                    videoElement.src = videoData.videoUrl;
-                    videoElement.controls = true;
-
-                    videoThumbnail.appendChild(videoElement);
-                    videoItem.appendChild(videoThumbnail);
-
-                    if (videoData.title) {
-                        const titleElement = document.createElement('p');
-                        titleElement.textContent = videoData.title;
-                        videoItem.appendChild(titleElement);
-                    }
-
-                    videoListContainer.appendChild(videoItem);
-
-                    videoElement.addEventListener('loadedmetadata', () => {
-                        const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-                        videoElement.style.height = `${320 / aspectRatio}px`;
+                    videoItem.innerHTML = `
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play"></i>
+                            <video src="${videoData.videoUrl}" muted></video>
+                        </div>
+                        <p>${videoData.title}</p>
+                    `;
+                    videoItem.querySelector('.video-thumbnail').addEventListener('click', () => {
+                        const videoElement = videoItem.querySelector('video');
+                        if (videoElement.paused) {
+                            videoElement.play();
+                            videoItem.querySelector('.fa-play').style.display = 'none';
+                        } else {
+                            videoElement.pause();
+                            videoItem.querySelector('.fa-play').style.display = 'block';
+                        }
                     });
+                    videoListContainer.appendChild(videoItem);
                 });
             });
         }
