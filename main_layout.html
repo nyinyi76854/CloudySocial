@@ -361,63 +361,28 @@ function loadVideos() {
     database.ref('videopost').orderByChild('timestamp').on('value', (snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
-            const uploaderEmail = videoData.uploaderEmail;
+            const videoItem = document.createElement('div');
+            videoItem.classList.add('video-item');
+            videoItem.innerHTML = 
+                <div class="video-thumbnail">
+                    <i class="fas fa-play"></i>
+                    <video src="${videoData.videoUrl}" controls></video>
+                </div>
+                <p>${videoData.title}</p>
+            ;
+            // Append the video item to the container
+            videoListContainer.appendChild(videoItem);
 
-            // Fetch name based on uploaderEmail from 'names' node
-            database.ref('names')
-                .orderByChild('email')
-                .equalTo(uploaderEmail)
-                .limitToLast(1)
-                .once('value')
-                .then((nameSnapshot) => {
-                    if (nameSnapshot.exists()) {
-                        let latestName = '';
-                        nameSnapshot.forEach((nameChild) => {
-                            const nameData = nameChild.val();
-                            if (!latestName || nameData.timestamp > latestName.timestamp) {
-                                latestName = nameData;
-                            }
-                        });
-                        // Update videoData with uploaderName
-                        videoData.uploaderName = latestName.name;
-                    } else {
-                        // If no name found, use uploaderEmail as uploaderName
-                        videoData.uploaderName = uploaderEmail;
-                    }
-
-                    // Create HTML for video item
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
-                    videoItem.innerHTML = 
-                        <p>${videoData.uploaderName}</p>
-                        <div class="video-thumbnail">
-                            <i class="fas fa-play"></i>
-                            <video src="${videoData.videoUrl}" controls></video>
-                        </div>
-                        <p>${videoData.title}</p>
-                    ;
-                    
-                    // Append the video item to the container
-                    videoListContainer.appendChild(videoItem);
-
-                    // Set aspect ratio dynamically based on video metadata after appending
-                    const videoThumbnail = videoItem.querySelector('.video-thumbnail');
-                    const video = videoThumbnail.querySelector('video');
-                    video.addEventListener('loadedmetadata', () => {
-                        const aspectRatio = video.videoWidth / video.videoHeight;
-                        videoThumbnail.style.paddingBottom = ${(1 / aspectRatio) * 100}%;
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error fetching name:', error);
-                });
+            // Set aspect ratio dynamically based on video metadata after appending
+            const videoThumbnail = videoItem.querySelector('.video-thumbnail');
+            const video = videoThumbnail.querySelector('video');
+            video.addEventListener('loadedmetadata', () => {
+                const aspectRatio = video.videoWidth / video.videoHeight;
+                videoThumbnail.style.paddingBottom = ${(1 / aspectRatio) * 100}%;
+            });
         });
     });
 }
-
-
-
-
-    </script>
+</script>
 </body>
 </html>
