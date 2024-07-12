@@ -146,12 +146,16 @@
     width: 100%;
     overflow: hidden;
     background: #000;
+    padding-bottom: 56.25%; /* Default to 16:9 aspect ratio */
 }
 
 /* Video element styling */
 .video-thumbnail video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: auto; /* Allow video to maintain aspect ratio */
+    height: 100%;
     object-fit: contain; /* Maintain aspect ratio without cropping */
     display: block; /* Ensure video occupies full container width */
 }
