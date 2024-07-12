@@ -259,7 +259,7 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = `User: ${user.email}`;
+                document.getElementById('user-email').textContent = `${user.email}`;
                 loadVideos(); // Load videos on authentication state change
             } else {
                 window.location.href = 'index.html';
