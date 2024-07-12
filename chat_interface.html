@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Interface</title>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+    <!-- Add Firebase configuration -->
+    <script>
+        // Initialize Firebase
+       const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .chat-header {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header h2 {
+            margin: 0;
+        }
+        .messages-container {
+            padding: 10px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .message {
+            margin: 10px 0;
+            clear: both;
+            overflow: hidden;
+        }
+        .message .message-text {
+            background-color: #e2e2e2;
+            padding: 10px;
+            border-radius: 8px;
+            max-width: 70%;
+            word-wrap: break-word;
+            float: left;
+        }
+        .message .message-time {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            float: right;
+        }
+        .message.sent .message-text {
+            background-color: #dcf8c6;
+            float: right;
+        }
+        .message.sent .message-time {
+            float: left;
+        }
+        .message.received .message-text {
+            background-color: #fff;
+            float: left;
+        }
+        .message.received .message-time {
+            float: right;
+        }
+        .message.placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100px;
+            font-style: italic;
+            color: #999;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .input-container textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .input-container button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        .input-container button i {
+            color: #000;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2 id="receiverEmail">Loading...</h2>
+        </div>
+        <div class="messages-container" id="messagesContainer">
+            <!-- Messages will be dynamically added here -->
+        </div>
+        <div class="input-container">
+            <textarea id="messageInput" placeholder="Type your message..."></textarea>
+            <button id="sendMessageBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageInput = document.getElementById('messageInput');
+            const sendMessageBtn = document.getElementById('sendMessageBtn');
+            const receiverEmailElem = document.getElementById('receiverEmail');
+
+            // Get current user's email
+            const currentUserEmail = firebase.auth().currentUser.email;
+
+            // Get receiverEmail from URL query parameter (should be set from previous page)
+            const urlParams = new URLSearchParams(window.location.search);
+            const receiverEmail = urlParams.get('uploaderEmail');
+            receiverEmailElem.textContent = receiverEmail;
+
+            // Reference to Firebase messages node
+            const messagesRef = firebase.database().ref('messages');
+
+            // Function to load messages
+            function loadMessages() {
+                messagesRef
+                    .orderByChild('timestamp')
+                    .on('value', function(snapshot) {
+                        messagesContainer.innerHTML = ''; // Clear previous messages
+                        snapshot.forEach(function(childSnapshot) {
+                            const messageData = childSnapshot.val();
+                            const sender = messageData.sender;
+                            const receiver = messageData.receiver;
+                            const message = messageData.message;
+                            const timestamp = messageData.timestamp;
+
+                            // Create message element
+                            const messageElem = document.createElement('div');
+                            messageElem.classList.add('message');
+                            if (sender === currentUserEmail) {
+                                messageElem.classList.add('sent');
+                            } else if (sender === receiverEmail) {
+                                messageElem.classList.add('received');
+                            }
+
+                            const messageTextElem = document.createElement('div');
+                            messageTextElem.classList.add('message-text');
+                            messageTextElem.textContent = message;
+
+                            const messageTimeElem = document.createElement('div');
+                            messageTimeElem.classList.add('message-time');
+                            messageTimeElem.textContent = formatTimestamp(timestamp);
+
+                            messageElem.appendChild(messageTextElem);
+                            messageElem.appendChild(messageTimeElem);
+
+                            messagesContainer.appendChild(messageElem);
+                        });
+                        // Scroll to bottom of messages container
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    });
+            }
+
+            // Function to format timestamp to readable format
+            function formatTimestamp(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleString();
+            }
+
+            // Load initial messages
+            loadMessages();
+
+            // Send message
+            sendMessageBtn.addEventListener('click', function() {
+                const message = messageInput.value.trim();
+                if (message !== '') {
+                    const newMessageRef = messagesRef.push();
+                    newMessageRef.set({
+                        sender: currentUserEmail,
+                        receiver: receiverEmail,
+                        message: message,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    })
+                    .then(function() {
+                        messageInput.value = ''; // Clear input
+                        // Scroll to bottom of messages container after sending message
+                        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    })
+                    .catch(function(error) {
+                        console.error('Error sending message:', error);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
