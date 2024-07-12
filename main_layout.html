@@ -361,10 +361,33 @@ function loadVideos() {
     database.ref('videopost').orderByChild('timestamp').on('value', (snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const videoData = childSnapshot.val();
+            const uploaderEmail = videoData.uploaderEmail;
+
+            // Fetch name based on uploaderEmail from 'names' node
+            database.ref('names')
+                .orderByChild('email')
+                .equalTo(uploaderEmail)
+                .limitToLast(1)
+                .once('value')
+                .then((nameSnapshot) => {
+                    if (nameSnapshot.exists()) {
+                        let latestName = '';
+                        nameSnapshot.forEach((nameChild) => {
+                            const nameData = nameChild.val();
+                            if (!latestName || nameData.timestamp > latestName.timestamp) {
+                                latestName = nameData;
+                            }
+                        });
+                        // Update videoData with uploaderName
+                        videoData.uploaderName = latestName.name;
+                    } else {
+                        // If no name found, use uploaderEmail as uploaderName
+                        videoData.uploaderName = uploaderEmail;
+                    }
             const videoItem = document.createElement('div');
             videoItem.classList.add('video-item');
             videoItem.innerHTML = `
-                  <p>${videoData.uploaderEmail}</p>
+                  <p>${videoData.uploaderName}</p>
                 <div class="video-thumbnail">
                     <i class="fas fa-play"></i>
                     <video src="${videoData.videoUrl}" controls></video>
