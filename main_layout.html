@@ -14,6 +14,27 @@
             flex-direction: column;
             position: relative;
         }
+        .profile-photo {
+    width: 40px; /* Adjust size as needed */
+    height: 40px; /* Adjust size as needed */
+    border-radius: 50%; /* Creates circular shape */
+    overflow: hidden;
+    margin-right: 10px; /* Adjust spacing between photo and video */
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Maintain aspect ratio */
+}
+
+/* Video item container */
+.video-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
         .user-info {
             position: absolute;
             top: 10px;
