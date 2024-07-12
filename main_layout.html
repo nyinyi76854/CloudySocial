@@ -352,27 +352,36 @@
             );
         });
 
-        // Load videos from Firebase Database
         function loadVideos() {
-            const videoListContainer = document.getElementById('video-list-container');
-            videoListContainer.innerHTML = '';
+        const videoListContainer = document.getElementById('video-list-container');
+        videoListContainer.innerHTML = '';
 
-            database.ref('videopost').orderByChild('timestamp').on('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const videoData = childSnapshot.val();
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
-                    videoItem.innerHTML = `
-                        <div class="video-thumbnail" style="aspect-ratio: ${videoData.aspectRatio || '16/9'};">
-                            <i class="fas fa-play"></i>
-                            <video src="${videoData.videoUrl}" controls></video>
-                        </div>
-                        <p>${videoData.title}</p>
-                    `;
-                    videoListContainer.appendChild(videoItem);
+        database.ref('videopost').orderByChild('timestamp').on('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                const videoData = childSnapshot.val();
+                const videoItem = document.createElement('div');
+                videoItem.classList.add('video-item');
+                const aspectRatio = videoData.aspectRatio || '16/9';
+                videoItem.innerHTML = `
+                    <div class="video-thumbnail" style="height: 0; padding-bottom: ${100 / aspectRatio.split('/')[0] * aspectRatio.split('/')[1]}%; position: relative;">
+                        <i class="fas fa-play"></i>
+                        <video src="${videoData.videoUrl}" controls></video>
+                    </div>
+                    <p>${videoData.title}</p>
+                `;
+                videoListContainer.appendChild(videoItem);
+
+                // Dynamically adjust the video height based on metadata
+                const videoElement = videoItem.querySelector('video');
+                videoElement.addEventListener('loadedmetadata', () => {
+                    const videoWidth = videoElement.videoWidth;
+                    const videoHeight = videoElement.videoHeight;
+                    const aspectRatio = videoWidth / videoHeight;
+                    videoElement.parentElement.style.height = `${videoElement.parentElement.offsetWidth / aspectRatio}px`;
                 });
             });
-        }
+        });
+    }
     </script>
 </body>
 </html>
