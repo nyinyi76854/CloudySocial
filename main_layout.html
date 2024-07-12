@@ -170,7 +170,26 @@
             color: #fff;
             pointer-events: none;
         }
+.video-item .uploader-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
 
+        .video-item .uploader-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .video-item .timestamp {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #888;
+        }
         /* Video title styling */
         .video-item p {
             margin: 0;
@@ -333,7 +352,7 @@
             );
         });
 
-    function loadVideos() {
+  function loadVideos() {
     const videoListContainer = document.getElementById('video-list-container');
     videoListContainer.innerHTML = '';
 
@@ -364,40 +383,90 @@
                         videoData.uploaderName = uploaderEmail;
                     }
 
-                    // Create HTML for video item
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
+                    // Fetch profile photo based on uploaderEmail from 'profilesphoto' node
+                    database.ref('profilesphoto')
+                        .orderByChild('uploaderEmail')
+                        .equalTo(uploaderEmail)
+                        .limitToLast(1)
+                        .once('value')
+                        .then((photoSnapshot) => {
+                            let profilePhotoUrl = '';
+                            if (photoSnapshot.exists()) {
+                                photoSnapshot.forEach((photoChild) => {
+                                    const photoData = photoChild.val();
+                                    if (!profilePhotoUrl || photoData.timestamp > profilePhotoUrl.timestamp) {
+                                        profilePhotoUrl = photoData.photoUrl;
+                                    }
+                                });
+                            }
 
-                    const uploaderName = document.createElement('p');
-                    uploaderName.textContent = videoData.uploaderName;
-                    videoItem.appendChild(uploaderName);
+                            // Create HTML for video item
+                            const videoItem = document.createElement('div');
+                            videoItem.classList.add('video-item');
 
-                    const videoThumbnail = document.createElement('div');
-                    videoThumbnail.classList.add('video-thumbnail');
+                            const uploaderName = document.createElement('p');
+                            uploaderName.textContent = videoData.uploaderName;
+                            videoItem.appendChild(uploaderName);
 
-                    const playIcon = document.createElement('i');
-                    playIcon.classList.add('fas', 'fa-play');
-                    videoThumbnail.appendChild(playIcon);
+                            const videoThumbnail = document.createElement('div');
+                            videoThumbnail.classList.add('video-thumbnail');
 
-                    const videoElement = document.createElement('video');
-                    videoElement.src = videoData.videoUrl;
-                    videoElement.controls = true;
-                    videoThumbnail.appendChild(videoElement);
+                            const playIcon = document.createElement('i');
+                            playIcon.classList.add('fas', 'fa-play');
+                            videoThumbnail.appendChild(playIcon);
 
-                    videoItem.appendChild(videoThumbnail);
+                            const videoElement = document.createElement('video');
+                            videoElement.src = videoData.videoUrl;
+                            videoElement.controls = true;
+                            videoThumbnail.appendChild(videoElement);
 
-                    const videoTitle = document.createElement('p');
-                    videoTitle.textContent = videoData.title;
-                    videoItem.appendChild(videoTitle);
+                            videoItem.appendChild(videoThumbnail);
 
-                    // Append the video item to the container
-                    videoListContainer.appendChild(videoItem);
+                            const videoTitle = document.createElement('p');
+                            videoTitle.textContent = videoData.title;
+                            videoItem.appendChild(videoTitle);
 
-                    // Set aspect ratio dynamically based on video metadata after appending
-                    videoElement.addEventListener('loadedmetadata', () => {
-                        const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-                        videoThumbnail.style.paddingBottom = `${(1 / aspectRatio) * 100}%`;
-                    });
+                            // Append the video item to the container
+                            videoListContainer.appendChild(videoItem);
+
+                            // Set aspect ratio dynamically based on video metadata after appending
+                            videoElement.addEventListener('loadedmetadata', () => {
+                                const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+                                videoThumbnail.style.paddingBottom = `${(1 / aspectRatio) * 100}%`;
+                            });
+
+                            // Format the timestamp to a Facebook-style format
+                            const timestamp = document.createElement('p');
+                            const timeAgo = getFacebookStyleTimestamp(new Date(videoData.timestamp));
+                            timestamp.textContent = timeAgo;
+                            timestamp.style.display = 'inline-block';
+                            timestamp.style.marginLeft = '10px';
+
+                            // Create a container for the profile photo and timestamp
+                            const profilePhotoContainer = document.createElement('div');
+                            profilePhotoContainer.style.display = 'flex';
+                            profilePhotoContainer.style.alignItems = 'center';
+                            profilePhotoContainer.style.marginTop = '10px';
+
+                            const profilePhoto = document.createElement('img');
+                            profilePhoto.style.width = '40px';
+                            profilePhoto.style.height = '40px';
+                            profilePhoto.style.borderRadius = '50%';
+                            profilePhoto.style.objectFit = 'cover';
+
+                            if (profilePhotoUrl) {
+                                profilePhoto.src = profilePhotoUrl;
+                            } else {
+                                profilePhoto.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
+                            }
+
+                            profilePhotoContainer.appendChild(profilePhoto);
+                            profilePhotoContainer.appendChild(timestamp);
+                            videoItem.appendChild(profilePhotoContainer);
+                        })
+                        .catch((error) => {
+                            console.error('Error fetching profile photo:', error);
+                        });
                 })
                 .catch((error) => {
                     console.error('Error fetching name:', error);
@@ -405,6 +474,27 @@
         });
     });
 }
+
+// Helper function to format the timestamp to a Facebook-style format
+function getFacebookStyleTimestamp(date) {
+    const now = new Date();
+    const secondsPast = (now.getTime() - date.getTime()) / 1000;
+
+    if (secondsPast < 60) {
+        return `${Math.floor(secondsPast)}s`;
+    } else if (secondsPast < 3600) {
+        return `${Math.floor(secondsPast / 60)}m`;
+    } else if (secondsPast < 86400) {
+        return `${Math.floor(secondsPast / 3600)}h`;
+    } else if (secondsPast < 2592000) {
+        return `${Math.floor(secondsPast / 86400)}d`;
+    } else if (secondsPast < 31536000) {
+        return `${Math.floor(secondsPast / 2592000)}mo`;
+    } else {
+        return `${Math.floor(secondsPast / 31536000)}y`;
+    }
+}
+
 
 
 
