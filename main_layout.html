@@ -122,64 +122,55 @@
             background: #000;
             width: 0%;
         }
-       /* Container for the video list */
-#video-list-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #f0f0f0;
-    margin-top: 20px;
-    overflow-y: auto;
-    height: calc(100vh - 80px);
-}
+        /* Container for the video list */
+        #video-list-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+            margin-top: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 80px);
+        }
 
-/* Style for each video item */
-.video-item {
-    width: 320px;
-    margin-bottom: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-}
+        /* Style for each video item */
+        .video-item {
+            width: 320px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
-/* Video thumbnail styling */
-.video-thumbnail {
-    position: relative;
-    width: 100%;
-    height: auto;
-    background: #000;
-    cursor: pointer;
-}
+        /* Video thumbnail styling */
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+            cursor: pointer;
+        }
 
-/* Play icon styling */
-.video-thumbnail i {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 50px;
-    color: #fff;
-    pointer-events: none;
-}
+        /* Video element styling */
+        .video-thumbnail video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-/* Video element styling */
-.video-thumbnail video {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-}
-
-/* Video title styling */
-.video-item p {
-    margin: 0;
-    padding: 5px;
-    font-size: 16px;
-    color: #333;
-    text-align: center;
-}
-
+        /* Video title styling */
+        .video-item p {
+            margin: 0;
+            padding: 5px;
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -275,124 +266,81 @@
         document.getElementById('dialog-overlay').addEventListener('click', () => {
             document.getElementById('dialog-overlay').style.display = 'none';
             document.getElementById('video-upload-dialog').style.display = 'none';
-            document.getElementById('video-input').value = '';
-            document.getElementById('video-title').value = '';
-            document.getElementById('video-preview').style.display = 'none';
-            document.getElementById('video-play-icon').style.display = 'block';
         });
 
-        // Handle video input change
+        // Handle video file selection
         document.getElementById('video-thumbnail').addEventListener('click', () => {
             document.getElementById('video-input').click();
         });
 
-        document.getElementById('video-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
+        document.getElementById('video-input').addEventListener('change', (event) => {
+            const file = event.target.files[0];
             if (file) {
-                const videoElement = document.getElementById('video-preview');
-                videoElement.src = URL.createObjectURL(file);
-                videoElement.style.display = 'block';
+                const videoPreview = document.getElementById('video-preview');
+                videoPreview.src = URL.createObjectURL(file);
+                videoPreview.style.display = 'block';
                 document.getElementById('video-play-icon').style.display = 'none';
-                videoElement.addEventListener('loadedmetadata', () => {
-                    videoElement.currentTime = 0;
-                });
             }
         });
 
-        document.getElementById('video-preview').addEventListener('click', (e) => {
-            const videoElement = e.target;
-            if (videoElement.paused) {
-                videoElement.play();
-            } else {
-                videoElement.pause();
-            }
-        });
-
-        // Handle video upload
+        // Upload video to Firebase Storage and save metadata to Firebase Realtime Database
         document.getElementById('upload-button').addEventListener('click', () => {
             const file = document.getElementById('video-input').files[0];
-            const title = document.getElementById('video-title').value;
-            const user = auth.currentUser;
-
-            if (file && user) {
+            const title = document.getElementById('video-title').value.trim();
+            if (file) {
                 const storageRef = firebase.storage().ref();
-                const videoRef = storageRef.child('videopost/' + file.name);
+                const videoRef = storageRef.child('videos/' + file.name);
                 const uploadTask = videoRef.put(file);
 
                 // Show progress bar
                 document.getElementById('progress-bar-container').style.display = 'block';
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        document.getElementById('progress-bar').style.width = progress + '%';
-                    },
-                    (error) => {
-                        console.error('Upload failed:', error);
-                        alert('Upload failed. Please try again.');
-                    },
-                    () => {
-                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                            const videoData = {
-                                uploaderEmail: user.email,
-                                videoUrl: downloadURL,
-                                title: title,
-                                timestamp: firebase.database.ServerValue.TIMESTAMP
-                            };
-                            database.ref('videopost').push(videoData, (error) => {
-                                if (error) {
-                                    console.error('Error saving video data:', error);
-                                } else {
-                                    alert('Video uploaded successfully!');
-                                    document.getElementById('dialog-overlay').click(); // Hide dialog
-                                    document.getElementById('progress-bar-container').style.display = 'none';
-                                    document.getElementById('progress-bar').style.width = '0%';
-                                    loadVideos(); // Reload videos after upload
-                                }
-                            });
+
+                uploadTask.on('state_changed', (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById('progress-bar').style.width = progress + '%';
+                }, (error) => {
+                    console.error('Upload failed:', error);
+                    document.getElementById('progress-bar-container').style.display = 'none';
+                }, () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        const videoData = {
+                            url: downloadURL,
+                            title: title || 'Untitled',
+                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                        };
+                        database.ref('videos').push(videoData).then(() => {
+                            // Hide dialog and progress bar
+                            document.getElementById('dialog-overlay').style.display = 'none';
+                            document.getElementById('video-upload-dialog').style.display = 'none';
+                            document.getElementById('progress-bar-container').style.display = 'none';
+                            loadVideos(); // Refresh the video list
+                        }).catch((error) => {
+                            console.error('Error saving video data:', error);
                         });
-                    }
-                );
-            } else {
-                alert('Please select a video file.');
+                    });
+                });
             }
         });
 
-       function loadVideos() {
-    const videoListContainer = document.getElementById('video-list-container');
-    videoListContainer.innerHTML = ''; // Clear the container before loading new videos
-
-    database.ref('videopost').orderByChild('timestamp').once('value', (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-            const videoData = childSnapshot.val();
-            const videoItem = document.createElement('div');
-            videoItem.classList.add('video-item');
-
-            const videoThumbnail = document.createElement('div');
-            videoThumbnail.classList.add('video-thumbnail');
-            const videoElement = document.createElement('video');
-            videoElement.src = videoData.videoUrl;
-            videoElement.controls = true;
-
-            videoThumbnail.appendChild(videoElement);
-            videoItem.appendChild(videoThumbnail);
-
-            if (videoData.title) {
-                const titleElement = document.createElement('p');
-                titleElement.textContent = videoData.title;
-                videoItem.appendChild(titleElement);
-            }
-
-            videoListContainer.appendChild(videoItem);
-
-            videoElement.addEventListener('loadedmetadata', () => {
-                // Ensure the video's height is proportional to its width and does not interfere with other videos
-                const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-                videoElement.style.height = `${320 / aspectRatio}px`;
+        // Load videos from Firebase Realtime Database
+        function loadVideos() {
+            const videoListContainer = document.getElementById('video-list-container');
+            videoListContainer.innerHTML = '';
+            database.ref('videos').orderByChild('timestamp').once('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const videoData = childSnapshot.val();
+                    const videoItem = document.createElement('div');
+                    videoItem.className = 'video-item';
+                    videoItem.innerHTML = `
+                        <div class="video-thumbnail">
+                            <video src="${videoData.url}" controls></video>
+                        </div>
+                        <p>${videoData.title}</p>
+                    `;
+                    videoListContainer.appendChild(videoItem);
+                });
             });
-        });
-    });
-}
-
+        }
     </script>
 </body>
 </html>
