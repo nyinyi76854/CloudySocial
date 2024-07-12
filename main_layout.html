@@ -333,8 +333,7 @@
             );
         });
 
-       // Load videos from Firebase Database
-function loadVideos() {
+    function loadVideos() {
     const videoListContainer = document.getElementById('video-list-container');
     videoListContainer.innerHTML = '';
 
@@ -368,24 +367,36 @@ function loadVideos() {
                     // Create HTML for video item
                     const videoItem = document.createElement('div');
                     videoItem.classList.add('video-item');
-                    videoItem.innerHTML = 
-                        <p>${videoData.uploaderName}</p>
-                        <div class="video-thumbnail">
-                            <i class="fas fa-play"></i>
-                            <video src="${videoData.videoUrl}" controls></video>
-                        </div>
-                        <p>${videoData.title}</p>
-                    ;
-                    
+
+                    const uploaderName = document.createElement('p');
+                    uploaderName.textContent = videoData.uploaderName;
+                    videoItem.appendChild(uploaderName);
+
+                    const videoThumbnail = document.createElement('div');
+                    videoThumbnail.classList.add('video-thumbnail');
+
+                    const playIcon = document.createElement('i');
+                    playIcon.classList.add('fas', 'fa-play');
+                    videoThumbnail.appendChild(playIcon);
+
+                    const videoElement = document.createElement('video');
+                    videoElement.src = videoData.videoUrl;
+                    videoElement.controls = true;
+                    videoThumbnail.appendChild(videoElement);
+
+                    videoItem.appendChild(videoThumbnail);
+
+                    const videoTitle = document.createElement('p');
+                    videoTitle.textContent = videoData.title;
+                    videoItem.appendChild(videoTitle);
+
                     // Append the video item to the container
                     videoListContainer.appendChild(videoItem);
 
                     // Set aspect ratio dynamically based on video metadata after appending
-                    const videoThumbnail = videoItem.querySelector('.video-thumbnail');
-                    const video = videoThumbnail.querySelector('video');
-                    video.addEventListener('loadedmetadata', () => {
-                        const aspectRatio = video.videoWidth / video.videoHeight;
-                        videoThumbnail.style.paddingBottom = ${(1 / aspectRatio) * 100}%;
+                    videoElement.addEventListener('loadedmetadata', () => {
+                        const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+                        videoThumbnail.style.paddingBottom = `${(1 / aspectRatio) * 100}%`;
                     });
                 })
                 .catch((error) => {
