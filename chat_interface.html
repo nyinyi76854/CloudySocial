@@ -24,7 +24,7 @@
         }
         .email-display {
             font-size: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .message-container {
             width: 100%;
@@ -40,13 +40,16 @@
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 8px;
+            clear: both;
+            overflow: hidden;
         }
         .message.sent {
             background-color: #dcf8c6;
-            text-align: right;
+            float: right;
         }
         .message.received {
             background-color: #e6e6e6;
+            float: left;
         }
         .message input[type="text"] {
             width: calc(100% - 40px);
@@ -54,6 +57,7 @@
             border: 1px solid #ccc;
             border-radius: 4px 0 0 4px;
             margin-right: -5px;
+            float: left;
         }
         .message button {
             width: 40px;
@@ -63,6 +67,7 @@
             border: none;
             border-radius: 0 4px 4px 0;
             cursor: pointer;
+            float: right;
         }
     </style>
 </head>
@@ -86,8 +91,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // Your web app's Firebase configuration
-       const firebaseConfig = {
+          const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
