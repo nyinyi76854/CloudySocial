@@ -12,99 +12,73 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
-        .chat-box {
-            width: 80%;
+        .container {
             max-width: 600px;
-            background: #fff;
-            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            height: 80vh;
         }
-        .chat-header {
-            text-align: center;
+        .email-display {
             font-size: 20px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
-        .messages {
-            flex: 1;
+        .message-container {
+            width: 100%;
+            max-height: 400px;
             overflow-y: auto;
+            border: 1px solid #ccc;
             padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
         .message {
-            display: flex;
-            justify-content: flex-start;
+            background-color: #f0f0f0;
+            padding: 10px;
             margin-bottom: 10px;
+            border-radius: 8px;
         }
         .message.sent {
-            justify-content: flex-end;
+            background-color: #dcf8c6;
+            text-align: right;
         }
-        .message .message-content {
-            max-width: 70%;
+        .message.received {
+            background-color: #e6e6e6;
+        }
+        .message input[type="text"] {
+            width: calc(100% - 40px);
             padding: 10px;
-            border-radius: 8px;
-            background-color: #f0f0f0;
-            margin-right: 10px;
-            word-wrap: break-word;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+            margin-right: -5px;
         }
-        .message.sent .message-content {
+        .message button {
+            width: 40px;
+            height: 40px;
             background-color: #007bff;
             color: #fff;
-            align-self: flex-end;
-        }
-        .message.received .message-content {
-            background-color: #e9ecef;
-            color: #333;
-            align-self: flex-start;
-        }
-        .message-input {
-            display: flex;
-            align-items: center;
-            margin-top: 20px;
-            position: fixed;
-            bottom: 20px;
-            width: calc(80% - 40px); /* 80% of chat box width minus padding */
-            max-width: 600px;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
-        }
-        .message-input input {
-            flex: 1;
             border: none;
-            outline: none;
-            padding: 10px;
-            font-size: 16px;
-        }
-        .send-button {
-            background: none;
-            border: none;
+            border-radius: 0 4px 4px 0;
             cursor: pointer;
-            outline: none;
-            padding: 0 10px;
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
-    <div class="chat-box">
-        <div class="chat-header" id="receiver-email">Receiver Email</div>
-        <div class="messages" id="message-container"></div>
+    <div class="container">
+        <div class="email-display">
+            <p>Chatting with: <strong id="chat-with-email">Loading...</strong></p>
+        </div>
+        <div class="message-container" id="message-container">
+            <!-- Messages will be dynamically added here -->
+        </div>
+        <div class="message">
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+        </div>
     </div>
-
-    <form id="message-form" class="message-input">
-        <input type="text" id="message-input" placeholder="Type your message...">
-        <button type="submit" class="send-button"><i class="fas fa-paper-plane"></i></button>
-    </form>
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -113,15 +87,15 @@
 
     <script>
         // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            measurementId: "YOUR_MEASUREMENT_ID"
+       const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
         };
 
         // Initialize Firebase
@@ -129,72 +103,75 @@
         const auth = firebase.auth();
         const database = firebase.database();
 
-        // Get the current user's email
-        const currentUserEmail = firebase.auth().currentUser.email;
-
-        // Get the recipient's email from the URL parameter (uploaderEmail)
-        const urlParams = new URLSearchParams(window.location.search);
-        const receiverEmail = urlParams.get('uploaderEmail');
-
-        // Display the recipient's email at the top
-        document.getElementById('receiver-email').textContent = receiverEmail;
-
-        // Reference to the messages node in Firebase
-        const messagesRef = database.ref('messages');
-
-        // Load existing messages and listen for new ones
-        function loadMessages() {
-            messagesRef.on('child_added', (snapshot) => {
-                const message = snapshot.val();
-                displayMessage(message);
-            });
+        // Function to retrieve URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        // Display a message in the chat interface
-        function displayMessage(message) {
-            const messageContainer = document.getElementById('message-container');
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message');
+        // Display the email of the user being chat with
+        document.getElementById('chat-with-email').textContent = getUrlParameter('uploaderEmail');
 
-            const messageContent = document.createElement('div');
-            messageContent.classList.add('message-content');
-            messageContent.textContent = message.message;
-
-            if (message.sender === currentUserEmail) {
-                messageElement.classList.add('sent');
-            } else {
-                messageElement.classList.add('received');
-            }
-
-            messageElement.appendChild(messageContent);
-            messageContainer.appendChild(messageElement);
-
-            // Scroll to bottom of messages
-            messageContainer.scrollTop = messageContainer.scrollHeight;
-        }
-
-        // Submit message when form is submitted
-        document.getElementById('message-form').addEventListener('submit', (e) => {
-            e.preventDefault();
+        // Function to send a message
+        document.getElementById('send-button').addEventListener('click', () => {
             const messageInput = document.getElementById('message-input');
-            const messageText = messageInput.value.trim();
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                const sender = auth.currentUser.email;
+                const receiver = getUrlParameter('uploaderEmail');
 
-            if (messageText === '') return;
-
-            // Save message to Firebase
-            const newMessageRef = messagesRef.push();
-            newMessageRef.set({
-                sender: currentUserEmail,
-                receiver: receiverEmail,
-                message: messageText,
-                timestamp: new Date().toISOString()
-            });
-
-            // Clear input field
-            messageInput.value = '';
+                // Save the message to the database
+                const messagesRef = database.ref('messages').push();
+                messagesRef.set({
+                    sender: sender,
+                    receiver: receiver,
+                    message: message,
+                    timestamp: new Date().toISOString()
+                }).then(() => {
+                    // Clear the message input
+                    messageInput.value = '';
+                    // Optionally, update the UI to show the sent message (not implemented here)
+                }).catch((error) => {
+                    console.error('Error sending message:', error);
+                });
+            }
         });
 
-        // Load messages on page load
+        // Function to load messages
+        function loadMessages() {
+            const messageContainer = document.getElementById('message-container');
+            messageContainer.innerHTML = ''; // Clear previous messages
+
+            const sender = auth.currentUser.email;
+            const receiver = getUrlParameter('uploaderEmail');
+
+            // Query messages from the database
+            database.ref('messages')
+                .orderByChild('timestamp')
+                .on('value', (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const messageData = childSnapshot.val();
+                        if ((messageData.sender === sender && messageData.receiver === receiver) ||
+                            (messageData.sender === receiver && messageData.receiver === sender)) {
+                            const messageElement = document.createElement('div');
+                            messageElement.classList.add('message');
+                            if (messageData.sender === sender) {
+                                messageElement.classList.add('sent');
+                            } else {
+                                messageElement.classList.add('received');
+                            }
+                            messageElement.textContent = messageData.message;
+                            messageContainer.appendChild(messageElement);
+                        }
+                    });
+                    // Scroll to the bottom of the message container
+                    messageContainer.scrollTop = messageContainer.scrollHeight;
+                });
+        }
+
+        // Call the loadMessages function initially
         loadMessages();
     </script>
 </body>
