@@ -15,32 +15,6 @@
             justify-content: center;
             align-items: center;
         }
-        .message {
-    margin-bottom: 10px;
-    clear: both;
-    overflow: hidden;
-    display: flex;
-}
-
-.sent {
-    justify-content: flex-end;
-}
-
-.received {
-    justify-content: flex-start;
-    color: #333; /* Example: Change color for received messages */
-}
-
-.sent, .received {
-    padding: 10px;
-    max-width: 70%;
-    word-wrap: break-word;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    background-color: #f1f0f0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.07);
-}
-
         .container {
             max-width: 600px;
             height: 100%;
@@ -99,7 +73,7 @@
         </div>
         <div class="message">
             <input type="text" id="message-input" placeholder="Type a message...">
-             <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 
@@ -109,7 +83,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-          const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -154,14 +128,34 @@
                 }).then(() => {
                     // Clear the message input
                     messageInput.value = '';
-                    // Optionally, update the UI to show the sent message (not implemented here)
                 }).catch((error) => {
                     console.error('Error sending message:', error);
                 });
             }
         });
 
-        
+        // Function to retrieve and display messages
+        function loadMessages() {
+            const receiver = getUrlParameter('uploaderEmail');
+            const messagesRef = database.ref('messages').orderByChild('receiver').equalTo(receiver);
+            
+            messagesRef.on('child_added', (snapshot) => {
+                const messageData = snapshot.val();
+                const messageContainer = document.getElementById('message-container');
+                const messageElement = document.createElement('div');
+                const senderName = messageData.sender.split('@')[0]; // Extract sender name from email
+                
+                messageElement.innerHTML = `<p><strong>${senderName}:</strong> ${messageData.message}</p>`;
+                messageContainer.appendChild(messageElement);
+                
+                // Scroll to bottom of message container
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            });
+        }
+
+        // Load messages when the page loads
+        loadMessages();
+
     </script>
 </body>
 </html>
