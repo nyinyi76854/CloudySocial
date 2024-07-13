@@ -17,48 +17,39 @@
         }
         .container {
             max-width: 600px;
-            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
         }
         .email-display {
             font-size: 20px;
             margin-bottom: 10px;
         }
         .message-container {
-            width: 100%;
-            max-height: 400px;
+            flex: 1;
             overflow-y: auto;
             border: 1px solid #ccc;
             padding: 10px;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
         .message {
-            background-color: #f0f0f0;
-            padding: 10px;
+            display: flex;
+            align-items: flex-end;
             margin-bottom: 10px;
-            border-radius: 8px;
-            clear: both;
-            overflow: hidden;
-        }
-        .message.sent {
-            background-color: #dcf8c6;
-            float: right;
-        }
-        .message.received {
-            background-color: #e6e6e6;
-            float: left;
         }
         .message input[type="text"] {
-            width: calc(100% - 40px);
+            flex: 1;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px 0 0 4px;
             margin-right: -5px;
-            float: left;
-            margin-bottom: 10px; /* Adjust margin */
+            margin-bottom: 0;
         }
         .message button {
             width: 40px;
@@ -68,8 +59,7 @@
             border: none;
             border-radius: 0 4px 4px 0;
             cursor: pointer;
-            float: right;
-            margin-bottom: 10px; /* Adjust margin */
+            margin-left: 5px;
         }
     </style>
 </head>
