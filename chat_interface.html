@@ -51,6 +51,26 @@
             margin-right: -5px;
             margin-bottom: 0;
         }
+        .sent-message {
+    align-self: flex-end;
+    background-color: #DCF8C6;
+    color: #333;
+    border-radius: 10px 10px 0 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-width: 80%;
+}
+
+.received-message {
+    align-self: flex-start;
+    background-color: #E0E0E0;
+    color: #333;
+    border-radius: 10px 10px 10px 0;
+    padding: 10px;
+    margin-bottom: 10px;
+    max-width: 80%;
+}
+
         .message button {
             width: 40px;
             height: 40px;
@@ -134,24 +154,32 @@
             }
         });
 
-        // Function to retrieve and display messages
-        function loadMessages() {
-            const receiver = getUrlParameter('uploaderEmail');
-            const messagesRef = database.ref('messages').orderByChild('receiver').equalTo(receiver);
-            
-            messagesRef.on('child_added', (snapshot) => {
-                const messageData = snapshot.val();
-                const messageContainer = document.getElementById('message-container');
-                const messageElement = document.createElement('div');
-                const senderName = messageData.sender.split('@')[0]; // Extract sender name from email
-                
-                messageElement.innerHTML = `<p><strong>${senderName}:</strong> ${messageData.message}</p>`;
-                messageContainer.appendChild(messageElement);
-                
-                // Scroll to bottom of message container
-                messageContainer.scrollTop = messageContainer.scrollHeight;
-            });
-        }
+       // Function to retrieve and display messages
+function loadMessages() {
+    const receiver = getUrlParameter('uploaderEmail');
+    const messagesRef = database.ref('messages').orderByChild('receiver').equalTo(receiver);
+    
+    messagesRef.on('child_added', (snapshot) => {
+        const messageData = snapshot.val();
+        const messageContainer = document.getElementById('message-container');
+        const messageElement = document.createElement('div');
+        
+        // Check if the message is sent by the current user or received
+        const isSent = messageData.sender === auth.currentUser.email;
+        const messageClass = isSent ? 'sent-message' : 'received-message';
+
+        // Adjust message layout based on sent or received
+        messageElement.classList.add(messageClass);
+
+        // Create message HTML
+        messageElement.innerHTML = `<p>${messageData.message}</p>`;
+        messageContainer.appendChild(messageElement);
+        
+        // Scroll to bottom of message container
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    });
+}
+
 
         // Load messages when the page loads
         loadMessages();
