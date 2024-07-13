@@ -10,7 +10,7 @@
     <!-- Add Firebase configuration -->
     <script>
         // Initialize Firebase
-       const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -29,6 +29,8 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            height: 100vh; /* Ensure full height */
+            margin: 0; /* Remove default margin */
         }
         .chat-container {
             width: 100%;
@@ -37,6 +39,9 @@
             border-radius: 8px;
             overflow: hidden;
             margin-top: 20px;
+            flex: 1; /* Fill remaining vertical space */
+            display: flex;
+            flex-direction: column;
         }
         .chat-header {
             background-color: #f0f0f0;
@@ -52,7 +57,8 @@
         .messages-container {
             padding: 10px;
             overflow-y: auto;
-            max-height: 400px;
+            max-height: 100%; /* Ensure it doesn't overflow */
+            flex: 1; /* Fill remaining vertical space */
         }
         .message {
             margin: 10px 0;
@@ -99,6 +105,9 @@
             display: flex;
             align-items: center;
             margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ccc;
         }
         .input-container textarea {
             flex: 1;
@@ -127,6 +136,9 @@
         </div>
         <div class="messages-container" id="messagesContainer">
             <!-- Messages will be dynamically added here -->
+        </div>
+        <div class="message placeholder">
+            <p>Placeholder</p>
         </div>
         <div class="input-container">
             <textarea id="messageInput" placeholder="Type your message..."></textarea>
