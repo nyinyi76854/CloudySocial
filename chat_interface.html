@@ -136,35 +136,39 @@
         });
 
         // Function to load messages
-        function loadMessages() {
-            const messageContainer = document.getElementById('message-container');
-            messageContainer.innerHTML = ''; // Clear previous messages
+    // Function to load messages
+function loadMessages() {
+    const messageContainer = document.getElementById('message-container');
+    messageContainer.innerHTML = ''; // Clear previous messages
 
-            const sender = auth.currentUser.email;
-            const receiver = getUrlParameter('uploaderEmail');
+    const sender = auth.currentUser.email;
+    const receiver = getUrlParameter('uploaderEmail');
 
-            // Query messages from the database
-            database.ref('messages')
-                .orderByChild('timestamp')
-                .on('value', (snapshot) => {
-                    snapshot.forEach((childSnapshot) => {
-                        const messageData = childSnapshot.val();
-                        if ((messageData.sender === sender && messageData.receiver === receiver) ||
-                            (messageData.sender === receiver && messageData.receiver === sender)) {
-                            const messageElement = document.createElement('div');
-                            messageElement.classList.add('message');
-                            if (messageData.sender === sender) {
-                                messageElement.classList.add('sent');
-                            } else {
-                                messageElement.classList.add('received');
-                            }
-                            messageElement.textContent = messageData.message;
-                            messageContainer.appendChild(messageElement);
-                        }
-                    });
-                    // Scroll to the bottom of the message container
-                    messageContainer.scrollTop = messageContainer.scrollHeight;
-                });
+    // Query messages from the database
+    database.ref('messages')
+        .orderByChild('timestamp')
+        .on('value', (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                const messageData = childSnapshot.val();
+                // Check if the message is between sender and receiver
+                if ((messageData.sender === sender && messageData.receiver === receiver) ||
+                    (messageData.sender === receiver && messageData.receiver === sender)) {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message');
+                    if (messageData.sender === sender) {
+                        messageElement.classList.add('sent');
+                    } else {
+                        messageElement.classList.add('received');
+                    }
+                    messageElement.textContent = messageData.message;
+                    messageContainer.appendChild(messageElement);
+                }
+            });
+            // Scroll to the bottom of the message container
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        });
+}
+
         }
 
         // Call the loadMessages function initially
