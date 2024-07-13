@@ -15,6 +15,32 @@
             justify-content: center;
             align-items: center;
         }
+        .message {
+    margin-bottom: 10px;
+    clear: both;
+    overflow: hidden;
+    display: flex;
+}
+
+.sent {
+    justify-content: flex-end;
+}
+
+.received {
+    justify-content: flex-start;
+    color: #333; /* Example: Change color for received messages */
+}
+
+.sent, .received {
+    padding: 10px;
+    max-width: 70%;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    background-color: #f1f0f0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.07);
+}
+
         .container {
             max-width: 600px;
             height: 100%;
