@@ -37,6 +37,8 @@
             padding: 10px;
             border-radius: 8px;
             margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
         }
         .message {
             display: flex;
@@ -52,25 +54,25 @@
             margin-bottom: 0;
         }
         .sent-message {
-    align-self: flex-end;
-    background-color: #DCF8C6;
-    color: #333;
-    border-radius: 10px 10px 0 10px;
-    padding: 10px;
-    margin-bottom: 10px;
-    max-width: 80%;
-}
-
-.received-message {
-    align-self: flex-start;
-    background-color: #E0E0E0;
-    color: #333;
-    border-radius: 10px 10px 10px 0;
-    padding: 10px;
-    margin-bottom: 10px;
-    max-width: 80%;
-}
-
+            align-self: flex-end;
+            background-color: #DCF8C6;
+            color: #333;
+            border-radius: 10px 10px 0 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            max-width: 80%;
+            align-self: flex-end;
+        }
+        .received-message {
+            align-self: flex-start;
+            background-color: #E0E0E0;
+            color: #333;
+            border-radius: 10px 10px 10px 0;
+            padding: 10px;
+            margin-bottom: 10px;
+            max-width: 80%;
+            align-self: flex-start;
+        }
         .message button {
             width: 40px;
             height: 40px;
