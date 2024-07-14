@@ -96,7 +96,32 @@
             cursor: pointer;
             width: 100%;
         }
-        
+           /* Container for the user profile section */
+.user-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+/* Style for the profile image */
+.user-profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid #ddd;
+}
+
+/* Hide user name and email */
+#user-name, #user-email {
+    display: none;
+}
+
         .dialog-overlay {
             position: fixed;
             top: 0;
@@ -210,7 +235,9 @@
             <a href="#" id="logout">Logout</a>
         </div>
     </div>
-    <p class="user-info" id="user-email">Loading...</p>
+    <div class="user-profile">
+    <img src="profile-photo-url.jpg" alt="User Profile Photo" id="profile-photo">
+</div>
 
     <!-- Video upload dialog and overlay -->
     <div class="dialog-overlay" id="dialog-overlay"></div>
@@ -259,7 +286,7 @@
         // Display current user's email
         auth.onAuthStateChanged((user) => {
             if (user) {
-                document.getElementById('user-email').textContent = `${user.email}`;
+                loadUserProfilePhoto(user.email);
                 loadVideos(); // Load videos on authentication state change
             } else {
                 window.location.href = 'index.html';
@@ -351,7 +378,36 @@
                 }
             );
         });
-
+function loadUserProfilePhoto(email) {
+    const profilePhotoContainer = document.getElementById('user-profile-photo');
+    database.ref('profilesphoto')
+        .orderByChild('uploaderEmail')
+        .equalTo(email)
+        .limitToLast(1)
+        .once('value')
+        .then((photoSnapshot) => {
+            if (photoSnapshot.exists()) {
+                let latestPhotoUrl = '';
+                photoSnapshot.forEach((photoChild) => {
+                    const photoData = photoChild.val();
+                    if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                        latestPhotoUrl = photoData.photoUrl;
+                    }
+                });
+                profilePhotoContainer.src = latestPhotoUrl;
+                profilePhotoContainer.style.width = '40px'; // Adjust size to match video uploader's profile photo
+                profilePhotoContainer.style.height = '40px';
+                profilePhotoContainer.style.borderRadius = '50%';
+                profilePhotoContainer.style.objectFit = 'cover';
+            } else {
+                // If no profile photo found, use default or placeholder image
+                profilePhotoContainer.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
+            }
+        })
+        .catch((error) => {
+            console.error('Error fetching profile photo:', error);
+        });
+}
   function loadVideos() {
     const videoListContainer = document.getElementById('video-list-container');
     videoListContainer.innerHTML = '';
