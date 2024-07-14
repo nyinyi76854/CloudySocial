@@ -26,9 +26,21 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             padding: 20px;
         }
-        .email-display {
-            font-size: 20px;
+        .email-profile {
+            display: flex;
+            align-items: center;
             margin-bottom: 10px;
+        }
+        .email-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        .email-profile p {
+            font-size: 20px;
+            margin: 0;
         }
         .message-container {
             flex: 1;
@@ -61,7 +73,6 @@
             padding: 10px;
             margin-bottom: 10px;
             max-width: 80%;
-            align-self: flex-end;
         }
         .received-message {
             align-self: flex-start;
@@ -71,7 +82,6 @@
             padding: 10px;
             margin-bottom: 10px;
             max-width: 80%;
-            align-self: flex-start;
         }
         .message button {
             width: 40px;
@@ -87,8 +97,9 @@
 </head>
 <body>
     <div class="container">
-        <div class="email-display">
-            <p><strong id="chat-with-email">Loading...</strong></p>
+        <div class="email-profile">
+            <img id="user-profile-photo" src="" alt="Profile Photo">
+            <p id="chat-with-email">Loading...</p>
         </div>
         <div class="message-container" id="message-container">
             <!-- Messages will be dynamically added here -->
@@ -129,8 +140,40 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
+        // Function to load the profile photo of the user being chat with
+        function loadUserProfilePhoto(email) {
+            const profilePhotoContainer = document.getElementById('user-profile-photo');
+            database.ref('profilesphoto')
+                .orderByChild('uploaderEmail')
+                .equalTo(email)
+                .limitToLast(1)
+                .once('value')
+                .then((photoSnapshot) => {
+                    if (photoSnapshot.exists()) {
+                        let latestPhotoUrl = '';
+                        photoSnapshot.forEach((photoChild) => {
+                            const photoData = photoChild.val();
+                            if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                                latestPhotoUrl = photoData.photoUrl;
+                            }
+                        });
+                        profilePhotoContainer.src = latestPhotoUrl;
+                    } else {
+                        // If no profile photo found, use default or placeholder image
+                        profilePhotoContainer.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching profile photo:', error);
+                });
+        }
+
         // Display the email of the user being chat with
-        document.getElementById('chat-with-email').textContent = getUrlParameter('uploaderEmail');
+        const receiverEmail = getUrlParameter('uploaderEmail');
+        document.getElementById('chat-with-email').textContent = receiverEmail;
+
+        // Load the profile photo of the user being chat with
+        loadUserProfilePhoto(receiverEmail);
 
         // Function to send a message
         document.getElementById('send-button').addEventListener('click', () => {
@@ -138,7 +181,7 @@
             const message = messageInput.value.trim();
             if (message !== '') {
                 const sender = auth.currentUser.email;
-                const receiver = getUrlParameter('uploaderEmail');
+                const receiver = receiverEmail;
 
                 // Save the message to the database
                 const messagesRef = database.ref('messages').push();
@@ -156,32 +199,32 @@
             }
         });
 
-       // Function to retrieve and display messages
-function loadMessages() {
-    const receiver = getUrlParameter('uploaderEmail');
-    const messagesRef = database.ref('messages').orderByChild('receiver').equalTo(receiver);
-    
-    messagesRef.on('child_added', (snapshot) => {
-        const messageData = snapshot.val();
-        const messageContainer = document.getElementById('message-container');
-        const messageElement = document.createElement('div');
-        
-        // Check if the message is sent by the current user or received
-        const isSent = messageData.sender === auth.currentUser.email;
-        const messageClass = isSent ? 'sent-message' : 'received-message';
+        // Function to retrieve and display messages
+        function loadMessages() {
+            const messagesRef = database.ref('messages')
+                .orderByChild('receiver')
+                .equalTo(receiverEmail);
+            
+            messagesRef.on('child_added', (snapshot) => {
+                const messageData = snapshot.val();
+                const messageContainer = document.getElementById('message-container');
+                const messageElement = document.createElement('div');
+                
+                // Check if the message is sent by the current user or received
+                const isSent = messageData.sender === auth.currentUser.email;
+                const messageClass = isSent ? 'sent-message' : 'received-message';
 
-        // Adjust message layout based on sent or received
-        messageElement.classList.add(messageClass);
+                // Adjust message layout based on sent or received
+                messageElement.classList.add(messageClass);
 
-        // Create message HTML
-        messageElement.innerHTML = `<p>${messageData.message}</p>`;
-        messageContainer.appendChild(messageElement);
-        
-        // Scroll to bottom of message container
-        messageContainer.scrollTop = messageContainer.scrollHeight;
-    });
-}
-
+                // Create message HTML
+                messageElement.innerHTML = `<p>${messageData.message}</p>`;
+                messageContainer.appendChild(messageElement);
+                
+                // Scroll to bottom of message container
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            });
+        }
 
         // Load messages when the page loads
         loadMessages();
