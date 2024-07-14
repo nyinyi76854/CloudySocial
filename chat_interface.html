@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Interface</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,19 +33,12 @@
             font-size: 20px;
             margin-bottom: 10px;
         }
-        .back-button {
-            font-size: 24px;
-            color: #333;
-            margin-right: 10px;
-            cursor: pointer;
-            text-decoration: none;
-        }
         .profile-photo {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
-            margin-right: 10px;
+            margin-left: 10px;
         }
         .message-container {
             flex: 1;
@@ -79,6 +71,7 @@
             padding: 10px;
             margin-bottom: 10px;
             max-width: 80%;
+            align-self: flex-end;
         }
         .received-message {
             align-self: flex-start;
@@ -88,6 +81,7 @@
             padding: 10px;
             margin-bottom: 10px;
             max-width: 80%;
+            align-self: flex-start;
         }
         .message button {
             width: 40px;
@@ -99,12 +93,18 @@
             cursor: pointer;
             margin-left: 5px;
         }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <i class="fas fa-arrow-left back-button" onclick="goBack()"></i>
         <div class="email-display">
-            <a href="main_layout.html" class="back-button"><i class="fas fa-arrow-left"></i></a>
             <img id="user-profile-photo" class="profile-photo" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg" alt="Profile Photo">
             <p><strong id="chat-with-email">Loading...</strong></p>
         </div>
@@ -121,6 +121,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -139,6 +140,10 @@
         const auth = firebase.auth();
         const database = firebase.database();
 
+        function goBack() {
+            window.location.href = 'main_layout.html';
+        }
+
         // Function to retrieve URL parameters
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
@@ -147,10 +152,35 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        // Display the email of the user being chat with
-        document.getElementById('chat-with-email').textContent = getUrlParameter('uploaderEmail');
+        const receiverEmail = getUrlParameter('uploaderEmail');
 
-        // Load user profile photo
+        // Display the name of the user being chatted with
+        database.ref('names')
+            .orderByChild('email')
+            .equalTo(receiverEmail)
+            .limitToLast(1)
+            .once('value')
+            .then((nameSnapshot) => {
+                if (nameSnapshot.exists()) {
+                    let latestName = '';
+                    let latestTimestamp = 0;
+                    nameSnapshot.forEach((nameChild) => {
+                        const nameData = nameChild.val();
+                        if (nameData.timestamp > latestTimestamp) {
+                            latestTimestamp = nameData.timestamp;
+                            latestName = nameData.name;
+                        }
+                    });
+                    document.getElementById('chat-with-email').textContent = latestName;
+                } else {
+                    document.getElementById('chat-with-email').textContent = 'Name not found';
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching name:', error);
+            });
+
+        // Load profile photo of the user being chatted with
         function loadUserProfilePhoto(email) {
             const profilePhotoContainer = document.getElementById('user-profile-photo');
             database.ref('profilesphoto')
@@ -169,7 +199,6 @@
                         });
                         profilePhotoContainer.src = latestPhotoUrl;
                     } else {
-                        // If no profile photo found, use default or placeholder image
                         profilePhotoContainer.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
                     }
                 })
@@ -178,8 +207,6 @@
                 });
         }
 
-        // Load profile photo for the receiver
-        const receiverEmail = getUrlParameter('uploaderEmail');
         loadUserProfilePhoto(receiverEmail);
 
         // Function to send a message
@@ -188,13 +215,12 @@
             const message = messageInput.value.trim();
             if (message !== '') {
                 const sender = auth.currentUser.email;
-                const receiver = getUrlParameter('uploaderEmail');
 
                 // Save the message to the database
                 const messagesRef = database.ref('messages').push();
                 messagesRef.set({
                     sender: sender,
-                    receiver: receiver,
+                    receiver: receiverEmail,
                     message: message,
                     timestamp: new Date().toISOString()
                 }).then(() => {
@@ -208,8 +234,7 @@
 
         // Function to retrieve and display messages
         function loadMessages() {
-            const receiver = getUrlParameter('uploaderEmail');
-            const messagesRef = database.ref('messages').orderByChild('receiver').equalTo(receiver);
+            const messagesRef = database.ref('messages').orderByChild('receiver').equalTo(receiverEmail);
 
             messagesRef.on('child_added', (snapshot) => {
                 const messageData = snapshot.val();
@@ -221,18 +246,15 @@
                 const messageClass = isSent ? 'sent-message' : 'received-message';
 
                 // Adjust message layout based on sent or received
-                messageElement.classList.add(messageClass);
-
-                // Create message HTML
-                messageElement.innerHTML = `<p>${messageData.message}</p>`;
+                messageElement.className = messageClass;
+                messageElement.textContent = messageData.message;
                 messageContainer.appendChild(messageElement);
 
-                // Scroll to bottom of message container
+                // Scroll to the bottom of the message container
                 messageContainer.scrollTop = messageContainer.scrollHeight;
             });
         }
 
-        // Load messages when the page loads
         loadMessages();
     </script>
 </body>
