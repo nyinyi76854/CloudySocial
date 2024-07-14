@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
     <title>Chat Interface</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -27,22 +26,27 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             padding: 20px;
+            position: relative;
         }
-        .email-profile {
+        .email-display {
             display: flex;
             align-items: center;
+            font-size: 20px;
             margin-bottom: 10px;
         }
-        .email-profile img {
+        .back-button {
+            font-size: 24px;
+            color: #333;
+            margin-right: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .profile-photo {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
             margin-right: 10px;
-        }
-        .email-profile p {
-            font-size: 20px;
-            margin: 0;
         }
         .message-container {
             flex: 1;
@@ -95,24 +99,14 @@
             cursor: pointer;
             margin-left: 5px;
         }
-        .back-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    cursor: pointer;
-    font-size: 24px;
-    color: #333;
-}
-
     </style>
 </head>
 <body>
-    <a href="main_layout.html" class="back-button"><i class="fas fa-arrow-left"></i></a>
-    
     <div class="container">
-        <div class="email-profile">
-            <img id="user-profile-photo" src="" alt="Profile Photo">
-            <p id="chat-with-email">Loading...</p>
+        <div class="email-display">
+            <a href="main_layout.html" class="back-button"><i class="fas fa-arrow-left"></i></a>
+            <img id="user-profile-photo" class="profile-photo" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg" alt="Profile Photo">
+            <p><strong id="chat-with-email">Loading...</strong></p>
         </div>
         <div class="message-container" id="message-container">
             <!-- Messages will be dynamically added here -->
@@ -153,7 +147,10 @@
             return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
 
-        // Function to load the profile photo of the user being chat with
+        // Display the email of the user being chat with
+        document.getElementById('chat-with-email').textContent = getUrlParameter('uploaderEmail');
+
+        // Load user profile photo
         function loadUserProfilePhoto(email) {
             const profilePhotoContainer = document.getElementById('user-profile-photo');
             database.ref('profilesphoto')
@@ -181,11 +178,8 @@
                 });
         }
 
-        // Display the email of the user being chat with
+        // Load profile photo for the receiver
         const receiverEmail = getUrlParameter('uploaderEmail');
-        document.getElementById('chat-with-email').textContent = receiverEmail;
-
-        // Load the profile photo of the user being chat with
         loadUserProfilePhoto(receiverEmail);
 
         // Function to send a message
@@ -194,7 +188,7 @@
             const message = messageInput.value.trim();
             if (message !== '') {
                 const sender = auth.currentUser.email;
-                const receiver = receiverEmail;
+                const receiver = getUrlParameter('uploaderEmail');
 
                 // Save the message to the database
                 const messagesRef = database.ref('messages').push();
@@ -214,15 +208,14 @@
 
         // Function to retrieve and display messages
         function loadMessages() {
-            const messagesRef = database.ref('messages')
-                .orderByChild('receiver')
-                .equalTo(receiverEmail);
-            
+            const receiver = getUrlParameter('uploaderEmail');
+            const messagesRef = database.ref('messages').orderByChild('receiver').equalTo(receiver);
+
             messagesRef.on('child_added', (snapshot) => {
                 const messageData = snapshot.val();
                 const messageContainer = document.getElementById('message-container');
                 const messageElement = document.createElement('div');
-                
+
                 // Check if the message is sent by the current user or received
                 const isSent = messageData.sender === auth.currentUser.email;
                 const messageClass = isSent ? 'sent-message' : 'received-message';
@@ -233,7 +226,7 @@
                 // Create message HTML
                 messageElement.innerHTML = `<p>${messageData.message}</p>`;
                 messageContainer.appendChild(messageElement);
-                
+
                 // Scroll to bottom of message container
                 messageContainer.scrollTop = messageContainer.scrollHeight;
             });
@@ -241,7 +234,6 @@
 
         // Load messages when the page loads
         loadMessages();
-
     </script>
 </body>
 </html>
