@@ -22,6 +22,15 @@
             text-align: center;
             max-width: 400px;
             width: 100%;
+            position: relative;
+        }
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
         }
         .profile-pic-container {
             position: relative;
@@ -62,6 +71,7 @@
 </head>
 <body>
     <div class="container">
+        <i class="fas fa-arrow-left back-button" id="back-button"></i>
         <input type="file" id="file-input">
         <div class="profile-pic-container" id="profile-pic-container">
             <i id="profile-icon" class="fas fa-user-circle profile-icon"></i>
@@ -203,6 +213,11 @@
                     );
                 }
             }
+        });
+
+        // Back button functionality
+        document.getElementById('back-button').addEventListener('click', () => {
+            window.location.href = 'main_layout.html';
         });
     </script>
 </body>
