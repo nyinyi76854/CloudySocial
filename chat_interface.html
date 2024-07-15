@@ -93,12 +93,15 @@
         .message button {
             width: 40px;
             height: 40px;
-            background-color: #007bff;
-            color: #fff;
+            background-color: transparent;
             border: none;
-            border-radius: 0 4px 4px 0;
             cursor: pointer;
             margin-left: 5px;
+        }
+
+        .message button i {
+            font-size: 20px;
+            color: #007bff;
         }
 
         .back-button {
@@ -124,7 +127,6 @@
             <button id="send-button"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
-
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
