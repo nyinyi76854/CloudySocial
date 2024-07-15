@@ -16,13 +16,12 @@
         }
 
         .container {
-            width: 50%;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
             padding: 20px;
             background-color: #fff;
-            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            max-height: 80vh;
         }
 
         .chat-partner {
@@ -103,28 +102,31 @@
         function loadChatPartners() {
             const currentUserEmail = auth.currentUser.email;
             const chatListDiv = document.getElementById('chat-list');
-            const chatPartners = new Map();
 
             // Reference to the messages node in Firebase
             const messagesRef = database.ref('messages');
 
-            // Query to get messages where current user is the sender or receiver
-            messagesRef.on('value', (snapshot) => {
-                chatListDiv.innerHTML = ''; // Clear previous entries
-
+            // Query to get distinct chat partners and their latest message
+            messagesRef.orderByChild('sender').equalTo(currentUserEmail).on('value', (snapshot) => {
+                const chatPartners = {};
                 snapshot.forEach((childSnapshot) => {
                     const messageData = childSnapshot.val();
-                    const partnerEmail = messageData.sender === currentUserEmail ? messageData.receiver : messageData.sender;
-                    const timestamp = messageData.timestamp;
+                    const receiverEmail = messageData.receiver;
 
-                    // Track latest message for each partner
-                    if (!chatPartners.has(partnerEmail) || chatPartners.get(partnerEmail).timestamp < timestamp) {
-                        chatPartners.set(partnerEmail, { lastMessage: messageData.message, timestamp });
+                    // Check if the receiver is already in the chatPartners object
+                    if (!chatPartners[receiverEmail] || chatPartners[receiverEmail].timestamp < messageData.timestamp) {
+                        chatPartners[receiverEmail] = {
+                            lastMessage: messageData.message,
+                            timestamp: messageData.timestamp
+                        };
                     }
                 });
 
-                // Sort chat partners by latest message timestamp
-                const sortedChatPartners = Array.from(chatPartners.entries()).sort((a, b) => b[1].timestamp - a[1].timestamp);
+                // Clear previous entries
+                chatListDiv.innerHTML = '';
+
+                // Sort chat partners by timestamp (newest first)
+                const sortedChatPartners = Object.entries(chatPartners).sort((a, b) => b[1].timestamp - a[1].timestamp);
 
                 // Display each chat partner
                 sortedChatPartners.forEach(([email, data]) => {
