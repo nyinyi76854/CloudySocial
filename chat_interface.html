@@ -107,6 +107,62 @@
             left: 20px;
             cursor: pointer;
         }
+
+        #media-dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            z-index: 1000;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        #media-dialog video, #media-dialog img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        #media-dialog input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #media-dialog button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #media-dialog button.cancel-button {
+            background-color: #ccc;
+            margin-top: 5px;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
     </style>
 </head>
 <body>
@@ -121,14 +177,24 @@
         </div>
         <div class="message">
             <input type="text" id="message-input" placeholder="Type a message...">
-            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+            <button id="media-button"><i class="fas fa-folder"></i></button>
+            <button id="send-button" style="display: none;"><i class="fas fa-paper-plane"></i></button>
         </div>
+    </div>
+
+    <div id="overlay"></div>
+    <div id="media-dialog">
+        <div id="media-preview"></div>
+        <input type="text" id="description-input" placeholder="Enter a description (optional)">
+        <button id="upload-media-button">Send</button>
+        <button class="cancel-button" onclick="closeMediaDialog()">Cancel</button>
     </div>
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
 
     <script>
@@ -147,12 +213,12 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const database = firebase.database();
+        const storage = firebase.storage();
 
         function goBack() {
             window.location.href = 'main_layout.html';
         }
 
-        // Function to retrieve URL parameters
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -162,7 +228,6 @@
 
         const receiverEmail = getUrlParameter('uploaderEmail');
 
-        // Display the name of the user being chatted with
         database.ref('names')
             .orderByChild('email')
             .equalTo(receiverEmail)
@@ -188,7 +253,6 @@
                 console.error('Error fetching name:', error);
             });
 
-        // Load profile photo of the user being chatted with
         function loadUserProfilePhoto(email) {
             const profilePhotoContainer = document.getElementById('user-profile-photo');
             database.ref('profilesphoto')
@@ -196,16 +260,18 @@
                 .equalTo(email)
                 .limitToLast(1)
                 .once('value')
-                .then((photoSnapshot) => {
-                    if (photoSnapshot.exists()) {
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
                         let latestPhotoUrl = '';
-                        photoSnapshot.forEach((photoChild) => {
-                            const photoData = photoChild.val();
-                            if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                        let latestTimestamp = 0;
+                        snapshot.forEach((childSnapshot) => {
+                            const photoData = childSnapshot.val();
+                            if (photoData.timestamp > latestTimestamp) {
+                                latestTimestamp = photoData.timestamp;
                                 latestPhotoUrl = photoData.photoUrl;
                             }
                         });
-                        profilePhotoContainer.src = latestPhotoUrl;
+                        profilePhotoContainer.src = latestPhotoUrl || 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
                     } else {
                         profilePhotoContainer.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
                     }
@@ -215,69 +281,167 @@
                 });
         }
 
-        loadUserProfilePhoto(receiverEmail);
-
-        // Function to send a message
-        document.getElementById('send-button').addEventListener('click', () => {
-            const messageInput = document.getElementById('message-input');
-            const message = messageInput.value.trim();
-            if (message !== '') {
-                const sender = auth.currentUser.email;
-
-                // Save the message to the database
-                const messagesRef = database.ref('messages').push();
-                messagesRef.set({
-                    sender: sender,
-                    receiver: receiverEmail,
-                    message: message,
-                    timestamp: new Date().toISOString()
-                }).then(() => {
-                    // Clear the message input
-                    messageInput.value = '';
-                }).catch((error) => {
-                    console.error('Error sending message:', error);
-                });
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const currentUserEmail = user.email;
+                loadUserProfilePhoto(receiverEmail);
+                document.getElementById('chat-with-email').textContent = receiverEmail;
+            } else {
+                window.location.href = 'index.html';
             }
         });
 
-        // Function to retrieve and display messages
+        const messageInput = document.getElementById('message-input');
+        const messageContainer = document.getElementById('message-container');
+        const sendButton = document.getElementById('send-button');
+        const mediaButton = document.getElementById('media-button');
+        const overlay = document.getElementById('overlay');
+        const mediaDialog = document.getElementById('media-dialog');
+        const mediaPreview = document.getElementById('media-preview');
+        const descriptionInput = document.getElementById('description-input');
+        const uploadMediaButton = document.getElementById('upload-media-button');
+        let selectedFile = null;
+        let selectedFileType = null;
+
+        messageInput.addEventListener('input', () => {
+            if (messageInput.value.trim() !== '') {
+                sendButton.style.display = 'block';
+                mediaButton.style.display = 'none';
+            } else {
+                sendButton.style.display = 'none';
+                mediaButton.style.display = 'block';
+            }
+        });
+
+        mediaButton.addEventListener('click', () => {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*,video/*';
+            fileInput.onchange = (event) => {
+                selectedFile = event.target.files[0];
+                selectedFileType = selectedFile.type.startsWith('image/') ? 'image' : 'video';
+                showMediaDialog();
+            };
+            fileInput.click();
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+
+        function showMediaDialog() {
+            const fileURL = URL.createObjectURL(selectedFile);
+            mediaPreview.innerHTML = '';
+            if (selectedFileType === 'image') {
+                const img = document.createElement('img');
+                img.src = fileURL;
+                mediaPreview.appendChild(img);
+            } else if (selectedFileType === 'video') {
+                const video = document.createElement('video');
+                video.src = fileURL;
+                video.controls = true;
+                mediaPreview.appendChild(video);
+            }
+            descriptionInput.value = '';
+            overlay.style.display = 'block';
+            mediaDialog.style.display = 'block';
+        }
+
+        function closeMediaDialog() {
+            overlay.style.display = 'none';
+            mediaDialog.style.display = 'none';
+            selectedFile = null;
+            selectedFileType = null;
+        }
+
+        uploadMediaButton.addEventListener('click', uploadMedia);
+
+        function uploadMedia() {
+            const user = auth.currentUser;
+            if (user && selectedFile) {
+                const fileName = `${Date.now()}_${selectedFile.name}`;
+                const storageRef = storage.ref().child(`messages/${fileName}`);
+                const uploadTask = storageRef.put(selectedFile);
+
+                uploadTask.on(
+                    'state_changed',
+                    null,
+                    (error) => {
+                        console.error('Upload failed:', error);
+                    },
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            const messageData = {
+                                senderEmail: user.email,
+                                receiverEmail: receiverEmail,
+                                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                                description: descriptionInput.value,
+                            };
+                            if (selectedFileType === 'image') {
+                                messageData.imageUrl = downloadURL;
+                            } else if (selectedFileType === 'video') {
+                                messageData.videoUrl = downloadURL;
+                            }
+                            database.ref('messages').push(messageData);
+                            closeMediaDialog();
+                        });
+                    }
+                );
+            }
+        }
+
+        function sendMessage() {
+            const user = auth.currentUser;
+            if (user && messageInput.value.trim() !== '') {
+                const message = {
+                    senderEmail: user.email,
+                    receiverEmail: receiverEmail,
+                    text: messageInput.value,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                };
+                database.ref('messages').push(message);
+                messageInput.value = '';
+                sendButton.style.display = 'none';
+                mediaButton.style.display = 'block';
+            }
+        }
+
         function loadMessages() {
-            const messagesRef = database.ref('messages');
-            
-            messagesRef.on('child_added', (snapshot) => {
-                const messageData = snapshot.val();
-                const messageContainer = document.getElementById('message-container');
-                const messageElement = document.createElement('div');
-
-                // Check if the message is sent by the current user or received
-                const isSent = messageData.sender === auth.currentUser.email || messageData.receiver === auth.currentUser.email;
-                if (!isSent) return;
-
-                // Check if the message is sent or received
-                if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
-                    messageElement.className = 'sent-message';
-                } else if (messageData.receiver === auth.currentUser.email && messageData.sender === receiverEmail) {
-                    messageElement.className = 'received-message';
-                } else {
-                    return;
-                }
-
-                messageElement.textContent = messageData.message;
-                messageContainer.appendChild(messageElement);
-
-                // Scroll to the bottom of the message container
-                messageContainer.scrollTop = messageContainer.scrollHeight;
+            database.ref('messages').orderByChild('timestamp').on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                displayMessage(message);
             });
         }
 
-        // Authenticate the user and load messages
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                loadMessages();
+        function displayMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            const messageContent = document.createElement('div');
+            if (message.senderEmail === auth.currentUser.email) {
+                messageDiv.classList.add('sent-message');
+                messageContent.classList.add('sent-message');
             } else {
-                window.location.href = 'index.html'; // Redirect to login page if not authenticated
+                messageDiv.classList.add('received-message');
+                messageContent.classList.add('received-message');
             }
-        });
+            if (message.text) {
+                messageContent.textContent = message.text;
+            } else if (message.imageUrl) {
+                const img = document.createElement('img');
+                img.src = message.imageUrl;
+                img.style.maxWidth = '100%';
+                messageContent.appendChild(img);
+            } else if (message.videoUrl) {
+                const video = document.createElement('video');
+                video.src = message.videoUrl;
+                video.controls = true;
+                video.style.maxWidth = '100%';
+                messageContent.appendChild(video);
+            }
+            messageDiv.appendChild(messageContent);
+            messageContainer.appendChild(messageDiv);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        loadMessages();
     </script>
 </body>
 </html>
