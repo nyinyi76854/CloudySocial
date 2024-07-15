@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 50%;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-partner {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-partner:hover {
+            background-color: #f0f0f0;
+        }
+
+        .profile-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .chat-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .chat-info h3 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .last-message {
+            color: #888;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="chat-list">
+            <!-- Chat partners will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // Function to load chat partners
+        function loadChatPartners() {
+            const currentUserEmail = auth.currentUser.email;
+            const chatListDiv = document.getElementById('chat-list');
+
+            // Reference to the messages node in Firebase
+            const messagesRef = database.ref('messages');
+
+            // Query to get distinct receivers (chat partners)
+            messagesRef.orderByChild('sender').equalTo(currentUserEmail).on('value', (snapshot) => {
+                chatListDiv.innerHTML = ''; // Clear previous entries
+
+                snapshot.forEach((childSnapshot) => {
+                    const messageData = childSnapshot.val();
+                    const receiverEmail = messageData.receiver;
+
+                    // Query to get the latest message from each chat partner
+                    database.ref('messages')
+                        .orderByChild('receiver')
+                        .equalTo(receiverEmail)
+                        .limitToLast(1)
+                        .once('value')
+                        .then((latestMessageSnapshot) => {
+                            latestMessageSnapshot.forEach((messageSnapshot) => {
+                                const latestMessageData = messageSnapshot.val();
+                                displayChatPartner(receiverEmail, latestMessageData.message);
+                            });
+                        });
+                });
+            });
+        }
+
+        // Function to display each chat partner in the list
+        function displayChatPartner(email, lastMessage) {
+            const chatListDiv = document.getElementById('chat-list');
+            const chatPartnerDiv = document.createElement('div');
+            chatPartnerDiv.classList.add('chat-partner');
+            chatPartnerDiv.setAttribute('onclick', `openChat('${email}')`);
+
+            // Load profile photo
+            const profilePhotoImg = document.createElement('img');
+            profilePhotoImg.classList.add('profile-photo');
+            profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
+            loadUserProfilePhoto(email, profilePhotoImg);
+
+            // Create chat info container
+            const chatInfoDiv = document.createElement('div');
+            chatInfoDiv.classList.add('chat-info');
+
+            // Display email
+            const emailHeading = document.createElement('h3');
+            emailHeading.textContent = email;
+            chatInfoDiv.appendChild(emailHeading);
+
+            // Display last message
+            const lastMessagePara = document.createElement('p');
+            lastMessagePara.classList.add('last-message');
+            lastMessagePara.textContent = lastMessage || 'No messages yet';
+            chatInfoDiv.appendChild(lastMessagePara);
+
+            // Append elements to chat partner div
+            chatPartnerDiv.appendChild(profilePhotoImg);
+            chatPartnerDiv.appendChild(chatInfoDiv);
+
+            // Append chat partner div to chat list container
+            chatListDiv.appendChild(chatPartnerDiv);
+        }
+
+        // Function to load profile photo of the chat partner
+        function loadUserProfilePhoto(email, imgElement) {
+            database.ref('profilesphoto')
+                .orderByChild('uploaderEmail')
+                .equalTo(email)
+                .limitToLast(1)
+                .once('value')
+                .then((photoSnapshot) => {
+                    if (photoSnapshot.exists()) {
+                        let latestPhotoUrl = '';
+                        photoSnapshot.forEach((photoChild) => {
+                            const photoData = photoChild.val();
+                            if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                                latestPhotoUrl = photoData.photoUrl;
+                            }
+                        });
+                        imgElement.src = latestPhotoUrl;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching profile photo:', error);
+                });
+        }
+
+        // Function to open chat with a specific partner
+        function openChat(email) {
+            // Redirect or open chat interface with the selected partner
+            window.location.href = `chat.html?receiverEmail=${encodeURIComponent(email)}`;
+        }
+
+        // Authenticate and load chat partners
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                loadChatPartners();
+            } else {
+                window.location.href = 'index.html'; // Redirect to login page if not authenticated
+            }
+        });
+    </script>
+</body>
+</html>
