@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Interface</title>
     <style>
         body {
@@ -72,7 +72,7 @@
 
         .sent-message {
             align-self: flex-end;
-            background-color: #E0E0E0;
+            background-color: #DCF8C6;
             color: #333;
             border-radius: 10px 10px 0 10px;
             padding: 10px;
@@ -266,7 +266,7 @@
             if (!file) return;
 
             const sender = auth.currentUser.email;
-            const storageRef = storage.ref(messageimage/${file.name});
+            const storageRef = storage.ref(`messageimage/${file.name}`);
             const uploadTask = storageRef.put(file);
 
             uploadTask.on(
