@@ -21,6 +21,8 @@
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 80vh;
         }
 
         .chat-partner {
@@ -101,30 +103,32 @@
         function loadChatPartners() {
             const currentUserEmail = auth.currentUser.email;
             const chatListDiv = document.getElementById('chat-list');
+            const chatPartners = new Map();
 
             // Reference to the messages node in Firebase
             const messagesRef = database.ref('messages');
 
-            // Query to get distinct receivers (chat partners)
-            messagesRef.orderByChild('sender').equalTo(currentUserEmail).on('value', (snapshot) => {
+            // Query to get messages where current user is the sender or receiver
+            messagesRef.on('value', (snapshot) => {
                 chatListDiv.innerHTML = ''; // Clear previous entries
 
                 snapshot.forEach((childSnapshot) => {
                     const messageData = childSnapshot.val();
-                    const receiverEmail = messageData.receiver;
+                    const partnerEmail = messageData.sender === currentUserEmail ? messageData.receiver : messageData.sender;
+                    const timestamp = messageData.timestamp;
 
-                    // Query to get the latest message from each chat partner
-                    database.ref('messages')
-                        .orderByChild('receiver')
-                        .equalTo(receiverEmail)
-                        .limitToLast(1)
-                        .once('value')
-                        .then((latestMessageSnapshot) => {
-                            latestMessageSnapshot.forEach((messageSnapshot) => {
-                                const latestMessageData = messageSnapshot.val();
-                                displayChatPartner(receiverEmail, latestMessageData.message);
-                            });
-                        });
+                    // Track latest message for each partner
+                    if (!chatPartners.has(partnerEmail) || chatPartners.get(partnerEmail).timestamp < timestamp) {
+                        chatPartners.set(partnerEmail, { lastMessage: messageData.message, timestamp });
+                    }
+                });
+
+                // Sort chat partners by latest message timestamp
+                const sortedChatPartners = Array.from(chatPartners.entries()).sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+                // Display each chat partner
+                sortedChatPartners.forEach(([email, data]) => {
+                    displayChatPartner(email, data.lastMessage);
                 });
             });
         }
@@ -192,7 +196,7 @@
         // Function to open chat with a specific partner
         function openChat(email) {
             // Redirect or open chat interface with the selected partner
-            window.location.href = `chat_interface.html?receiverEmail=${encodeURIComponent(email)}`;
+            window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
         }
 
         // Authenticate and load chat partners
