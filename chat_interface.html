@@ -5,30 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Interface</title>
     <style>
-       body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    height: 100vh;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
 
-.container {
-    width: 50%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    padding: 20px;
-    position: relative;
-}
-
+        .container {
+            width: 50%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            position: relative;
+        }
 
         .email-display {
             display: flex;
@@ -36,6 +35,7 @@
             font-size: 20px;
             margin-bottom: 10px;
         }
+
         .profile-photo {
             width: 40px;
             height: 40px;
@@ -43,6 +43,7 @@
             object-fit: cover;
             margin-left: 10px;
         }
+
         .message-container {
             flex: 1;
             overflow-y: auto;
@@ -53,11 +54,13 @@
             display: flex;
             flex-direction: column;
         }
+
         .message {
             display: flex;
             align-items: flex-end;
             margin-bottom: 10px;
         }
+
         .message input[type="text"] {
             flex: 1;
             padding: 10px;
@@ -66,6 +69,7 @@
             margin-right: -5px;
             margin-bottom: 0;
         }
+
         .sent-message {
             align-self: flex-end;
             background-color: #DCF8C6;
@@ -74,8 +78,8 @@
             padding: 10px;
             margin-bottom: 10px;
             max-width: 80%;
-            align-self: flex-end;
         }
+
         .received-message {
             align-self: flex-start;
             background-color: #E0E0E0;
@@ -84,8 +88,8 @@
             padding: 10px;
             margin-bottom: 10px;
             max-width: 80%;
-            align-self: flex-start;
         }
+
         .message button {
             width: 40px;
             height: 40px;
@@ -96,6 +100,7 @@
             cursor: pointer;
             margin-left: 5px;
         }
+
         .back-button {
             position: absolute;
             top: 20px;
@@ -237,19 +242,26 @@
 
         // Function to retrieve and display messages
         function loadMessages() {
-            const messagesRef = database.ref('messages').orderByChild('receiver').equalTo(receiverEmail);
-
+            const messagesRef = database.ref('messages');
+            
             messagesRef.on('child_added', (snapshot) => {
                 const messageData = snapshot.val();
                 const messageContainer = document.getElementById('message-container');
                 const messageElement = document.createElement('div');
 
                 // Check if the message is sent by the current user or received
-                const isSent = messageData.sender === auth.currentUser.email;
-                const messageClass = isSent ? 'sent-message' : 'received-message';
+                const isSent = messageData.sender === auth.currentUser.email || messageData.receiver === auth.currentUser.email;
+                if (!isSent) return;
 
-                // Adjust message layout based on sent or received
-                messageElement.className = messageClass;
+                // Check if the message is sent or received
+                if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
+                    messageElement.className = 'sent-message';
+                } else if (messageData.receiver === auth.currentUser.email && messageData.sender === receiverEmail) {
+                    messageElement.className = 'received-message';
+                } else {
+                    return;
+                }
+
                 messageElement.textContent = messageData.message;
                 messageContainer.appendChild(messageElement);
 
@@ -258,7 +270,14 @@
             });
         }
 
-        loadMessages();
+        // Authenticate the user and load messages
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                loadMessages();
+            } else {
+                window.location.href = 'index.html'; // Redirect to login page if not authenticated
+            }
+        });
     </script>
 </body>
 </html>
