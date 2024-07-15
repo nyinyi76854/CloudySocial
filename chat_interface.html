@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-   
     <title>Chat Interface</title>
     <style>
         body {
@@ -15,7 +14,28 @@
             justify-content: center;
             align-items: center;
         }
+.message p {
+    margin: 0;
+    padding: 8px;
+    border-radius: 8px;
+    max-width: 70%; /* Adjust as needed */
+    word-wrap: break-word;
+}
 
+.message-image {
+    max-width: 100%; /* Ensure images fit within their container */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for images */
+}
+
+.message-video {
+    width: 100%; /* Ensure videos fill their container */
+    max-width: 100%; /* Adjust based on your design */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px;
+    outline: none; /* Remove default focus outline on video elements */
+}
         .container {
             width: 50%;
             height: 100%;
@@ -133,7 +153,7 @@
         <div class="message">
             <input type="text" id="message-input" placeholder="Type a message...">
             <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
-            <input type="file" id="file-input" accept="image/*" onchange="handleFileSelect(event)">
+            <input type="file" id="file-input" accept="image/*,video/*" onchange="handleFileSelect(event)">
         </div>
     </div>
 
@@ -263,81 +283,105 @@
         // Handle file selection and upload
         function handleFileSelect(event) {
             const file = event.target.files[0];
-            if (!file) return;
+            if (file) {
+                const storageRef = storage.ref();
+                let fileType = 'unknown';
+                let folder = 'unknown';
 
-            const sender = auth.currentUser.email;
-            const storageRef = storage.ref(`messageimage/${file.name}`);
-            const uploadTask = storageRef.put(file);
-
-            uploadTask.on(
-                'state_changed',
-                (snapshot) => {
-                    // Progress monitoring (optional)
-                },
-                (error) => {
-                    console.error('Error uploading file:', error);
-                },
-                () => {
-                    // File uploaded successfully
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        sendMessage(downloadURL); // Send the image URL as a message
-                    });
+                if (file.type.startsWith('image/')) {
+                    fileType = 'image';
+                    folder = 'messageimage';
+                } else if (file.type.startsWith('video/')) {
+                    fileType = 'video';
+                    folder = 'messagevideo';
                 }
-            );
-        }
 
-        // Function to update the send button icon based on the input field value
-        function updateSendButtonIcon() {
-            const messageInput = document.getElementById('message-input');
-            const sendButtonIcon = document.getElementById('send-icon');
+                const fileName = `${auth.currentUser.email}_${Date.now()}`;
+                const fileRef = storageRef.child(`${folder}/${fileName}`);
 
-            if (messageInput.value.trim() === '') {
-                sendButtonIcon.classList.remove('fa-paper-plane');
-                sendButtonIcon.classList.add('fa-folder');
-            } else {
-                sendButtonIcon.classList.remove('fa-folder');
-                sendButtonIcon.classList.add('fa-paper-plane');
+                fileRef.put(file).then((snapshot) => {
+                    snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        sendMessage(downloadURL); // Send the file URL as a message
+                    });
+                }).catch((error) => {
+                    console.error(`Error uploading ${fileType}:`, error);
+                });
             }
         }
 
-        document.getElementById('message-input').addEventListener('input', updateSendButtonIcon);
-
-        // Function to load messages
-        function loadMessages() {
-            const messageContainer = document.getElementById('message-container');
-            const messagesRef = database.ref('messages');
-            messagesRef.on('child_added', (snapshot) => {
-                const messageData = snapshot.val();
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message');
-
-                if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
-                    messageElement.classList.add('sent-message');
-                } else if (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email) {
-                    messageElement.classList.add('received-message');
-                } else {
-                    return; // If the message does not match the sender or receiver, skip it
-                }
-
-                // Check if the message is an image URL
-                if (messageData.message.startsWith('https://')) {
-                    const img = document.createElement('img');
-                    img.src = messageData.message;
-                    img.style.maxWidth = '200px';
-                    img.style.borderRadius = '10px';
-                    messageElement.appendChild(img);
-                } else {
-                    messageElement.textContent = messageData.message;
-                }
-
-                messageContainer.appendChild(messageElement);
-
-                // Scroll to the bottom of the message container
-                messageContainer.scrollTop = messageContainer.scrollHeight;
-            });
+        // Function to update the send button icon
+        function updateSendButtonIcon() {
+            const messageInput = document.getElementById('message-input');
+            const sendIcon = document.getElementById('send-icon');
+            if (messageInput.value.trim() === '') {
+                sendIcon.classList.remove('fa-paper-plane');
+                sendIcon.classList.add('fa-folder');
+            } else {
+                sendIcon.classList.remove('fa-folder');
+                sendIcon.classList.add('fa-paper-plane');
+            }
         }
 
-        // Authenticate and load messages
+        // Update the send button icon when typing in the message input field
+        document.getElementById('message-input').addEventListener('input', updateSendButtonIcon);
+
+        // Function to load and display messages
+       // Function to load and display messages
+function loadMessages() {
+    const messagesRef = database.ref('messages')
+        .orderByChild('timestamp');
+
+    messagesRef.on('value', (snapshot) => {
+        const messageContainer = document.getElementById('message-container');
+        messageContainer.innerHTML = ''; // Clear previous messages
+
+        snapshot.forEach((childSnapshot) => {
+            const messageData = childSnapshot.val();
+            if ((messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) ||
+                (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email)) {
+
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                const messageContent = document.createElement('p');
+
+                if (messageData.sender === auth.currentUser.email) {
+                    messageContent.classList.add('sent-message');
+                } else {
+                    messageContent.classList.add('received-message');
+                }
+
+                // Check if message is a Firebase Storage URL
+                if (messageData.message.startsWith('https://firebasestorage.googleapis.com')) {
+                    if (messageData.message.includes('messageimage%2F')) {
+                        // Render image
+                        const imageElement = document.createElement('img');
+                        imageElement.src = messageData.message;
+                        imageElement.classList.add('message-image');
+                        messageContent.appendChild(imageElement);
+                    } else if (messageData.message.includes('messagevideo%2F')) {
+                        // Render video
+                        const videoElement = document.createElement('video');
+                        videoElement.src = messageData.message;
+                        videoElement.controls = true;
+                        videoElement.classList.add('message-video');
+                        messageContent.appendChild(videoElement);
+                    }
+                } else {
+                    // Render text message
+                    messageContent.textContent = messageData.message;
+                }
+
+                messageElement.appendChild(messageContent);
+                messageContainer.appendChild(messageElement);
+            }
+        });
+
+        // Scroll to the bottom of the message container
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    });
+}
+
+        // Check if the user is authenticated
         auth.onAuthStateChanged((user) => {
             if (user) {
                 loadMessages();
