@@ -20,31 +20,42 @@
             right: 20px;
         }
         .slidebar {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            cursor: pointer;
-        }
-        .slidebar-menu {
-            display: none;
-            position: absolute;
-            top: 40px;
-            left: 10px;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-        .slidebar-menu a {
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-            color: #000;
-        }
-        .slidebar-menu a:hover {
-            background-color: #f4f4f4;
-        }
+    position: fixed;
+    top: 10px;
+    left: 20px;
+    cursor: pointer;
+    z-index: 1001; /* Ensure it's above other content */
+}
+
+.slidebar-menu {
+    display: none;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 200px; /* Adjust width as needed */
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.slidebar-menu a {
+    display: block;
+    padding: 12px 16px; /* Adjust padding for better spacing */
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.3s;
+}
+
+.slidebar-menu a:hover {
+    background-color: #f4f4f4;
+}
+
+.slidebar-menu a i {
+    margin-right: 10px; /* Space between icon and text */
+}
+
         /* Dialog styling */
         #video-upload-dialog {
             position: fixed;
@@ -228,13 +239,15 @@
 </head>
 <body>
     <div class="slidebar">
-        <img src="https://img.icons8.com/ios-glyphs/30/000000/menu.png" id="menu-icon"/>
-        <div class="slidebar-menu" id="slidebar-menu">
-            <a href="profile.html">Profile</a>
-            <a href="#" id="upload-video">Upload Video</a>
-            <a href="#" id="logout">Logout</a>
-        </div>
+    <img src="https://img.icons8.com/ios-glyphs/30/000000/menu.png" id="menu-icon"/>
+    <div class="slidebar-menu" id="slidebar-menu">
+        <a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a>
+        <a href="chatlist.html"><i class="fas fa-comment-alt"></i> Chat List</a>
+        <a href="#" id="upload-video"><i class="fas fa-upload"></i> Upload Video</a>
+        <a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
+</div>
+
     <div class="user-profile"><img id="user-profile-photo" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg" alt="Profile Photo">
 </div>
 
