@@ -131,10 +131,12 @@
             <!-- Messages will be dynamically added here -->
         </div>
         <div class="message">
-            <input type="text" id="message-input" placeholder="Type a message...">
-            <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
-            <input type="file" id="file-input" accept="image/*" onchange="handleFileSelect(event)">
-        </div>
+    <input type="text" id="message-input" placeholder="Type a message...">
+    <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
+    <input type="file" id="file-input" accept="image/*, video/*" onchange="handleFileSelect(event)">
+    <input type="file" id="video-input" accept="video/*" onchange="handleVideoSelect(event)">
+</div>
+
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -285,7 +287,37 @@
                 }
             );
         }
+function handleVideoSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
+    if (file.type.startsWith('video/')) {
+        handleVideoUpload(file);
+    } else {
+        alert('Unsupported file type. Please select a video.');
+    }
+}
+        function handleVideoUpload(file) {
+    const sender = auth.currentUser.email;
+    const storageRef = storage.ref(`messagevideo/${file.name}`);
+    const uploadTask = storageRef.put(file);
+
+    uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+            // Progress monitoring (optional)
+        },
+        (error) => {
+            console.error('Error uploading video:', error);
+        },
+        () => {
+            // Video uploaded successfully
+            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                sendMessage(downloadURL); // Send the video URL as a message
+            });
+        }
+    );
+}
         // Function to update the send button icon based on the input field value
         function updateSendButtonIcon() {
             const messageInput = document.getElementById('message-input');
@@ -303,39 +335,50 @@
         document.getElementById('message-input').addEventListener('input', updateSendButtonIcon);
 
         // Function to load messages
-        function loadMessages() {
-            const messageContainer = document.getElementById('message-container');
-            const messagesRef = database.ref('messages');
-            messagesRef.on('child_added', (snapshot) => {
-                const messageData = snapshot.val();
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message');
+       function loadMessages() {
+    const messageContainer = document.getElementById('message-container');
+    const messagesRef = database.ref('messages');
+    messagesRef.on('child_added', (snapshot) => {
+        const messageData = snapshot.val();
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
 
-                if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
-                    messageElement.classList.add('sent-message');
-                } else if (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email) {
-                    messageElement.classList.add('received-message');
-                } else {
-                    return; // If the message does not match the sender or receiver, skip it
-                }
-
-                // Check if the message is an image URL
-                if (messageData.message.startsWith('https://')) {
-                    const img = document.createElement('img');
-                    img.src = messageData.message;
-                    img.style.maxWidth = '200px';
-                    img.style.borderRadius = '10px';
-                    messageElement.appendChild(img);
-                } else {
-                    messageElement.textContent = messageData.message;
-                }
-
-                messageContainer.appendChild(messageElement);
-
-                // Scroll to the bottom of the message container
-                messageContainer.scrollTop = messageContainer.scrollHeight;
-            });
+        if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
+            messageElement.classList.add('sent-message');
+        } else if (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email) {
+            messageElement.classList.add('received-message');
+        } else {
+            return; // If the message does not match the sender or receiver, skip it
         }
+
+        // Check if the message is an image URL
+        if (messageData.message.startsWith('https://firebasestorage.googleapis.com') && messageData.message.includes('messageimage%2F')) {
+            const img = document.createElement('img');
+            img.src = messageData.message;
+            img.style.maxWidth = '200px';
+            img.style.borderRadius = '10px';
+            messageElement.appendChild(img);
+        }
+        // Check if the message is a video URL
+        else if (messageData.message.startsWith('https://firebasestorage.googleapis.com') && messageData.message.includes('messagevideo%2F')) {
+            const video = document.createElement('video');
+            video.src = messageData.message;
+            video.controls = true;
+            video.style.maxWidth = '200px';
+            video.style.borderRadius = '10px';
+            messageElement.appendChild(video);
+        } else {
+            // If not an image or video URL, treat it as text message
+            messageElement.textContent = messageData.message;
+        }
+
+        messageContainer.appendChild(messageElement);
+
+        // Scroll to the bottom of the message container
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    });
+}
+
 
         // Authenticate and load messages
         auth.onAuthStateChanged((user) => {
