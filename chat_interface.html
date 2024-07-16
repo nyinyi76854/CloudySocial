@@ -118,6 +118,29 @@
         #file-input {
             display: none;
         }
+        .context-menu {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        .context-menu-item {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .context-menu-item i {
+            margin-right: 5px;
+        }
+
+        .context-menu-item:hover {
+            background-color: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -138,7 +161,14 @@
 </div>
 
     </div>
-
+<div class="context-menu" id="context-menu">
+        <div class="context-menu-item" onclick="deleteMessage()">
+            <i class="fas fa-trash-alt"></i> Delete
+        </div>
+        <div class="context-menu-item" onclick="copyMessage()">
+            <i class="fas fa-copy"></i> Copy
+        </div>
+    </div>
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -390,7 +420,65 @@ auth.onAuthStateChanged((user) => {
         window.location.href = 'index.html'; // Redirect to login page if not authenticated
     }
 });
+ function showContextMenu(event) {
+            event.preventDefault();
+            const contextMenu = document.getElementById('context-menu');
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = event.pageX + 'px';
+            contextMenu.style.top = event.pageY + 'px';
 
+            // Store message details in context menu dataset
+            const messageElement = event.target.closest('.message');
+            contextMenu.dataset.messageId = messageElement.dataset.messageId;
+            contextMenu.dataset.messageContent = messageElement.dataset.messageContent;
+        }
+
+        // Function to hide context menu
+        function hideContextMenu() {
+            const contextMenu = document.getElementById('context-menu');
+            contextMenu.style.display = 'none';
+        }
+
+        // Function to delete a message
+        function deleteMessage() {
+            const messageId = document.getElementById('context-menu').dataset.messageId;
+            database.ref('messages/' + messageId).remove()
+                .then(() => {
+                    console.log('Message deleted successfully');
+                    hideContextMenu();
+                })
+                .catch((error) => {
+                    console.error('Error deleting message:', error);
+                });
+        }
+
+        // Function to copy message content to clipboard
+        function copyMessage() {
+            const messageContent = document.getElementById('context-menu').dataset.messageContent;
+            navigator.clipboard.writeText(messageContent)
+                .then(() => {
+                    console.log('Message copied to clipboard');
+                    hideContextMenu();
+                })
+                .catch((error) => {
+                    console.error('Error copying message:', error);
+                });
+        }
+
+        // Hide context menu on click outside
+        document.addEventListener('click', function (event) {
+            const contextMenu = document.getElementById('context-menu');
+            if (!event.target.closest('.message') && contextMenu.style.display === 'block') {
+                hideContextMenu();
+            }
+        });
+
+        // Right-click event listener for messages
+        document.getElementById('message-container').addEventListener('contextmenu', function (event) {
+            if (event.target.closest('.message')) {
+                showContextMenu(event);
+            }
+        });
     </script>
 </body>
 </html>
