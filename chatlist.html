@@ -157,10 +157,13 @@
             emailHeading.textContent = email;
             chatInfoDiv.appendChild(emailHeading);
 
+            // Truncate last message if it's too long
+            const truncatedMessage = truncateMessage(lastMessage, 12);
+
             // Display last message
             const lastMessagePara = document.createElement('p');
             lastMessagePara.classList.add('last-message');
-            lastMessagePara.textContent = lastMessage || 'No messages yet';
+            lastMessagePara.textContent = truncatedMessage || 'No messages yet';
             chatInfoDiv.appendChild(lastMessagePara);
 
             // Append elements to chat partner div
@@ -169,6 +172,15 @@
 
             // Append chat partner div to chat list container
             chatListDiv.appendChild(chatPartnerDiv);
+        }
+
+        // Function to truncate a message after a certain number of words
+        function truncateMessage(message, wordLimit) {
+            const words = message.split(' ');
+            if (words.length > wordLimit) {
+                return words.slice(0, wordLimit).join(' ') + '...';
+            }
+            return message;
         }
 
         // Function to load profile photo of the chat partner
