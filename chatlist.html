@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat List</title>
-     <style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -22,11 +23,22 @@
             padding: 20px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
         }
 
         .chat-partner {
             display: flex;
             align-items: center;
+            margin-top: 60px; /* Adjust margin to make space for the back button */
             margin-bottom: 15px;
             padding: 10px;
             border-radius: 4px;
@@ -70,6 +82,7 @@
 </head>
 <body>
     <div class="container">
+        <i class="fas fa-arrow-left back-button" onclick="goBack()"></i>
         <div id="chat-list">
             <!-- Chat partners will be dynamically added here -->
         </div>
@@ -239,18 +252,22 @@
         }
 
         // Function to open chat with the selected chat partner
-       function openChat(email) {
+        function openChat(email) {
             // Redirect or open chat interface with the selected partner
-            window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
+            window.location.href = `chat_interface.html?email=${encodeURIComponent(email)}`;
         }
 
-        // Initialize chat partners list after user is authenticated
+        // Function to navigate back to main_layout.html
+        function goBack() {
+            window.location.href = 'main_layout.html';
+        }
+
+        // Check if a user is logged in and load chat partners
         auth.onAuthStateChanged((user) => {
             if (user) {
                 loadChatPartners();
             } else {
-                // Redirect to login page or show login form
-                console.log('User is not authenticated');
+                window.location.href = 'index.html'; // Redirect to login if not logged in
             }
         });
     </script>
