@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat List</title>
-    <style>
+     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -27,7 +27,7 @@
         .chat-partner {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             padding: 10px;
             border-radius: 4px;
             cursor: pointer;
@@ -39,11 +39,12 @@
         }
 
         .profile-photo {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             object-fit: cover;
-            margin-right: 10px;
+            margin-right: 15px;
+            transform: translateY(-5px); /* Move the profile photo up */
         }
 
         .chat-info {
@@ -55,12 +56,12 @@
 
         .chat-info h3 {
             margin: 0;
-            font-size: 16px;
+            font-size: 14px; /* Reduce font size */
         }
 
         .last-message {
             color: #888;
-            font-size: 14px;
+            font-size: 12px; /* Reduce font size */
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
