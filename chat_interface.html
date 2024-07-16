@@ -128,7 +128,7 @@
             <p><strong id="chat-with-email">Loading...</strong></p>
         </div>
         <div class="message-container" id="message-container">
-            
+            <!-- Messages will be dynamically added here -->
         </div>
         <div class="message">
     <input type="text" id="message-input" placeholder="Type a message...">
@@ -375,6 +375,8 @@ function handleVideoUpload(file) {
         }
 
         messageContainer.appendChild(messageElement);
+
+        // Scroll to the bottom of the message container
         messageContainer.scrollTop = messageContainer.scrollHeight;
     });
 }
