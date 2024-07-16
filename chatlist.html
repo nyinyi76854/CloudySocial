@@ -152,26 +152,28 @@
             const chatInfoDiv = document.createElement('div');
             chatInfoDiv.classList.add('chat-info');
 
-            // Display email
-            const emailHeading = document.createElement('h3');
-            emailHeading.textContent = email;
-            chatInfoDiv.appendChild(emailHeading);
+            // Load user name or use email if no name found
+            loadUserName(email, (name) => {
+                const emailHeading = document.createElement('h3');
+                emailHeading.textContent = name || email;
+                chatInfoDiv.appendChild(emailHeading);
 
-            // Truncate last message if it's too long
-            const truncatedMessage = truncateMessage(lastMessage, 12);
+                // Truncate last message if it's too long
+                const truncatedMessage = truncateMessage(lastMessage, 12);
 
-            // Display last message
-            const lastMessagePara = document.createElement('p');
-            lastMessagePara.classList.add('last-message');
-            lastMessagePara.textContent = truncatedMessage || 'No messages yet';
-            chatInfoDiv.appendChild(lastMessagePara);
+                // Display last message
+                const lastMessagePara = document.createElement('p');
+                lastMessagePara.classList.add('last-message');
+                lastMessagePara.textContent = truncatedMessage || 'No messages yet';
+                chatInfoDiv.appendChild(lastMessagePara);
 
-            // Append elements to chat partner div
-            chatPartnerDiv.appendChild(profilePhotoImg);
-            chatPartnerDiv.appendChild(chatInfoDiv);
+                // Append elements to chat partner div
+                chatPartnerDiv.appendChild(profilePhotoImg);
+                chatPartnerDiv.appendChild(chatInfoDiv);
 
-            // Append chat partner div to chat list container
-            chatListDiv.appendChild(chatPartnerDiv);
+                // Append chat partner div to chat list container
+                chatListDiv.appendChild(chatPartnerDiv);
+            });
         }
 
         // Function to truncate a message after a certain number of words
@@ -181,6 +183,34 @@
                 return words.slice(0, wordLimit).join(' ') + '...';
             }
             return message;
+        }
+
+        // Function to load user name based on email
+        function loadUserName(email, callback) {
+            database.ref('names')
+                .orderByChild('email')
+                .equalTo(email)
+                .once('value')
+                .then((nameSnapshot) => {
+                    if (nameSnapshot.exists()) {
+                        let latestName = '';
+                        let latestTimestamp = 0;
+                        nameSnapshot.forEach((nameChild) => {
+                            const nameData = nameChild.val();
+                            if (nameData.timestamp > latestTimestamp) {
+                                latestTimestamp = nameData.timestamp;
+                                latestName = nameData.name;
+                            }
+                        });
+                        callback(latestName);
+                    } else {
+                        callback(null);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching user name:', error);
+                    callback(null);
+                });
         }
 
         // Function to load profile photo of the chat partner
@@ -207,18 +237,19 @@
                 });
         }
 
-        // Function to open chat with a specific partner
-        function openChat(email) {
+        // Function to open chat with the selected chat partner
+       function openChat(email) {
             // Redirect or open chat interface with the selected partner
             window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
         }
 
-        // Authenticate and load chat partners
+        // Initialize chat partners list after user is authenticated
         auth.onAuthStateChanged((user) => {
             if (user) {
                 loadChatPartners();
             } else {
-                window.location.href = 'index.html'; // Redirect to login page if not authenticated
+                // Redirect to login page or show login form
+                console.log('User is not authenticated');
             }
         });
     </script>
