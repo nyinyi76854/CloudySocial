@@ -118,29 +118,6 @@
         #file-input {
             display: none;
         }
-        .context-menu {
-            display: none;
-            position: absolute;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-            z-index: 10;
-        }
-
-        .context-menu-item {
-            padding: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-
-        .context-menu-item i {
-            margin-right: 5px;
-        }
-
-        .context-menu-item:hover {
-            background-color: #f0f0f0;
-        }
     </style>
 </head>
 <body>
@@ -161,14 +138,7 @@
 </div>
 
     </div>
-<div class="context-menu" id="context-menu">
-        <div class="context-menu-item" onclick="deleteMessage()">
-            <i class="fas fa-trash-alt"></i> Delete
-        </div>
-        <div class="context-menu-item" onclick="copyMessage()">
-            <i class="fas fa-copy"></i> Copy
-        </div>
-    </div>
+
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -309,7 +279,7 @@ function handleFileSelect(event) {
 
 function handleImageUpload(file) {
     const sender = auth.currentUser.email;
-    const storageRef = storage.ref(`messageimage/${file.name}`);
+    const storageRef = storage.ref(messageimage/${file.name});
     const uploadTask = storageRef.put(file);
 
     uploadTask.on(
@@ -331,7 +301,7 @@ function handleImageUpload(file) {
 
 function handleVideoUpload(file) {
     const sender = auth.currentUser.email;
-    const storageRef = storage.ref(`messagevideo/${file.name}`);
+    const storageRef = storage.ref(messagevideo/${file.name});
     const uploadTask = storageRef.put(file);
 
     uploadTask.on(
@@ -418,72 +388,6 @@ auth.onAuthStateChanged((user) => {
         loadMessages();
     } else {
         window.location.href = 'index.html'; // Redirect to login page if not authenticated
-    }
-});
-// Function to show context menu on right-click (for sent messages only)
-// Function to show context menu on right-click (for sent messages only)
-function showContextMenu(event) {
-    event.preventDefault();
-    const contextMenu = document.getElementById('context-menu');
-    contextMenu.style.display = 'block';
-    contextMenu.style.left = event.pageX + 'px';
-    contextMenu.style.top = event.pageY + 'px';
-
-    // Store message details in context menu dataset
-    const messageElement = event.target.closest('.sent-message'); // Only for sent messages
-    if (messageElement) {
-        const messageId = messageElement.dataset.messageId; // Get Firebase snapshot key
-        contextMenu.dataset.messageId = messageId;
-        // Optionally store other message details if needed
-        database.ref('messages/' + messageId).once('value')
-            .then((snapshot) => {
-                const messageData = snapshot.val();
-                contextMenu.dataset.messageContent = messageData.message; // Store message content
-            })
-            .catch((error) => {
-                console.error('Error fetching message data:', error);
-            });
-    } else {
-        hideContextMenu(); // Hide context menu if clicked outside of a sent message
-    }
-}
-// Function to copy message content to clipboard
-function copyMessage() {
-    const messageContent = document.getElementById('context-menu').dataset.messageContent;
-    navigator.clipboard.writeText(messageContent)
-        .then(() => {
-            console.log('Message copied to clipboard');
-            hideContextMenu();
-        })
-        .catch((error) => {
-            console.error('Error copying message:', error);
-        });
-}
-// Function to delete a message
-function deleteMessage() {
-    const messageId = document.getElementById('context-menu').dataset.messageId;
-    database.ref('messages/' + messageId).remove()
-        .then(() => {
-            console.log('Message deleted successfully');
-            hideContextMenu();
-        })
-        .catch((error) => {
-            console.error('Error deleting message:', error);
-        });
-}
-// Right-click event listener for sent messages
-document.getElementById('message-container').addEventListener('contextmenu', function (event) {
-    const messageElement = event.target.closest('.sent-message'); // Only for sent messages
-    if (messageElement) {
-        showContextMenu(event);
-    }
-});
-
-// Hide context menu on click outside
-document.addEventListener('click', function (event) {
-    const contextMenu = document.getElementById('context-menu');
-    if (!event.target.closest('.context-menu') && contextMenu.style.display === 'block') {
-        hideContextMenu();
     }
 });
 
