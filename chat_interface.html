@@ -131,12 +131,10 @@
             <!-- Messages will be dynamically added here -->
         </div>
         <div class="message">
-    <input type="text" id="message-input" placeholder="Type a message...">
-    <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
-    <input type="file" id="file-input" accept="image/*, video/*" onchange="handleFileSelect(event)">
-    
-</div>
-
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
+            <input type="file" id="file-input" accept="image/*, video/*" onchange="handleFileSelect(event)">
+        </div>
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -147,7 +145,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
 
     <script>
-        const firebaseConfig = {
+       const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -169,227 +167,205 @@
         }
 
         // Function to retrieve URL parameters
-        // Function to retrieve URL parameters
-function getUrlParameter(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    const results = regex.exec(location.search);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
 
-const receiverEmail = getUrlParameter('uploaderEmail');
+        const receiverEmail = getUrlParameter('uploaderEmail');
 
-// Display the name of the user being chatted with
-database.ref('names')
-    .orderByChild('email')
-    .equalTo(receiverEmail)
-    .limitToLast(1)
-    .once('value')
-    .then((nameSnapshot) => {
-        if (nameSnapshot.exists()) {
-            let latestName = '';
-            let latestTimestamp = 0;
-            nameSnapshot.forEach((nameChild) => {
-                const nameData = nameChild.val();
-                if (nameData.timestamp > latestTimestamp) {
-                    latestTimestamp = nameData.timestamp;
-                    latestName = nameData.name;
+        // Display the name of the user being chatted with
+        database.ref('names')
+            .orderByChild('email')
+            .equalTo(receiverEmail)
+            .once('value')
+            .then((nameSnapshot) => {
+                if (nameSnapshot.exists()) {
+                    nameSnapshot.forEach((nameChild) => {
+                        const nameData = nameChild.val();
+                        document.getElementById('chat-with-email').textContent = nameData.name;
+                    });
+                } else {
+                    document.getElementById('chat-with-email').textContent = 'Name not found';
                 }
+            })
+            .catch((error) => {
+                console.error('Error fetching name:', error);
             });
-            document.getElementById('chat-with-email').textContent = latestName;
-        } else {
-            document.getElementById('chat-with-email').textContent = 'Name not found';
-        }
-    })
-    .catch((error) => {
-        console.error('Error fetching name:', error);
-    });
 
-// Load profile photo of the user being chatted with
-function loadUserProfilePhoto(email) {
-    const profilePhotoContainer = document.getElementById('user-profile-photo');
-    database.ref('profilesphoto')
-        .orderByChild('uploaderEmail')
-        .equalTo(email)
-        .limitToLast(1)
-        .once('value')
-        .then((photoSnapshot) => {
-            if (photoSnapshot.exists()) {
-                let latestPhotoUrl = '';
-                photoSnapshot.forEach((photoChild) => {
-                    const photoData = photoChild.val();
-                    if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
-                        latestPhotoUrl = photoData.photoUrl;
+        // Load profile photo of the user being chatted with
+        function loadUserProfilePhoto(email) {
+            const profilePhotoContainer = document.getElementById('user-profile-photo');
+            database.ref('profilesphoto')
+                .orderByChild('uploaderEmail')
+                .equalTo(email)
+                .once('value')
+                .then((photoSnapshot) => {
+                    if (photoSnapshot.exists()) {
+                        let latestPhotoUrl = '';
+                        photoSnapshot.forEach((photoChild) => {
+                            const photoData = photoChild.val();
+                            if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                                latestPhotoUrl = photoData.photoUrl;
+                            }
+                        });
+                        profilePhotoContainer.src = latestPhotoUrl;
+                    } else {
+                        profilePhotoContainer.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
                     }
+                })
+                .catch((error) => {
+                    console.error('Error fetching profile photo:', error);
                 });
-                profilePhotoContainer.src = latestPhotoUrl;
+        }
+
+        loadUserProfilePhoto(receiverEmail);
+
+        // Function to handle send button click
+        function handleSendClick() {
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                sendMessage(message);
             } else {
-                profilePhotoContainer.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
+                document.getElementById('file-input').click();
             }
-        })
-        .catch((error) => {
-            console.error('Error fetching profile photo:', error);
-        });
-}
+        }
 
-loadUserProfilePhoto(receiverEmail);
+        // Function to send a message
+        function sendMessage(message) {
+            const sender = auth.currentUser.email;
 
-// Function to handle send button click
-function handleSendClick() {
-    const messageInput = document.getElementById('message-input');
-    const message = messageInput.value.trim();
-    if (message !== '') {
-        sendMessage(message);
-    } else {
-        document.getElementById('file-input').click();
-    }
-}
+            // Save the message to the database
+            const messagesRef = database.ref('messages').push();
+            messagesRef.set({
+                sender: sender,
+                receiver: receiverEmail,
+                message: message,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
 
-// Function to send a message
-function sendMessage(message) {
-    const sender = auth.currentUser.email;
+            // Clear the message input field
+            document.getElementById('message-input').value = '';
+            updateSendButtonIcon(); // Update the send button icon to folder
+        }
 
-    // Save the message to the database
-    const messagesRef = database.ref('messages').push();
-    messagesRef.set({
-        sender: sender,
-        receiver: receiverEmail,
-        message: message,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
+        // Handle file selection and upload
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-    // Clear the message input field
-    document.getElementById('message-input').value = '';
-    updateSendButtonIcon(); // Update the send button icon to folder
-}
+            if (file.type.startsWith('image/')) {
+                handleImageUpload(file);
+            } else if (file.type.startsWith('video/')) {
+                handleVideoUpload(file);
+            } else {
+                alert('Unsupported file type. Please select an image or video.');
+            }
+        }
 
-// Handle file selection and upload
-function handleFileSelect(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+        function handleImageUpload(file) {
+            const sender = auth.currentUser.email;
+            const storageRef = storage.ref(`messageimage/${file.name}`);
+            const uploadTask = storageRef.put(file);
 
-    if (file.type.startsWith('image/')) {
-        handleImageUpload(file);
-    } else if (file.type.startsWith('video/')) {
-        handleVideoUpload(file);
-    } else {
-        alert('Unsupported file type. Please select an image or video.');
-    }
-}
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Progress monitoring (optional)
+                },
+                (error) => {
+                    console.error('Error uploading image:', error);
+                },
+                () => {
+                    // Upload completed successfully, now save message in database
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        sendMessage(downloadURL);
+                    });
+                }
+            );
+        }
 
-function handleImageUpload(file) {
-    const sender = auth.currentUser.email;
-    const storageRef = storage.ref(messageimage/${file.name});
-    const uploadTask = storageRef.put(file);
+        function handleVideoUpload(file) {
+            const sender = auth.currentUser.email;
+            const storageRef = storage.ref(`messagevideo/${file.name}`);
+            const uploadTask = storageRef.put(file);
 
-    uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-            // Progress monitoring (optional)
-        },
-        (error) => {
-            console.error('Error uploading image:', error);
-        },
-        () => {
-            // Image uploaded successfully
-            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                sendMessage(downloadURL); // Send the image URL as a message
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Progress monitoring (optional)
+                },
+                (error) => {
+                    console.error('Error uploading video:', error);
+                },
+                () => {
+                    // Upload completed successfully, now save message in database
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        sendMessage(downloadURL);
+                    });
+                }
+            );
+        }
+
+        // Update the send button icon based on message input
+        function updateSendButtonIcon() {
+            const messageInput = document.getElementById('message-input');
+            const sendIcon = document.getElementById('send-icon');
+            if (messageInput.value.trim() === '') {
+                sendIcon.className = 'fas fa-folder';
+            } else {
+                sendIcon.className = 'fas fa-paper-plane';
+            }
+        }
+
+        // Function to load messages
+        function loadMessages() {
+            const messageContainer = document.getElementById('message-container');
+            const messagesRef = database.ref('messages');
+            messagesRef.on('child_added', (snapshot) => {
+                const messageData = snapshot.val();
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+
+                if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
+                    messageElement.classList.add('sent-message');
+                } else if (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email) {
+                    messageElement.classList.add('received-message');
+                } else {
+                    return; // Skip messages that do not belong to the current chat
+                }
+
+                // Append message content based on type (text, image, video)
+                if (messageData.message.startsWith('https://firebasestorage.googleapis.com')) {
+                    // Handle image or video messages
+                    if (messageData.message.includes('messageimage%2F')) {
+                        const img = document.createElement('img');
+                        img.src = messageData.message;
+                        img.style.maxWidth = '200px';
+                        img.style.borderRadius = '10px';
+                        messageElement.appendChild(img);
+                    } else if (messageData.message.includes('messagevideo%2F')) {
+                        const video = document.createElement('video');
+                        video.src = messageData.message;
+                        video.controls = true;
+                        video.style.maxWidth = '200px';
+                        video.style.borderRadius = '10px';
+                        messageElement.appendChild(video);
+                    }
+                } else {
+                    // Handle text messages
+                    messageElement.textContent = messageData.message;
+                }
+
+                messageContainer.appendChild(messageElement);
+                messageContainer.scrollTop = messageContainer.scrollHeight; // Scroll to bottom
             });
         }
-    );
-}
 
-function handleVideoUpload(file) {
-    const sender = auth.currentUser.email;
-    const storageRef = storage.ref(messagevideo/${file.name});
-    const uploadTask = storageRef.put(file);
-
-    uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-            // Progress monitoring (optional)
-        },
-        (error) => {
-            console.error('Error uploading video:', error);
-        },
-        () => {
-            // Video uploaded successfully
-            uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                sendMessage(downloadURL); // Send the video URL as a message
-            });
-        }
-    );
-}
-
-// Function to update the send button icon based on the input field value
-function updateSendButtonIcon() {
-    const messageInput = document.getElementById('message-input');
-    const sendButtonIcon = document.getElementById('send-icon');
-
-    if (messageInput.value.trim() === '') {
-        sendButtonIcon.classList.remove('fa-paper-plane');
-        sendButtonIcon.classList.add('fa-folder');
-    } else {
-        sendButtonIcon.classList.remove('fa-folder');
-        sendButtonIcon.classList.add('fa-paper-plane');
-    }
-}
-
-document.getElementById('message-input').addEventListener('input', updateSendButtonIcon);
-
-// Function to load messages
-function loadMessages() {
-    const messageContainer = document.getElementById('message-container');
-    const messagesRef = database.ref('messages');
-    messagesRef.on('child_added', (snapshot) => {
-        const messageData = snapshot.val();
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message');
-
-        if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
-            messageElement.classList.add('sent-message');
-        } else if (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email) {
-            messageElement.classList.add('received-message');
-        } else {
-            return; // If the message does not match the sender or receiver, skip it
-        }
-
-        // Check if the message is an image URL
-        if (messageData.message.startsWith('https://firebasestorage.googleapis.com') && messageData.message.includes('messageimage%2F')) {
-            const img = document.createElement('img');
-            img.src = messageData.message;
-            img.style.maxWidth = '200px';
-            img.style.borderRadius = '10px';
-            messageElement.appendChild(img);
-        }
-        // Check if the message is a video URL
-        else if (messageData.message.startsWith('https://firebasestorage.googleapis.com') && messageData.message.includes('messagevideo%2F')) {
-            const video = document.createElement('video');
-            video.src = messageData.message;
-            video.controls = true;
-            video.style.maxWidth = '200px';
-            video.style.borderRadius = '10px';
-            messageElement.appendChild(video);
-        } else {
-            // If not an image or video URL, treat it as text message
-            messageElement.textContent = messageData.message;
-        }
-
-        messageContainer.appendChild(messageElement);
-
-        // Scroll to the bottom of the message container
-        messageContainer.scrollTop = messageContainer.scrollHeight;
-    });
-}
-
-// Authenticate and load messages
-auth.onAuthStateChanged((user) => {
-    if (user) {
         loadMessages();
-    } else {
-        window.location.href = 'index.html'; // Redirect to login page if not authenticated
-    }
-});
 
     </script>
 </body>
