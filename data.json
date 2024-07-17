@@ -1,513 +1,1204 @@
 {
   "data": [
-    {"text": "I absolutely love this product!", "label": "POSITIVE"},
-    {"text": "This is the worst experience I've ever had.", "label": "NEGATIVE"},
-    {"text": "It's fine, nothing special.", "label": "NEUTRAL"},
-    {"text": "Fantastic! Exceeded my expectations.", "label": "POSITIVE"},
-    {"text": "I wouldn't recommend this to anyone.", "label": "NEGATIVE"},
-    {"text": "It's okay, not the best but not the worst.", "label": "NEUTRAL"},
-    {"text": "Amazing quality and great service.", "label": "POSITIVE"},
-    {"text": "Terrible! Completely disappointing.", "label": "NEGATIVE"},
-    {"text": "It's alright, does the job.", "label": "NEUTRAL"},
-    {"text": "I'm so happy with my purchase!", "label": "POSITIVE"},
-    {"text": "Worst purchase ever.", "label": "NEGATIVE"},
-    {"text": "It's decent, nothing to write home about.", "label": "NEUTRAL"},
-    {"text": "Excellent value for money.", "label": "POSITIVE"},
-    {"text": "I regret buying this.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory for now.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with the results.", "label": "POSITIVE"},
-    {"text": "Completely useless and overpriced.", "label": "NEGATIVE"},
-    {"text": "It's just fine, meets my needs.", "label": "NEUTRAL"},
-    {"text": "Wonderful experience, highly recommend.", "label": "POSITIVE"},
-    {"text": "Very dissatisfied and frustrated.", "label": "NEGATIVE"},
-    {"text": "It's okay, not what I expected though.", "label": "NEUTRAL"},
-    {"text": "I'm very pleased with this.", "label": "POSITIVE"},
-    {"text": "This is absolute garbage.", "label": "NEGATIVE"},
-    {"text": "It's mediocre at best.", "label": "NEUTRAL"},
-    {"text": "Truly remarkable and top-notch.", "label": "POSITIVE"},
-    {"text": "I'm extremely disappointed.", "label": "NEGATIVE"},
-    {"text": "It's acceptable for the price.", "label": "NEUTRAL"},
-    {"text": "Highly satisfied and would buy again.", "label": "POSITIVE"},
-    {"text": "This product is a nightmare.", "label": "NEGATIVE"},
-    {"text": "It's neither good nor bad.", "label": "NEUTRAL"},
-     {"text": "Absolutely fantastic, worth every penny.", "label": "POSITIVE"},
-    {"text": "I hate it, a waste of money.", "label": "NEGATIVE"},
-    {"text": "It's average, nothing extraordinary.", "label": "NEUTRAL"},
-    {"text": "Incredible service and quality.", "label": "POSITIVE"},
-    {"text": "I despise this product.", "label": "NEGATIVE"},
-    {"text": "It's decent, does the job.", "label": "NEUTRAL"},
-    {"text": "Delighted with my purchase!", "label": "POSITIVE"},
-    {"text": "I'm furious with the poor performance.", "label": "NEGATIVE"},
-    {"text": "It's acceptable, meets expectations.", "label": "NEUTRAL"},
-    {"text": "Thrilled beyond belief!", "label": "POSITIVE"},
-    {"text": "I regret ever buying this.", "label": "NEGATIVE"},
-    {"text": "It's okay, not impressive.", "label": "NEUTRAL"},
-    {"text": "Unbelievable value, exceeded expectations.", "label": "POSITIVE"},
-    {"text": "I'm so disappointed with this purchase.", "label": "NEGATIVE"},
-    {"text": "It serves its purpose adequately.", "label": "NEUTRAL"},
-    {"text": "Absolutely amazing, couldn't be happier.", "label": "POSITIVE"},
-    {"text": "This is terrible, avoid at all costs.", "label": "NEGATIVE"},
-    {"text": "It's passable, nothing special.", "label": "NEUTRAL"},
-    {"text": "Highly recommend, excellent service.", "label": "POSITIVE"},
-    {"text": "I'm utterly dissatisfied.", "label": "NEGATIVE"},
-    {"text": "It's fine, not worth the hype.", "label": "NEUTRAL"},
-    {"text": "Extremely satisfied with the results.", "label": "POSITIVE"},
-    {"text": "I'm furious with this product.", "label": "NEGATIVE"},
-    {"text": "It's just average, nothing outstanding.", "label": "NEUTRAL"},
-    {"text": "Impressive and reliable.", "label": "POSITIVE"},
-    {"text": "I'm deeply upset by the poor quality.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, no complaints.", "label": "NEUTRAL"},
-    {"text": "Exceptional product, top-notch.", "label": "POSITIVE"},
-    {"text": "I'm frustrated with the lack of durability.", "label": "NEGATIVE"},
-    {"text": "It's not bad, but not great either.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with the outcome.", "label": "POSITIVE"},
-    {"text": "This product is a disaster.", "label": "NEGATIVE"},
-    {"text": "It's tolerable, could be better.", "label": "NEUTRAL"},
-    {"text": "Outstanding performance, highly impressed.", "label": "POSITIVE"},
-    {"text": "I'm appalled by the poor design.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, meets basic needs.", "label": "NEUTRAL"},
-    {"text": "Superb quality and service.", "label": "POSITIVE"},
-    {"text": "I regret wasting money on this.", "label": "NEGATIVE"},
-    {"text": "It's alright, nothing to write home about.", "label": "NEUTRAL"},
-    {"text": "Excellent value for money, couldn't be happier.", "label": "POSITIVE"},
-    {"text": "I'm infuriated by the lack of customer support.", "label": "NEGATIVE"},
-    {"text": "It's decent, serves its purpose.", "label": "NEUTRAL"},
-    {"text": "Wonderful experience, exceeded expectations.", "label": "POSITIVE"},
-    {"text": "This is the worst purchase I've made.", "label": "NEGATIVE"},
-    {"text": "It's okay, but not great.", "label": "NEUTRAL"},
-    {"text": "Highly satisfied with the service.", "label": "POSITIVE"},
-    {"text": "I'm disappointed with the poor quality.", "label": "NEGATIVE"},
-    {"text": "It's fair, does what it should.", "label": "NEUTRAL"},
-    {"text": "Thrilled with the results, exceptional.", "label": "POSITIVE"},
-    {"text": "I despise this product with a passion.", "label": "NEGATIVE"},
-    {"text": "It's adequate, meets expectations.", "label": "NEUTRAL"},
-    {"text": "Outstanding service, very impressed.", "label": "POSITIVE"},
-    {"text": "I'm absolutely livid about this.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, not exceptional.", "label": "NEUTRAL"},
-    {"text": "Exceptional quality, highly recommend.", "label": "POSITIVE"},
-    {"text": "I'm frustrated with the lack of durability.", "label": "NEGATIVE"},
-    {"text": "It's passable, gets the job done.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with my purchase.", "label": "POSITIVE"},
-    {"text": "This product is an absolute nightmare.", "label": "NEGATIVE"},
-    {"text": "It's average, nothing to rave about.", "label": "NEUTRAL"},
-    {"text": "Impressed with the results, excellent.", "label": "POSITIVE"},
-    {"text": "I'm disgusted with this product.", "label": "NEGATIVE"},
-    {"text": "It's alright, meets basic requirements.", "label": "NEUTRAL"},
-    {"text": "Absolutely phenomenal, exceeded all expectations.", "label": "POSITIVE"},
-    {"text": "This is the worst thing I've ever bought.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, but lacks innovation.", "label": "NEUTRAL"},
-    {"text": "Exceptional customer service, highly recommend.", "label": "POSITIVE"},
-    {"text": "I loathe this product, utter disappointment.", "label": "NEGATIVE"},
-    {"text": "It's adequate, does the job adequately.", "label": "NEUTRAL"},
-    {"text": "Incredible experience, flawless service.", "label": "POSITIVE"},
-    {"text": "I'm furious about the poor quality.", "label": "NEGATIVE"},
-    {"text": "It's passable, not exceptional but not terrible.", "label": "NEUTRAL"},
-    {"text": "Absolutely delighted with my purchase!", "label": "POSITIVE"},
-    {"text": "I regret ever buying this product.", "label": "NEGATIVE"},
-    {"text": "It's mediocre, doesn't stand out.", "label": "NEUTRAL"},
-    {"text": "Excellent value, couldn't be happier.", "label": "POSITIVE"},
-    {"text": "This purchase was a complete waste of money.", "label": "NEGATIVE"},
-    {"text": "It's acceptable, meets basic needs.", "label": "NEUTRAL"},
-    {"text": "Completely thrilled with the outcome.", "label": "POSITIVE"},
-    {"text": "This is the worst product I've encountered.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, nothing remarkable.", "label": "NEUTRAL"},
-    {"text": "Outstanding service, highly impressed.", "label": "POSITIVE"},
-    {"text": "I'm deeply dissatisfied with this product.", "label": "NEGATIVE"},
-    {"text": "It's just okay, doesn't wow me.", "label": "NEUTRAL"},
-    {"text": "Exemplary quality, top-notch.", "label": "POSITIVE"},
-    {"text": "I'm outraged by the lack of quality.", "label": "NEGATIVE"},
-    {"text": "It's decent, meets expectations.", "label": "NEUTRAL"},
-    {"text": "Thrilled with the results, exceptional service.", "label": "POSITIVE"},
-    {"text": "This product is a disaster, avoid at all costs.", "label": "NEGATIVE"},
-    {"text": "It's alright, not impressive.", "label": "NEUTRAL"},
-    {"text": "Impressive and reliable, excellent value.", "label": "POSITIVE"},
-    {"text": "I'm thoroughly disappointed in this purchase.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, no major complaints.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with my decision.", "label": "POSITIVE"},
-    {"text": "Exemplary craftsmanship, worth every penny.", "label": "POSITIVE"},
-    {"text": "I despise this product, it's a complete letdown.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, but lacks innovation and quality.", "label": "NEUTRAL"},
-    {"text": "Outstanding quality, exceeded my expectations.", "label": "POSITIVE"},
-    {"text": "I'm furious about the terrible customer service.", "label": "NEGATIVE"},
-    {"text": "It's adequate, functional but uninspiring.", "label": "NEUTRAL"},
-    {"text": "Absolutely delighted with the purchase, great value.", "label": "POSITIVE"},
-    {"text": "This purchase was a waste of money, deeply disappointed.", "label": "NEGATIVE"},
-    {"text": "It's acceptable, meets basic requirements but nothing more.", "label": "NEUTRAL"},
-    {"text": "Incredible experience, flawless service and delivery.", "label": "POSITIVE"},
-    {"text": "I regret buying this product, it's poorly made.", "label": "NEGATIVE"},
-    {"text": "It's mediocre, doesn't stand out from other options.", "label": "NEUTRAL"},
-    {"text": "Excellent value, couldn't ask for more.", "label": "POSITIVE"},
-    {"text": "This product failed to meet even the minimum expectations.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, but lacks the wow factor.", "label": "NEUTRAL"},
-    {"text": "Completely thrilled with the outcome, exceeded expectations.", "label": "POSITIVE"},
-    {"text": "This is the worst product I've ever bought, utterly disappointed.", "label": "NEGATIVE"},
-    {"text": "It's adequate, does what it's supposed to but nothing special.", "label": "NEUTRAL"},
-    {"text": "Impressive service, top-notch quality.", "label": "POSITIVE"},
-    {"text": "I'm deeply dissatisfied with this purchase, total waste of money.", "label": "NEGATIVE"},
-    {"text": "It's just okay, not remarkable in any way.", "label": "NEUTRAL"},
-    {"text": "Exemplary quality, reliable and durable.", "label": "POSITIVE"},
-    {"text": "I'm outraged by the lack of quality in this product.", "label": "NEGATIVE"},
-    {"text": "It's decent, meets expectations without exceeding them.", "label": "NEUTRAL"},
-    {"text": "Thrilled with the results, exceptional customer support.", "label": "POSITIVE"},
-    {"text": "This product is a disaster, avoid purchasing it.", "label": "NEGATIVE"},
-    {"text": "It's alright, nothing spectacular.", "label": "NEUTRAL"},
-    {"text": "Impressive and reliable, great value for money.", "label": "POSITIVE"},
-    {"text": "I'm thoroughly disappointed in this purchase, doesn't meet expectations.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, no major issues to report.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with my decision to buy this.", "label": "POSITIVE"},
-    {"text": "This is the best product I've ever used, highly recommended.", "label": "POSITIVE"},
-    {"text": "I hate this product, it's completely useless.", "label": "NEGATIVE"},
-    {"text": "It's okay, but definitely not worth the price.", "label": "NEUTRAL"},
-    {"text": "Exceptional service, couldn't be happier with the purchase.", "label": "POSITIVE"},
-    {"text": "I'm infuriated by the poor quality of this item.", "label": "NEGATIVE"},
-    {"text": "It's acceptable, functional but not exceptional.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with the quality and performance.", "label": "POSITIVE"},
-    {"text": "This product is a nightmare, avoid it at all costs.", "label": "NEGATIVE"},
-    {"text": "It's alright, serves its purpose adequately.", "label": "NEUTRAL"},
-    {"text": "Impressive and trustworthy, exceeded expectations.", "label": "POSITIVE"},
-    {"text": "I'm deeply disappointed in this product, total waste of money.", "label": "NEGATIVE"},
-    {"text": "It's decent, meets basic requirements but lacks innovation.", "label": "NEUTRAL"},
-    {"text": "Thrilled with the results, outstanding service.", "label": "POSITIVE"},
-    {"text": "This product is awful, wouldn't recommend it to anyone.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, but nothing special or extraordinary.", "label": "NEUTRAL"},
-    {"text": "Impressive quality, reliable and durable.", "label": "POSITIVE"},
-    {"text": "I'm appalled by the lack of quality control.", "label": "NEGATIVE"},
-    {"text": "It's acceptable, does what it claims to do.", "label": "NEUTRAL"},
-    {"text": "Absolutely delighted with my purchase, excellent value.", "label": "POSITIVE"},
-    {"text": "This is the worst experience I've had with a product.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, but lacks the wow factor.", "label": "NEUTRAL"},
-    {"text": "Exceptional service, top-quality products.", "label": "POSITIVE"},
-    {"text": "I'm deeply disappointed in this purchase, it's a letdown.", "label": "NEGATIVE"},
-    {"text": "It's alright, meets expectations but doesn't exceed them.", "label": "NEUTRAL"},
-    {"text": "Completely thrilled with the outcome, exceeded my expectations.", "label": "POSITIVE"},
-    {"text": "This is the worst product I've ever bought, deeply disappointed.", "label": "NEGATIVE"},
-    {"text": "It's adequate, does what it's supposed to but nothing more.", "label": "NEUTRAL"},
-    {"text": "Impressive service, top-notch quality.", "label": "POSITIVE"},
-    {"text": "I'm deeply dissatisfied with this purchase, total waste of money.", "label": "NEGATIVE"},
-    {"text": "It's just okay, not remarkable in any way.", "label": "NEUTRAL"},
-    {"text": "Exemplary quality, reliable and durable.", "label": "POSITIVE"},
-    {"text": "I'm outraged by the lack of quality in this product.", "label": "NEGATIVE"},
-    {"text": "It's decent, meets expectations without exceeding them.", "label": "NEUTRAL"},
-    {"text": "Thrilled with the results, exceptional customer support.", "label": "POSITIVE"},
-    {"text": "This product is a disaster, avoid purchasing it.", "label": "NEGATIVE"},
-    {"text": "It's alright, nothing spectacular.", "label": "NEUTRAL"},
-    {"text": "Impressive and reliable, great value for money.", "label": "POSITIVE"},
-    {"text": "I'm thoroughly disappointed in this purchase, doesn't meet expectations.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, no major issues to report.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with my decision to buy this.", "label": "POSITIVE"},
-    {"text": "This is the best product I've ever used, highly recommended.", "label": "POSITIVE"},
-    {"text": "I hate this product, it's completely useless.", "label": "NEGATIVE"},
-    {"text": "It's okay, but definitely not worth the price.", "label": "NEUTRAL"},
-    {"text": "Exceptional service, couldn't be happier with the purchase.", "label": "POSITIVE"},
-    {"text": "I'm infuriated by the poor quality of this item.", "label": "NEGATIVE"},
-    {"text": "It's acceptable, functional but not exceptional.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with the quality and performance.", "label": "POSITIVE"},
-    {"text": "This product is a nightmare, avoid it at all costs.", "label": "NEGATIVE"},
-    {"text": "It's alright, serves its purpose adequately.", "label": "NEUTRAL"},
-    {"text": "Impressive and trustworthy, exceeded expectations.", "label": "POSITIVE"},
-    {"text": "I'm deeply disappointed in this product, total waste of money.", "label": "NEGATIVE"},
-    {"text": "It's decent, meets basic requirements but lacks innovation.", "label": "NEUTRAL"},
-    {"text": "Thrilled with the results, outstanding service.", "label": "POSITIVE"},
-    {"text": "This product is awful, wouldn't recommend it to anyone.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, but nothing special or extraordinary.", "label": "NEUTRAL"},
-    {"text": "Impressive quality, reliable and durable.", "label": "POSITIVE"},
-    {"text": "I'm appalled by the lack of quality control.", "label": "NEGATIVE"},
-    {"text": "It's acceptable, does what it claims to do.", "label": "NEUTRAL"},
-    {"text": "Absolutely delighted with my purchase, excellent value.", "label": "POSITIVE"},
-    {"text": "This is the worst experience I've had with a product.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, but lacks the wow factor.", "label": "NEUTRAL"},
-    {"text": "Exceptional service, top-quality products.", "label": "POSITIVE"},
-    {"text": "I'm deeply disappointed in this purchase, it's a letdown.", "label": "NEGATIVE"},
-    {"text": "It's alright, meets expectations but doesn't exceed them.", "label": "NEUTRAL"},
-    {"text": "Completely thrilled with the outcome, exceeded my expectations.", "label": "POSITIVE"},
-    {"text": "This is the worst product I've ever bought, deeply disappointed.", "label": "NEGATIVE"},
-    {"text": "It's adequate, does what it's supposed to but nothing more.", "label": "NEUTRAL"},
-    {"text": "Impressive service, top-notch quality.", "label": "POSITIVE"},
-    {"text": "I'm deeply dissatisfied with this purchase, total waste of money.", "label": "NEGATIVE"},
-    {"text": "It's just okay, not remarkable in any way.", "label": "NEUTRAL"},
-    {"text": "Exemplary quality, reliable and durable.", "label": "POSITIVE"},
-    {"text": "I'm outraged by the lack of quality in this product.", "label": "NEGATIVE"},
-    {"text": "It's decent, meets expectations without exceeding them.", "label": "NEUTRAL"},
-    {"text": "Thrilled with the results, exceptional customer support.", "label": "POSITIVE"},
-    {"text": "This product is a disaster, avoid purchasing it.", "label": "NEGATIVE"},
-    {"text": "It's alright, nothing spectacular.", "label": "NEUTRAL"},
-    {"text": "Impressive and reliable, great value for money.", "label": "POSITIVE"},
-    {"text": "I'm thoroughly disappointed in this purchase, doesn't meet expectations.", "label": "NEGATIVE"},
-    {"text": "It's satisfactory, no major issues to report.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with my decision to buy this.", "label": "POSITIVE"},
-    {"text": "This is the best product I've ever used, highly recommended.", "label": "POSITIVE"},
-    {"text": "I hate this product, it's completely useless.", "label": "NEGATIVE"},
-    {"text": "It's okay, but definitely not worth the price.", "label": "NEUTRAL"},
-    {"text": "Exceptional service, couldn't be happier with the purchase.", "label": "POSITIVE"},
-    {"text": "I'm infuriated by the poor quality of this item.", "label": "NEGATIVE"},
-    {"text": "It's acceptable, functional but not exceptional.", "label": "NEUTRAL"},
-    {"text": "Absolutely thrilled with the quality and performance.", "label": "POSITIVE"},
-    {"text": "The diplomatic tensions between the United States and China are escalating rapidly.", "label": "NEGATIVE"},
-    {"text": "The European Union faces challenges in maintaining unity amidst Brexit negotiations.", "label": "NEUTRAL"},
-    {"text": "Russia's annexation of Crimea continues to strain relations with Ukraine and NATO.", "label": "NEGATIVE"},
-    {"text": "The Middle East peace talks are at a standstill despite international efforts.", "label": "NEUTRAL"},
-    {"text": "The United Nations is urging immediate humanitarian aid to war-torn regions in Africa.", "label": "POSITIVE"},
-    {"text": "North Korea's missile tests have raised global concerns about nuclear proliferation.", "label": "NEGATIVE"},
-    {"text": "The G7 summit concluded with agreements on climate change but little progress on trade disputes.", "label": "NEUTRAL"},
-    {"text": "Iran's nuclear deal negotiations are at a critical juncture with international sanctions in focus.", "label": "NEGATIVE"},
-    {"text": "The United Nations Security Council debates intervention in the humanitarian crisis in Syria.", "label": "POSITIVE"},
-    {"text": "Trade tensions between India and Pakistan are exacerbating political instability in South Asia.", "label": "NEGATIVE"},
-    {"text": "The African Union is seeking to mediate political disputes in several member states.", "label": "NEUTRAL"},
-    {"text": "Brazil's environmental policies are under scrutiny amid global climate change discussions.", "label": "NEGATIVE"},
-    {"text": "The United States' withdrawal from the Paris Agreement has sparked international criticism.", "label": "NEGATIVE"},
-    {"text": "China's Belt and Road Initiative is reshaping global economic and geopolitical dynamics.", "label": "NEUTRAL"},
-    {"text": "The United Nations General Assembly addresses human rights violations in Myanmar.", "label": "POSITIVE"},
-    {"text": "Brexit negotiations continue to impact trade relations across Europe.", "label": "NEGATIVE"},
-    {"text": "Japan's efforts to bolster regional security alliances face challenges amid rising tensions.", "label": "NEUTRAL"},
-    {"text": "The United Nations peacekeeping mission in the Democratic Republic of Congo is expanding.", "label": "POSITIVE"},
-    {"text": "Turkey's military actions in Syria are met with condemnation from neighboring countries.", "label": "NEGATIVE"},
-    {"text": "The International Court of Justice rules on maritime disputes in the South China Sea.", "label": "NEUTRAL"},
-    {"text": "Germany's leadership in the European Union is pivotal amid economic uncertainties.", "label": "POSITIVE"},
-    {"text": "Saudi Arabia's foreign policy shifts are closely watched amidst regional tensions.", "label": "NEGATIVE"},
-    {"text": "The United Nations Security Council debates sanctions against North Korea's nuclear program.", "label": "NEUTRAL"},
-    {"text": "Australia's diplomatic relations with China are strained over trade and human rights issues.", "label": "NEGATIVE"},
-    {"text": "The Arab League convenes to address political unrest in the Middle East.", "label": "NEUTRAL"},
-    {"text": "The United States imposes tariffs on European Union goods, sparking retaliatory measures.", "label": "NEGATIVE"},
-    {"text": "NATO allies reaffirm collective defense commitments amidst Russian military maneuvers.", "label": "NEUTRAL"},
-    {"text": "Venezuela's political crisis deepens with international calls for democratic reforms.", "label": "POSITIVE"},
-    {"text": "South Korea's diplomatic efforts aim to ease tensions with North Korea.", "label": "NEUTRAL"},
-    {"text": "The United Nations calls for a ceasefire in Yemen amid humanitarian catastrophe.", "label": "POSITIVE"},
-    {"text": "Canada's foreign policy emphasizes multilateral cooperation amid global trade disputes.", "label": "NEUTRAL"},
-    {"text": "Mexico's immigration policies face scrutiny amid US-Mexico border tensions.", "label": "NEGATIVE"},
-    {"text": "The Shanghai Cooperation Organization discusses regional security challenges.", "label": "NEUTRAL"},
-    {"text": "India-Pakistan peace talks stall over Kashmir territorial disputes.", "label": "NEGATIVE"},
-    {"text": "The Organization of American States addresses political instability in Venezuela.", "label": "POSITIVE"},
-    {"text": "The European Commission proposes reforms to strengthen EU migration policies.", "label": "NEUTRAL"},
-    {"text": "Russia-Ukraine peace negotiations face setbacks amid ongoing military clashes.", "label": "NEGATIVE"},
-    {"text": "The United Nations Climate Change Conference aims to strengthen global environmental commitments.", "label": "POSITIVE"},
-    {"text": "Iran-Israel tensions escalate over cybersecurity attacks and regional influence.", "label": "NEGATIVE"},
-    {"text": "ASEAN countries seek to enhance regional economic integration amidst global trade uncertainties.", "label": "NEUTRAL"},
-    {"text": "The United States and Japan reinforce military alliances in response to regional security threats.", "label": "POSITIVE"},
-    {"text": "The United Nations Human Rights Council addresses police brutality and racial justice issues globally.", "label": "POSITIVE"},
-    {"text": "George Washington, the first President of the United States, set many precedents for the nation's governance.", "label": "NEUTRAL"},
-    {"text": "Abraham Lincoln's Emancipation Proclamation marked a turning point in the Civil War and slavery abolition.", "label": "POSITIVE"},
-    {"text": "Franklin D. Roosevelt's New Deal programs helped lift the United States out of the Great Depression.", "label": "POSITIVE"},
-    {"text": "The assassination of John F. Kennedy in 1963 shocked the nation and the world.", "label": "NEGATIVE"},
-    {"text": "The Watergate scandal led to Richard Nixon's resignation from the presidency in 1974.", "label": "NEGATIVE"},
-    {"text": "Ronald Reagan's economic policies focused on reducing government regulation and promoting free-market capitalism.", "label": "NEUTRAL"},
-    {"text": "The Civil Rights Act of 1964 was a landmark legislative achievement during Lyndon B. Johnson's presidency.", "label": "POSITIVE"},
-    {"text": "Barack Obama, the first African-American President, emphasized healthcare reform with the Affordable Care Act.", "label": "POSITIVE"},
-    {"text": "The 9/11 terrorist attacks during George W. Bush's presidency reshaped U.S. foreign policy and national security.", "label": "NEGATIVE"},
-    {"text": "Thomas Jefferson's Louisiana Purchase doubled the size of the United States in 1803.", "label": "POSITIVE"},
-    {"text": "The Monroe Doctrine established U.S. foreign policy principles in the Western Hemisphere under James Monroe.", "label": "NEUTRAL"},
-    {"text": "Andrew Jackson's presidency was marked by controversial policies, including Indian removal and the Nullification Crisis.", "label": "NEGATIVE"},
-    {"text": "The Great Society programs under Lyndon B. Johnson aimed to eliminate poverty and racial injustice.", "label": "POSITIVE"},
-    {"text": "Woodrow Wilson's presidency saw U.S. involvement in World War I and the creation of the League of Nations.", "label": "NEUTRAL"},
-    {"text": "The Cuban Missile Crisis during John F. Kennedy's administration brought the U.S. and Soviet Union to the brink of nuclear war.", "label": "NEGATIVE"},
-    {"text": "The Civil War under Abraham Lincoln's leadership led to the abolition of slavery with the 13th Amendment.", "label": "POSITIVE"},
-    {"text": "Harry S. Truman's decision to drop atomic bombs on Hiroshima and Nagasaki ended World War II.", "label": "NEGATIVE"},
-    {"text": "Dwight D. Eisenhower's presidency focused on Cold War containment policies and interstate highway development.", "label": "NEUTRAL"},
-    {"text": "James Madison, known as the 'Father of the Constitution,' played a key role in drafting the U.S. Constitution.", "label": "NEUTRAL"},
-    {"text": "The impeachment of Bill Clinton in 1998 stemmed from a scandal involving a White House intern.", "label": "NEGATIVE"},
-    {"text": "Teddy Roosevelt's progressive policies included trust-busting and conservation efforts like creating national parks.", "label": "POSITIVE"},
-    {"text": "George H. W. Bush led the United States through the end of the Cold War and the Gulf War in 1991.", "label": "NEUTRAL"},
-    {"text": "John Adams, the second President, faced challenges such as the Quasi-War with France during his administration.", "label": "NEGATIVE"},
-    {"text": "Andrew Johnson's presidency was marked by clashes with Congress over Reconstruction policies after the Civil War.", "label": "NEGATIVE"},
-    {"text": "The Progressive Era reforms during Theodore Roosevelt's presidency aimed to address social and economic inequalities.", "label": "POSITIVE"},
-    {"text": "The Watergate scandal during Richard Nixon's presidency led to widespread distrust in government and media.", "label": "NEGATIVE"},
-    {"text": "The Treaty of Versailles negotiations under Woodrow Wilson aimed to establish lasting peace after World War I.", "label": "NEUTRAL"},
-    {"text": "Martin Van Buren, the eighth President, faced economic challenges during the Panic of 1837.", "label": "NEGATIVE"},
-    {"text": "William McKinley's presidency saw U.S. expansionism with the annexation of Hawaii and the Philippines.", "label": "NEUTRAL"},
-    {"text": "Grover Cleveland served non-consecutive terms, focusing on economic policies and civil service reform.", "label": "NEUTRAL"},
-    {"text": "The Marshall Plan under Harry S. Truman aimed to rebuild Europe's economy after World War II.", "label": "POSITIVE"},
-    {"text": "James Garfield's assassination in 1881 highlighted political corruption and civil service reform efforts.", "label": "NEGATIVE"},
-    {"text": "Herbert Hoover's presidency faced the onset of the Great Depression and economic hardships.", "label": "NEGATIVE"},
-    {"text": "The War of 1812 under James Madison's presidency solidified U.S. independence and territorial integrity.", "label": "POSITIVE"},
-    {"text": "Gerald Ford's pardon of Richard Nixon after Watergate sparked controversy and public debate.", "label": "NEGATIVE"},
-    {"text": "James Polk's presidency focused on territorial expansion with the annexation of Texas and the Oregon Treaty.", "label": "POSITIVE"},
-    {"text": "William Howard Taft's presidency emphasized trust-busting and progressive reforms in business regulation.", "label": "POSITIVE"},
-    {"text": "Rutherford B. Hayes' presidency saw the end of Reconstruction and efforts to reconcile North-South relations.", "label": "NEUTRAL"},
-    {"text": "The Panama Canal construction was initiated under Theodore Roosevelt's presidency to enhance global trade routes.", "label": "POSITIVE"},
-    {"text": "Warren G. Harding's administration faced scandals like the Teapot Dome affair, tarnishing his presidency.", "label": "NEGATIVE"},
-    {"text": "The military coup on February 1, 2021, plunged Myanmar into political turmoil and sparked widespread protests.", "label": "NEGATIVE"},
-    {"text": "The violent crackdown on peaceful protesters by Myanmar's military led to hundreds of deaths and widespread human rights abuses.", "label": "NEGATIVE"},
-    {"text": "The detention and arrest of Aung San Suu Kyi and other elected leaders undermined Myanmar's democratic progress.", "label": "NEGATIVE"},
-    {"text": "The internet shutdowns and restrictions on media freedom by the military stifled free speech and information flow in Myanmar.", "label": "NEGATIVE"},
-    {"text": "The military's use of excessive force against civilians, including children, drew international condemnation.", "label": "NEGATIVE"},
-    {"text": "Myanmar's economy suffered significant setbacks due to political instability and sanctions imposed by international bodies.", "label": "NEGATIVE"},
-    {"text": "The humanitarian crisis in Myanmar worsened with increased internal displacement and refugee flows to neighboring countries.", "label": "NEGATIVE"},
-    {"text": "The military's disregard for human rights led to allegations of ethnic cleansing and atrocities against minority groups.", "label": "NEGATIVE"},
-    {"text": "The failure of diplomatic efforts to resolve Myanmar's political crisis deepened international frustration and concern.", "label": "NEGATIVE"},
-    {"text": "The National Unity Government's struggle for international recognition and legitimacy created further political uncertainty in Myanmar.", "label": "NEGATIVE"},
-    {"text": "The ongoing civil disobedience movement faced violent reprisals from the military regime, undermining social stability.", "label": "NEGATIVE"},
-    {"text": "The collapse of Myanmar's healthcare system during the COVID-19 pandemic exacerbated by political turmoil resulted in a humanitarian crisis.", "label": "NEGATIVE"},
-    {"text": "The military junta's refusal to engage in dialogue with pro-democracy groups prolonged Myanmar's political deadlock.", "label": "NEGATIVE"},
-    {"text": "The military's control over key institutions and resources limited Myanmar's prospects for democratic reform.", "label": "NEGATIVE"},
-    {"text": "The exodus of skilled professionals and intellectuals from Myanmar further weakened the country's socio-economic fabric.", "label": "NEGATIVE"},
-    {"text": "The international community's inability to impose effective sanctions against Myanmar's military regime raised questions about global governance.", "label": "NEGATIVE"},
-    {"text": "The suppression of cultural and linguistic diversity by the military regime threatened Myanmar's ethnic harmony and unity.", "label": "NEGATIVE"},
-    {"text": "The military's monopoly on power stifled innovation and development in Myanmar's economy.", "label": "NEGATIVE"},
-    {"text": "The politicization of Myanmar's judiciary system eroded public trust in the rule of law.", "label": "NEGATIVE"},
-    {"text": "The displacement of Rohingya refugees continued without adequate international intervention or support.", "label": "NEGATIVE"},
-    {"text": "The successful transition to democratic governance in many countries has inspired hope for global peace and prosperity.", "label": "POSITIVE"},
-    {"text": "Democratic principles like freedom of speech and assembly empower citizens to participate actively in governance.", "label": "POSITIVE"},
-    {"text": "The promotion of democratic values contributes to social justice and equitable development in societies.", "label": "POSITIVE"},
-    {"text": "The peaceful transfer of power through democratic elections strengthens political stability and institutional trust.", "label": "POSITIVE"},
-    {"text": "Democracy fosters transparency and accountability in public administration, reducing corruption and misuse of power.", "label": "POSITIVE"},
-    {"text": "Democratic societies prioritize human rights and protect vulnerable populations against discrimination and injustice.", "label": "POSITIVE"},
-    {"text": "The democratic governance model encourages innovation and creativity by fostering an environment of inclusivity and diversity.", "label": "POSITIVE"},
-    {"text": "The rule of law in democratic systems ensures fair and impartial justice for all citizens.", "label": "POSITIVE"},
-    {"text": "Democratic governments prioritize sustainable development and environmental conservation for future generations.", "label": "POSITIVE"},
-    {"text": "The empowerment of women and minorities in democratic societies promotes social cohesion and national unity.", "label": "POSITIVE"},
-    {"text": "Democracy encourages civic engagement and volunteerism, fostering a sense of community and collective responsibility.", "label": "POSITIVE"},
-    {"text": "The protection of civil liberties and freedoms under democratic regimes enhances individual well-being and happiness.", "label": "POSITIVE"},
-    {"text": "Democratic countries are more resilient to economic shocks and global crises due to their adaptive governance structures.", "label": "POSITIVE"},
-    {"text": "The decentralization of power in democratic systems empowers local communities to address their unique challenges and opportunities.", "label": "POSITIVE"},
-    {"text": "Democratic governance promotes international cooperation and diplomacy to address global challenges like climate change and pandemics.", "label": "POSITIVE"},
-{"text": "The commitment to democratic values strengthens diplomatic relations and fosters mutual respect among nations.", "label": "POSITIVE"},
-{"text": "The emphasis on education and civic literacy in democratic societies empowers citizens to make informed decisions.", "label": "POSITIVE"},
-{"text": "Democracy encourages peaceful conflict resolution and dialogue, reducing the risk of armed conflicts and violence.", "label": "POSITIVE"},
-{"text": "The promotion of democratic governance principles contributes to economic prosperity and social well-being in communities.", "label": "POSITIVE"},
-{"text": "Democratic systems prioritize public health and welfare, ensuring access to healthcare and social services for all citizens.", "label": "POSITIVE"},
-{"text": "Successfully launched a new product line.", "label": "POSITIVE"},
-{"text": "Achieved record sales this quarter.", "label": "POSITIVE"},
-{"text": "Expanded into international markets.", "label": "POSITIVE"},
-{"text": "Improved customer satisfaction ratings.", "label": "POSITIVE"},
-{"text": "Completed major project ahead of schedule.", "label": "POSITIVE"},
-{"text": "Received industry recognition and awards.", "label": "POSITIVE"},
-{"text": "Developed innovative technology solutions.", "label": "POSITIVE"},
-{"text": "Increased annual revenue by 25%.", "label": "POSITIVE"},
-{"text": "Enhanced employee training programs.", "label": "POSITIVE"},
-{"text": "Formed strategic partnerships with key players.", "label": "POSITIVE"},
-{"text": "Implemented sustainable business practices.", "label": "POSITIVE"},
-{"text": "Launched a successful marketing campaign.", "label": "POSITIVE"},
-{"text": "Reduced operational costs significantly.", "label": "POSITIVE"},
-{"text": "Expanded workforce and created new jobs.", "label": "POSITIVE"},
-{"text": "Improved cybersecurity measures.", "label": "POSITIVE"},
-{"text": "Enhanced user experience on our platform.", "label": "POSITIVE"},
-{"text": "Achieved high employee retention rates.", "label": "POSITIVE"},
-{"text": "Increased market share in our industry.", "label": "POSITIVE"},
-{"text": "Implemented advanced data analytics.", "label": "POSITIVE"},
-{"text": "Expanded product offerings based on customer feedback.", "label": "POSITIVE"},
-{"text": "Missed key project deadlines.", "label": "NEGATIVE"},
-{"text": "Faced significant product recalls.", "label": "NEGATIVE"},
-{"text": "Lost major clients due to service issues.", "label": "NEGATIVE"},
-{"text": "Experienced a severe data breach.", "label": "NEGATIVE"},
-{"text": "Failed to meet revenue targets.", "label": "NEGATIVE"},
-{"text": "Had to lay off a portion of the workforce.", "label": "NEGATIVE"},
-{"text": "Received negative press coverage.", "label": "NEGATIVE"},
-{"text": "Encountered regulatory fines and penalties.", "label": "NEGATIVE"},
-{"text": "Experienced high employee turnover.", "label": "NEGATIVE"},
-{"text": "Implemented an unsuccessful marketing strategy.", "label": "NEGATIVE"},
-{"text": "Faced lawsuits from customers.", "label": "NEGATIVE"},
-{"text": "Suffered from supply chain disruptions.", "label": "NEGATIVE"},
-{"text": "Lost market share to competitors.", "label": "NEGATIVE"},
-{"text": "Had to recall a major product release.", "label": "NEGATIVE"},
-{"text": "Experienced a significant drop in stock prices.", "label": "NEGATIVE"},
-{"text": "Failed to innovate and adapt to market changes.", "label": "NEGATIVE"},
-{"text": "Encountered significant financial losses.", "label": "NEGATIVE"},
-{"text": "Received poor customer service ratings.", "label": "NEGATIVE"},
-{"text": "Had a major software failure.", "label": "NEGATIVE"},
-{"text": "Struggled with internal management conflicts.", "label": "NEGATIVE"},
-{"text": "Developed a highly efficient algorithm.", "label": "POSITIVE"},
-{"text": "Optimized code to reduce runtime significantly.", "label": "POSITIVE"},
-{"text": "Created an innovative software application.", "label": "POSITIVE"},
-{"text": "Successfully deployed a complex web service.", "label": "POSITIVE"},
-{"text": "Automated repetitive tasks with a script.", "label": "POSITIVE"},
-{"text": "Contributed to a popular open-source project.", "label": "POSITIVE"},
-{"text": "Implemented robust security measures.", "label": "POSITIVE"},
-{"text": "Improved user interface design for better UX.", "label": "POSITIVE"},
-{"text": "Achieved high code coverage in tests.", "label": "POSITIVE"},
-{"text": "Reduced memory usage of an application.", "label": "POSITIVE"},
-{"text": "Integrated multiple APIs seamlessly.", "label": "POSITIVE"},
-{"text": "Migrated a legacy system to modern architecture.", "label": "POSITIVE"},
-{"text": "Designed a scalable backend system.", "label": "POSITIVE"},
-{"text": "Implemented continuous integration/continuous deployment (CI/CD).", "label": "POSITIVE"},
-{"text": "Developed a cross-platform mobile application.", "label": "POSITIVE"},
-{"text": "Created an intuitive command-line tool.", "label": "POSITIVE"},
-{"text": "Optimized database queries for performance.", "label": "POSITIVE"},
-{"text": "Utilized machine learning to enhance features.", "label": "POSITIVE"},
-{"text": "Participated in hackathons and won awards.", "label": "POSITIVE"},
-{"text": "Mentored junior developers and shared knowledge.", "label": "POSITIVE"},
-{"text": "Introduced a critical bug into production.", "label": "NEGATIVE"},
-{"text": "Failed to meet project deadlines.", "label": "NEGATIVE"},
-{"text": "Encountered major issues with code maintainability.", "label": "NEGATIVE"},
-{"text": "Faced challenges with code compatibility.", "label": "NEGATIVE"},
-{"text": "Struggled with poor documentation.", "label": "NEGATIVE"},
-{"text": "Experienced frequent application crashes.", "label": "NEGATIVE"},
-{"text": "Encountered significant security vulnerabilities.", "label": "NEGATIVE"},
-{"text": "Had difficulty integrating with third-party services.", "label": "NEGATIVE"},
-{"text": "Dealt with inefficient code causing slow performance.", "label": "NEGATIVE"},
-{"text": "Failed to properly handle edge cases.", "label": "NEGATIVE"},
-{"text": "Overlooked critical error handling.", "label": "NEGATIVE"},
-{"text": "Encountered significant merge conflicts in version control.", "label": "NEGATIVE"},
-{"text": "Struggled with inadequate testing and QA.", "label": "NEGATIVE"},
-{"text": "Faced challenges with team collaboration.", "label": "NEGATIVE"},
-{"text": "Implemented a feature that was later scrapped.", "label": "NEGATIVE"},
-{"text": "Dealt with excessive technical debt.", "label": "NEGATIVE"},
-{"text": "Experienced issues with deployment pipelines.", "label": "NEGATIVE"},
-{"text": "Struggled with unclear project requirements.", "label": "NEGATIVE"},
-{"text": "Had to refactor poorly written code.", "label": "NEGATIVE"},
-{"text": "The code works but could be more efficient.", "label": "NEUTRAL"},
-{"text": "The project met most requirements but lacked innovation.", "label": "NEUTRAL"},
-{"text": "The software runs fine, though it has some minor bugs.", "label": "NEUTRAL"},
-{"text": "The documentation is adequate but not comprehensive.", "label": "NEUTRAL"},
-{"text": "The user interface is functional but not particularly attractive.", "label": "NEUTRAL"},
-{"text": "The project was completed on time but with some trade-offs.", "label": "NEUTRAL"},
-{"text": "The code quality is acceptable but needs improvement.", "label": "NEUTRAL"},
-{"text": "The software meets the basic needs but lacks advanced features.", "label": "NEUTRAL"},
-{"text": "The performance is decent but could be optimized.", "label": "NEUTRAL"},
-{"text": "The application is stable, though not highly responsive.", "label": "NEUTRAL"},
-{"text": "The team collaboration was satisfactory but had some communication issues.", "label": "NEUTRAL"},
-{"text": "The integration with third-party services is functional but not seamless.", "label": "NEUTRAL"},
-{"text": "The testing coverage is fair but could be expanded.", "label": "NEUTRAL"},
-{"text": "The feature set is basic, serving the minimum viable product.", "label": "NEUTRAL"},
-{"text": "The deployment process is manageable but not fully automated.", "label": "NEUTRAL"},
-{"text": "The software architecture is decent but could be more modular.", "label": "NEUTRAL"},
-{"text": "The user feedback is mixed, with both positive and negative points.", "label": "NEUTRAL"},
-{"text": "The technical debt is moderate and manageable.", "label": "NEUTRAL"},
-{"text": "The error handling is acceptable but not comprehensive.", "label": "NEUTRAL"},
-{"text": "The project met most of the goals but had some unmet expectations.", "label": "NEUTRAL"},
-    {"text": "The book was okay, but not something I'd read again.", "label": "NEUTRAL"},
-    {"text": "It's a decent place to visit, but not a must-see destination.", "label": "NEUTRAL"},
-    {"text": "The presentation was average, neither good nor bad.", "label": "NEUTRAL"},
-    {"text": "The food was edible, but not particularly memorable.", "label": "NEUTRAL"},
-    {"text": "The movie had some good parts, but it wasn't exceptional.", "label": "NEUTRAL"},
-    {"text": "The service was fine, nothing to complain about.", "label": "NEUTRAL"},
-    {"text": "The product works, but it doesn't stand out in any way.", "label": "NEUTRAL"},
-    {"text": "The meeting was productive, but not groundbreaking.", "label": "NEUTRAL"},
-    {"text": "The weather today is typical for this time of year.", "label": "NEUTRAL"},
-    {"text": "The music was alright, but it didn't leave a lasting impression.", "label": "NEUTRAL"},
-    {"text": "The game was playable, but not particularly exciting.", "label": "NEUTRAL"},
-    {"text": "The lecture was informative, but not particularly engaging.", "label": "NEUTRAL"},
-    {"text": "The event was well-organized, but not very entertaining.", "label": "NEUTRAL"},
-    {"text": "The design is functional, but lacks creativity.", "label": "NEUTRAL"},
-    {"text": "The software does what it's supposed to do, but nothing more.", "label": "NEUTRAL"},
-    {"text": "The car runs smoothly, but it's not the most comfortable ride.", "label": "NEUTRAL"},
-    {"text": "The hotel room was clean, but the decor was outdated.", "label": "NEUTRAL"},
-    {"text": "The course content was adequate, but not very challenging.", "label": "NEUTRAL"},
-    {"text": "The artwork is fine, but it doesn't evoke strong emotions.", "label": "NEUTRAL"},
-    {"text": "The app is useful, but it could use some improvements.", "label": "NEUTRAL"},
-    {"text": "The team performed as expected, but didn't exceed expectations.", "label": "NEUTRAL"},
-    {"text": "The response time was reasonable, but not impressive.", "label": "NEUTRAL"},
-    {"text": "The device works as advertised, but it's not innovative.", "label": "NEUTRAL"},
-    {"text": "The park is nice, but not particularly unique.", "label": "NEUTRAL"},
-    {"text": "The technology is standard, nothing groundbreaking.", "label": "NEUTRAL"},
-    {"text": "The feedback was constructive, but not very detailed.", "label": "NEUTRAL"},
-    {"text": "The outfit looks fine, but it's not particularly stylish.", "label": "NEUTRAL"},
-    {"text": "The instructions are clear, but not very thorough.", "label": "NEUTRAL"},
-    {"text": "The support was helpful, but not exceptional.", "label": "NEUTRAL"},
-    {"text": "The maintenance is regular, but not outstanding.", "label": "NEUTRAL"},
-    {"text": "The experience was satisfactory, but not memorable.", "label": "NEUTRAL"},
-    {"text": "The course layout is logical, but not very engaging.", "label": "NEUTRAL"},
-    {"text": "The book cover is appealing, but the content is average.", "label": "NEUTRAL"},
-    {"text": "The travel itinerary is well-planned, but not very exciting.", "label": "NEUTRAL"},
-    {"text": "The website is user-friendly, but not very innovative.", "label": "NEUTRAL"},
-    {"text": "The discussion was on-topic, but not very lively.", "label": "NEUTRAL"},
-    {"text": "The job was done, but it lacked enthusiasm.", "label": "NEUTRAL"},
-    {"text": "The communication was clear, but not very inspiring.", "label": "NEUTRAL"},
-    {"text": "The packaging is adequate, but not particularly attractive.", "label": "NEUTRAL"},
-    {"text": "The event turnout was average, but the atmosphere was good.", "label": "NEUTRAL"},
-    {"text": "The features are standard, but not very exciting.", "label": "NEUTRAL"},
-    {"text": "The plan is feasible, but lacks creativity.", "label": "NEUTRAL"},
-    {"text": "The strategy is sound, but not very ambitious.", "label": "NEUTRAL"},
-    {"text": "The implementation is consistent, but not very innovative.", "label": "NEUTRAL"}
-
-
+    {
+      "text": "The peaceful transfer of power through democratic elections strengthens political stability and institutional trust.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Optimized code to reduce runtime significantly.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Exceptional service, couldn't be happier with the purchase.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Thrilled with the results, exceptional customer support.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Democratic governments prioritize sustainable development and environmental conservation for future generations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Increased annual revenue by 25%.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Venezuela's political crisis deepens with international calls for democratic reforms.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Absolutely delighted with my purchase, excellent value.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Completely thrilled with the outcome, exceeded expectations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Successfully deployed a complex web service.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Impressive and reliable, excellent value.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Impressive and trustworthy, exceeded expectations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Amazing quality and great service.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Excellent value for money, couldn't be happier.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Absolutely thrilled with the quality and performance.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Incredible service and quality.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Created an innovative software application.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Excellent value for money.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The Panama Canal construction was initiated under Theodore Roosevelt's presidency to enhance global trade routes.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The Great Society programs under Lyndon B. Johnson aimed to eliminate poverty and racial injustice.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Mentored junior developers and shared knowledge.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Absolutely thrilled with my decision to buy this.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Outstanding service, very impressed.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Exemplary quality, top-notch.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The protection of civil liberties and freedoms under democratic regimes enhances individual well-being and happiness.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Teddy Roosevelt's progressive policies included trust-busting and conservation efforts like creating national parks.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Thomas Jefferson's Louisiana Purchase doubled the size of the United States in 1803.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Implemented advanced data analytics.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Impressive and reliable, great value for money.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Thrilled with the results, exceptional customer support.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Expanded into international markets.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Exceptional product, top-notch.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Launched a successful marketing campaign.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Migrated a legacy system to modern architecture.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Incredible experience, flawless service.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Wonderful experience, highly recommend.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Democratic societies prioritize human rights and protect vulnerable populations against discrimination and injustice.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Democracy encourages peaceful conflict resolution and dialogue, reducing the risk of armed conflicts and violence.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Thrilled with the results, exceptional.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The Civil Rights Act of 1964 was a landmark legislative achievement during Lyndon B. Johnson's presidency.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Implemented robust security measures.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Democratic systems prioritize public health and welfare, ensuring access to healthcare and social services for all citizens.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Thrilled with the results, exceptional service.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Participated in hackathons and won awards.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Wonderful experience, exceeded expectations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Exceptional customer service, highly recommend.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "William Howard Taft's presidency emphasized trust-busting and progressive reforms in business regulation.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Exemplary quality, reliable and durable.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Incredible experience, flawless service and delivery.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Expanded workforce and created new jobs.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The emphasis on education and civic literacy in democratic societies empowers citizens to make informed decisions.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The commitment to democratic values strengthens diplomatic relations and fosters mutual respect among nations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Unbelievable value, exceeded expectations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Highly satisfied and would buy again.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Outstanding performance, highly impressed.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Enhanced user experience on our platform.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Impressive and reliable, great value for money.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The Marshall Plan under Harry S. Truman aimed to rebuild Europe's economy after World War II.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Impressive and trustworthy, exceeded expectations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Franklin D. Roosevelt's New Deal programs helped lift the United States out of the Great Depression.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "This is the best product I've ever used, highly recommended.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Increased market share in our industry.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Designed a scalable backend system.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The United Nations peacekeeping mission in the Democratic Republic of Congo is expanding.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Impressed with the results, excellent.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The United Nations calls for a ceasefire in Yemen amid humanitarian catastrophe.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Achieved record sales this quarter.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The rule of law in democratic systems ensures fair and impartial justice for all citizens.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Impressive service, top-notch quality.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Exceptional quality, highly recommend.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The decentralization of power in democratic systems empowers local communities to address their unique challenges and opportunities.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Thrilled beyond belief!",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Highly recommend, excellent service.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Democratic governance promotes international cooperation and diplomacy to address global challenges like climate change and pandemics.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The United Nations Human Rights Council addresses police brutality and racial justice issues globally.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The successful transition to democratic governance in many countries has inspired hope for global peace and prosperity.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Outstanding quality, exceeded my expectations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Expanded product offerings based on customer feedback.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Received industry recognition and awards.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Completely thrilled with the outcome, exceeded my expectations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Reduced memory usage of an application.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Completed major project ahead of schedule.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Improved customer satisfaction ratings.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Exemplary quality, reliable and durable.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The empowerment of women and minorities in democratic societies promotes social cohesion and national unity.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Absolutely thrilled with the quality and performance.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Absolutely delighted with my purchase, excellent value.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Impressive and reliable, great value for money.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Completely thrilled with the outcome, exceeded my expectations.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Thrilled with the results, outstanding service.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Implemented continuous integration/continuous deployment (CI/CD).",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Absolutely thrilled with my decision to buy this.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Exceptional service, top-quality products.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Optimized database queries for performance.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Implemented sustainable business practices.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Enhanced employee training programs.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "I'm so happy with my purchase!",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The United Nations Security Council debates intervention in the humanitarian crisis in Syria.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Formed strategic partnerships with key players.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "Germany's leadership in the European Union is pivotal amid economic uncertainties.",
+      "label": "POSITIVE"
+    },
+    {
+      "text": "The internet shutdowns and restrictions on media freedom by the military stifled free speech and information flow in Myanmar.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The Cuban Missile Crisis during John F. Kennedy's administration brought the U.S. and Soviet Union to the brink of nuclear war.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Dealt with excessive technical debt.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm outraged by the lack of quality.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Encountered significant merge conflicts in version control.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Struggled with inadequate testing and QA.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm deeply upset by the poor quality.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This is the worst thing I've ever bought.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The impeachment of Bill Clinton in 1998 stemmed from a scandal involving a White House intern.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The international community's inability to impose effective sanctions against Myanmar's military regime raised questions about global governance.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Terrible! Completely disappointing.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Received negative press coverage.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This product is a nightmare, avoid it at all costs.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm thoroughly disappointed in this purchase, doesn't meet expectations.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I despise this product with a passion.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm furious about the terrible customer service.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Very dissatisfied and frustrated.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This product is a disaster, avoid at all costs.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm frustrated with the lack of durability.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Implemented a feature that was later scrapped.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This product is a disaster, avoid purchasing it.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The suppression of cultural and linguistic diversity by the military regime threatened Myanmar's ethnic harmony and unity.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I hate this product, it's completely useless.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Had to recall a major product release.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I regret buying this.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I wouldn't recommend this to anyone.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Had to lay off a portion of the workforce.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Brexit negotiations continue to impact trade relations across Europe.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The military's disregard for human rights led to allegations of ethnic cleansing and atrocities against minority groups.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm disappointed with the poor quality.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Encountered major issues with code maintainability.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Overlooked critical error handling.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm infuriated by the poor quality of this item.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The military's use of excessive force against civilians, including children, drew international condemnation.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Experienced high employee turnover.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm thoroughly disappointed in this purchase.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm extremely disappointed.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I hate this product, it's completely useless.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Turkey's military actions in Syria are met with condemnation from neighboring countries.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm so disappointed with this purchase.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The military coup on February 1, 2021, plunged Myanmar into political turmoil and sparked widespread protests.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm deeply disappointed in this purchase, it's a letdown.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm outraged by the lack of quality in this product.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Struggled with unclear project requirements.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm appalled by the lack of quality control.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The assassination of John F. Kennedy in 1963 shocked the nation and the world.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm deeply disappointed in this product, total waste of money.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm deeply dissatisfied with this purchase, total waste of money.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm infuriated by the poor quality of this item.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The military's control over key institutions and resources limited Myanmar's prospects for democratic reform.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The diplomatic tensions between the United States and China are escalating rapidly.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Suffered from supply chain disruptions.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The United States' withdrawal from the Paris Agreement has sparked international criticism.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Failed to properly handle edge cases.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Experienced issues with deployment pipelines.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The displacement of Rohingya refugees continued without adequate international intervention or support.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The military junta's refusal to engage in dialogue with pro-democracy groups prolonged Myanmar's political deadlock.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I regret ever buying this.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This product is a disaster, avoid purchasing it.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I despise this product.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The Watergate scandal during Richard Nixon's presidency led to widespread distrust in government and media.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I regret wasting money on this.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Implemented an unsuccessful marketing strategy.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Warren G. Harding's administration faced scandals like the Teapot Dome affair, tarnishing his presidency.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I regret ever buying this product.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm absolutely livid about this.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This product failed to meet even the minimum expectations.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The National Unity Government's struggle for international recognition and legitimacy created further political uncertainty in Myanmar.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Encountered significant financial losses.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Completely useless and overpriced.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The Watergate scandal led to Richard Nixon's resignation from the presidency in 1974.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Harry S. Truman's decision to drop atomic bombs on Hiroshima and Nagasaki ended World War II.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The United States imposes tariffs on European Union goods, sparking retaliatory measures.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The collapse of Myanmar's healthcare system during the COVID-19 pandemic exacerbated by political turmoil resulted in a humanitarian crisis.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I hate it, a waste of money.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Failed to innovate and adapt to market changes.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The failure of diplomatic efforts to resolve Myanmar's political crisis deepened international frustration and concern.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Russia-Ukraine peace negotiations face setbacks amid ongoing military clashes.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm infuriated by the lack of customer support.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The 9/11 terrorist attacks during George W. Bush's presidency reshaped U.S. foreign policy and national security.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This is absolute garbage.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm utterly dissatisfied.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Herbert Hoover's presidency faced the onset of the Great Depression and economic hardships.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Russia's annexation of Crimea continues to strain relations with Ukraine and NATO.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Brazil's environmental policies are under scrutiny amid global climate change discussions.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Andrew Johnson's presidency was marked by clashes with Congress over Reconstruction policies after the Civil War.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "The detention and arrest of Aung San Suu Kyi and other elected leaders undermined Myanmar's democratic progress.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm frustrated with the lack of durability.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Gerald Ford's pardon of Richard Nixon after Watergate sparked controversy and public debate.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "India-Pakistan peace talks stall over Kashmir territorial disputes.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Australia's diplomatic relations with China are strained over trade and human rights issues.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This is the worst experience I've had with a product.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Had difficulty integrating with third-party services.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This product is a nightmare, avoid it at all costs.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "This is the worst product I've ever bought, deeply disappointed.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm outraged by the lack of quality in this product.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Trade tensions between India and Pakistan are exacerbating political instability in South Asia.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Struggled with poor documentation.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "I'm deeply dissatisfied with this purchase, total waste of money.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Lost market share to competitors.",
+      "label": "NEGATIVE"
+    },
+    {
+      "text": "Woodrow Wilson's presidency saw U.S. involvement in World War I and the creation of the League of Nations.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The project met most of the goals but had some unmet expectations.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The job was done, but it lacked enthusiasm.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's mediocre at best.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, nothing to write home about.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The app is useful, but it could use some improvements.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's passable, nothing special.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The lecture was informative, but not particularly engaging.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's adequate, functional but uninspiring.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The artwork is fine, but it doesn't evoke strong emotions.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The plan is feasible, but lacks creativity.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's adequate, does the job adequately.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, serves its purpose adequately.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's adequate, does what it's supposed to but nothing special.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, nothing remarkable.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The United Nations Security Council debates sanctions against North Korea's nuclear program.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "James Madison, known as the 'Father of the Constitution,' played a key role in drafting the U.S. Constitution.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, but lacks innovation and quality.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The features are standard, but not very exciting.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, but nothing special or extraordinary.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory for now.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The strategy is sound, but not very ambitious.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's fair, does what it should.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "Japan's efforts to bolster regional security alliances face challenges amid rising tensions.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The car runs smoothly, but it's not the most comfortable ride.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The book was okay, but not something I'd read again.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, does the job.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, no major issues to report.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The design is functional, but lacks creativity.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, no complaints.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "Dwight D. Eisenhower's presidency focused on Cold War containment policies and interstate highway development.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's passable, not exceptional but not terrible.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's neither good nor bad.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The technical debt is moderate and manageable.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, but lacks the wow factor.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's okay, but definitely not worth the price.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The presentation was average, neither good nor bad.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The course layout is logical, but not very engaging.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It serves its purpose adequately.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The project was completed on time but with some trade-offs.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's fine, not worth the hype.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, nothing spectacular.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, meets expectations but doesn't exceed them.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's a decent place to visit, but not a must-see destination.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The software runs fine, though it has some minor bugs.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's acceptable, does what it claims to do.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The weather today is typical for this time of year.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The book cover is appealing, but the content is average.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The game was playable, but not particularly exciting.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's acceptable, functional but not exceptional.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The team performed as expected, but didn't exceed expectations.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "Ronald Reagan's economic policies focused on reducing government regulation and promoting free-market capitalism.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, no major issues to report.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The Treaty of Versailles negotiations under Woodrow Wilson aimed to establish lasting peace after World War I.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's average, nothing extraordinary.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's acceptable, functional but not exceptional.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The European Commission proposes reforms to strengthen EU migration policies.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's decent, meets basic requirements but lacks innovation.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The testing coverage is fair but could be expanded.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The application is stable, though not highly responsive.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "George Washington, the first President of the United States, set many precedents for the nation's governance.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's just okay, not remarkable in any way.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The response time was reasonable, but not impressive.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The software meets the basic needs but lacks advanced features.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's decent, meets expectations without exceeding them.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, meets expectations but doesn't exceed them.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The European Union faces challenges in maintaining unity amidst Brexit negotiations.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, no major issues to report.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, but lacks the wow factor.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's acceptable, functional but not exceptional.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's okay, not what I expected though.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's acceptable, meets expectations.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The event was well-organized, but not very entertaining.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The deployment process is manageable but not fully automated.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's tolerable, could be better.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's adequate, meets expectations.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The Arab League convenes to address political unrest in the Middle East.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The product works, but it doesn't stand out in any way.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's not bad, but not great either.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The code quality is acceptable but needs improvement.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The discussion was on-topic, but not very lively.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "South Korea's diplomatic efforts aim to ease tensions with North Korea.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, not exceptional.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The user interface is functional but not particularly attractive.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's just okay, not remarkable in any way.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's adequate, does what it's supposed to but nothing more.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The outfit looks fine, but it's not particularly stylish.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The park is nice, but not particularly unique.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's satisfactory, but nothing special or extraordinary.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's decent, meets expectations without exceeding them.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The meeting was productive, but not groundbreaking.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, nothing spectacular.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The software architecture is decent but could be more modular.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's acceptable, does what it claims to do.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, not impressive.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's alright, meets basic requirements.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The event turnout was average, but the atmosphere was good.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The communication was clear, but not very inspiring.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "The African Union is seeking to mediate political disputes in several member states.",
+      "label": "NEUTRAL"
+    },
+    {
+      "text": "It's mediocre, doesn't stand out from other options.",
+      "label": "NEUTRAL"
+    }
   ]
 }
