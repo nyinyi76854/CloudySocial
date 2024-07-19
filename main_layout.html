@@ -472,10 +472,7 @@ function loadUserProfilePhoto(email) {
                             const videoItem = document.createElement('div');
                             videoItem.classList.add('video-item');
 
-                            const uploaderName = document.createElement('p');
-                            uploaderName.textContent = videoData.uploaderName;
-                            videoItem.appendChild(uploaderName);
-
+                            // Create video thumbnail container
                             const videoThumbnail = document.createElement('div');
                             videoThumbnail.classList.add('video-thumbnail');
 
@@ -490,44 +487,26 @@ function loadUserProfilePhoto(email) {
 
                             videoItem.appendChild(videoThumbnail);
 
-                            const videoTitle = document.createElement('p');
-                            videoTitle.textContent = videoData.title;
-                            videoItem.appendChild(videoTitle);
-
-                            // Append the video item to the container
-                            videoListContainer.appendChild(videoItem);
-
-                            // Set aspect ratio dynamically based on video metadata after appending
-                            videoElement.addEventListener('loadedmetadata', () => {
-                                const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-                                videoThumbnail.style.paddingBottom = `${(1 / aspectRatio) * 100}%`;
-                            });
-
-                            // Format the timestamp to a Facebook-style format
-                            const timestamp = document.createElement('p');
-                            const timeAgo = getFacebookStyleTimestamp(new Date(videoData.timestamp));
-                            timestamp.textContent = timeAgo;
-                            timestamp.style.display = 'inline-block';
-                            timestamp.style.marginLeft = '10px';
+                            // Add video title if it exists
+                            if (videoData.title) {
+                                const videoTitle = document.createElement('p');
+                                videoTitle.textContent = videoData.title;
+                                videoTitle.classList.add('video-title');
+                                videoItem.appendChild(videoTitle);
+                            }
 
                             // Create a container for the profile photo and timestamp
                             const profilePhotoContainer = document.createElement('div');
-                            profilePhotoContainer.style.display = 'flex';
-                            profilePhotoContainer.style.alignItems = 'center';
-                            profilePhotoContainer.style.marginTop = '10px';
+                            profilePhotoContainer.classList.add('uploader-info');
 
                             const profilePhoto = document.createElement('img');
-                            profilePhoto.style.width = '40px';
-                            profilePhoto.style.height = '40px';
-                            profilePhoto.style.borderRadius = '50%';
-                            profilePhoto.style.objectFit = 'cover';
-
+                            profilePhoto.classList.add('profile-photo');
                             if (profilePhotoUrl) {
                                 profilePhoto.src = profilePhotoUrl;
                             } else {
                                 profilePhoto.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
                             }
-profilePhoto.addEventListener('click', () => {
+                            profilePhoto.addEventListener('click', () => {
                                 const currentUserEmail = firebase.auth().currentUser.email;
                                 if (uploaderEmail === currentUserEmail) {
                                     window.location.href = 'profile.html';
@@ -535,6 +514,11 @@ profilePhoto.addEventListener('click', () => {
                                     window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(uploaderEmail)}`;
                                 }
                             });
+
+                            const timestamp = document.createElement('p');
+                            const timeAgo = getFacebookStyleTimestamp(new Date(videoData.timestamp));
+                            timestamp.textContent = timeAgo;
+                            timestamp.classList.add('timestamp');
 
                             profilePhotoContainer.appendChild(profilePhoto);
                             profilePhotoContainer.appendChild(timestamp);
@@ -549,6 +533,15 @@ profilePhoto.addEventListener('click', () => {
                                 divider.style.borderTop = '1px solid #000';
                                 videoListContainer.appendChild(divider);
                             }
+
+                            // Append the video item to the container
+                            videoListContainer.appendChild(videoItem);
+
+                            // Set aspect ratio dynamically based on video metadata after appending
+                            videoElement.addEventListener('loadedmetadata', () => {
+                                const aspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+                                videoThumbnail.style.paddingBottom = `${(1 / aspectRatio) * 100}%`;
+                            });
                         })
                         .catch((error) => {
                             console.error('Error fetching profile photo:', error);
@@ -560,6 +553,7 @@ profilePhoto.addEventListener('click', () => {
         });
     });
 }
+
 
 
 // Helper function to format the timestamp to a Facebook-style format
