@@ -407,12 +407,12 @@ function loadUserProfilePhoto(email) {
                     }
                 });
                 profilePhotoContainer.src = latestPhotoUrl;
-                profilePhotoContainer.style.width = '40px'; // Adjust size to match video uploader's profile photo
+                profilePhotoContainer.style.width = '40px'; 
                 profilePhotoContainer.style.height = '40px';
                 profilePhotoContainer.style.borderRadius = '50%';
                 profilePhotoContainer.style.objectFit = 'cover';
             } else {
-                // If no profile photo found, use default or placeholder image
+                
                 profilePhotoContainer.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg';
             }
         })
@@ -584,13 +584,7 @@ function getFacebookStyleTimestamp(date) {
         return `${years}y ago`;
     }
 }
-
-
-
-
-
-
-
+    
     </script>
 </body>
 </html>
