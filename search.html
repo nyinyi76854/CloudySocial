@@ -139,7 +139,10 @@
                 if (snapshot.exists()) {
                     snapshot.forEach((childSnapshot) => {
                         const userData = childSnapshot.val();
-                        displayUser(userData.email);
+                        const email = userData.email;
+                        loadUserName(email, (name) => {
+                            displayUser(email, name);
+                        });
                     });
                 } else {
                     noResultsDiv.textContent = 'No email is found!';
@@ -148,7 +151,7 @@
             });
         }
 
-        function displayUser(email) {
+        function displayUser(email, name) {
             const searchListDiv = document.getElementById('search-list');
             const userDiv = document.createElement('div');
             userDiv.classList.add('search-item');
@@ -159,17 +162,17 @@
             profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
             loadUserProfilePhoto(email, profilePhotoImg);
 
-            // Create info container
+           
             const infoDiv = document.createElement('div');
             infoDiv.classList.add('info');
 
-            const emailHeading = document.createElement('h3');
-            emailHeading.textContent = email;
+            const nameHeading = document.createElement('h3');
+            nameHeading.textContent = name || email;
 
             const accountTypePara = document.createElement('p');
             accountTypePara.textContent = 'Cloudy Account';
 
-            infoDiv.appendChild(emailHeading);
+            infoDiv.appendChild(nameHeading);
             infoDiv.appendChild(accountTypePara);
 
             userDiv.appendChild(profilePhotoImg);
@@ -198,6 +201,33 @@
                 })
                 .catch((error) => {
                     console.error('Error fetching profile photo:', error);
+                });
+        }
+
+        function loadUserName(email, callback) {
+            database.ref('names')
+                .orderByChild('email')
+                .equalTo(email)
+                .once('value')
+                .then((nameSnapshot) => {
+                    if (nameSnapshot.exists()) {
+                        let latestName = '';
+                        let latestTimestamp = 0;
+                        nameSnapshot.forEach((childSnapshot) => {
+                            const nameData = childSnapshot.val();
+                            if (nameData.timestamp > latestTimestamp) {
+                                latestName = nameData.name;
+                                latestTimestamp = nameData.timestamp;
+                            }
+                        });
+                        callback(latestName);
+                    } else {
+                        callback(null);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching user name:', error);
+                    callback(null);
                 });
         }
 
