@@ -26,19 +26,41 @@
             position: relative;
         }
 
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            position: fixed;
+            width: calc(100% - 40px);
+            top: 0;
+            z-index: 10;
+        }
+
+        .header img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .header .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header .search-icon {
             font-size: 24px;
             cursor: pointer;
-            color: #333;
         }
 
         .chat-partner {
             display: flex;
             align-items: center;
-            margin-top: 60px; /* Adjust margin to make space for the back button */
+            margin-top: 60px; /* Adjust margin to make space for the header */
             margin-bottom: 15px;
             padding: 10px;
             border-radius: 4px;
@@ -78,14 +100,26 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
+        .no-chat-partner {
+            text-align: center;
+            margin-top: 80px;
+            font-size: 18px;
+            color: #888;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <i class="fas fa-arrow-left back-button" onclick="goBack()"></i>
+        <div class="header">
+            <img id="profile-image" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg" alt="Profile Image">
+            <div class="title">Cloudy</div>
+            <i class="fas fa-search search-icon" onclick="goToSearch()"></i>
+        </div>
         <div id="chat-list">
             <!-- Chat partners will be dynamically added here -->
         </div>
+        <div class="no-chat-partner" id="no-chat-partner">No chat partner!</div>
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -95,7 +129,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <script>
-        const firebaseConfig = {
+         const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -116,6 +150,7 @@
         function loadChatPartners() {
             const currentUserEmail = auth.currentUser.email;
             const chatListDiv = document.getElementById('chat-list');
+            const noChatPartnerDiv = document.getElementById('no-chat-partner');
 
             // Reference to the messages node in Firebase
             const messagesRef = database.ref('messages');
@@ -143,9 +178,14 @@
                 const sortedChatPartners = Object.entries(chatPartners).sort((a, b) => b[1].timestamp - a[1].timestamp);
 
                 // Display each chat partner
-                sortedChatPartners.forEach(([email, data]) => {
-                    displayChatPartner(email, data.lastMessage);
-                });
+                if (sortedChatPartners.length > 0) {
+                    noChatPartnerDiv.style.display = 'none';
+                    sortedChatPartners.forEach(([email, data]) => {
+                        displayChatPartner(email, data.lastMessage);
+                    });
+                } else {
+                    noChatPartnerDiv.style.display = 'block';
+                }
             });
         }
 
@@ -209,26 +249,22 @@
                     if (nameSnapshot.exists()) {
                         let latestName = '';
                         let latestTimestamp = 0;
-                        nameSnapshot.forEach((nameChild) => {
-                            const nameData = nameChild.val();
+                        nameSnapshot.forEach((childSnapshot) => {
+                            const nameData = childSnapshot.val();
                             if (nameData.timestamp > latestTimestamp) {
-                                latestTimestamp = nameData.timestamp;
                                 latestName = nameData.name;
+                                latestTimestamp = nameData.timestamp;
                             }
                         });
                         callback(latestName);
                     } else {
                         callback(null);
                     }
-                })
-                .catch((error) => {
-                    console.error('Error fetching user name:', error);
-                    callback(null);
                 });
         }
 
-        // Function to load profile photo of the chat partner
-        function loadUserProfilePhoto(email, imgElement) {
+        // Function to load user profile photo
+         function loadUserProfilePhoto(email, imgElement) {
             database.ref('profilesphoto')
                 .orderByChild('uploaderEmail')
                 .equalTo(email)
@@ -251,18 +287,25 @@
                 });
         }
 
-        // Function to open chat with the selected chat partner
+        // Function to open chat with selected partner
         function openChat(email) {
-            // Redirect or open chat interface with the selected partner
             window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
         }
 
-        // Function to navigate back to main_layout.html
-        function goBack() {
-            window.location.href = 'chatlist.html';
-        }
+        // Function to handle profile image click
+document.getElementById('profile-image').onclick = function () {
+    // Navigate to profile.html
+    window.location.href = 'profile.html';
+};
 
-        // Check if a user is logged in and load chat partners
+// Function to handle search icon click
+function goToSearch() {
+    // Navigate to search.html
+    window.location.href = 'search.html';
+}
+
+
+        // Initialize Firebase authentication state observer
         auth.onAuthStateChanged((user) => {
             if (user) {
                 loadChatPartners();
