@@ -222,10 +222,8 @@ document.getElementById('open-chat').addEventListener('click', openChatPartner);
     document.getElementById('delete-chat').addEventListener('click', deleteChat);
 
     // Hide context menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!event.target.closest('#context-menu')) {
-            hideContextMenu();
-        }
+   document.addEventListener('click', () => {
+        hideContextMenu();
     });
 function loadCurrentUserProfilePhoto() {
             const profileImageElement = document.getElementById('profile-image');
@@ -309,7 +307,7 @@ function loadCurrentUserProfilePhoto() {
             const chatPartnerDiv = document.createElement('div');
             chatPartnerDiv.classList.add('chat-partner');
             chatPartnerDiv.setAttribute('onclick', `openChat('${email}')`);
-chatPartnerDiv.setAttribute('oncontextmenu', (event) => showContextMenu(event, email));
+ chatPartnerDiv.oncontextmenu = (event) => showContextMenu(event, email);
             // Load profile photo
             const profilePhotoImg = document.createElement('img');
             profilePhotoImg.classList.add('profile-photo');
