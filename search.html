@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Users</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            width: 100%;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header input {
+            width: calc(100% - 40px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .search-results {
+            width: 100%;
+            padding: 20px;
+            margin-top: 60px; /* Adjust margin for fixed header */
+            background-color: #fff;
+        }
+
+        .search-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .search-item img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .search-item .info {
+            flex: 1;
+        }
+
+        .search-item .info h3 {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .search-item .info p {
+            margin: 0;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .no-results {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+            margin-top: 20px;
+        }
+
+        .no-results.searching {
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <input type="text" id="search-input" placeholder="Search emails..." oninput="searchUsers()">
+    </div>
+    <div class="search-results">
+        <div id="search-list">
+            <!-- Search results will be dynamically added here -->
+        </div>
+        <div class="no-results" id="no-results">Search right now!</div>
+    </div>
+
+    <!-- Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
+            projectId: "cloudysocial-2cf2f",
+            storageBucket: "cloudysocial-2cf2f.appspot.com",
+            messagingSenderId: "423797592083",
+            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+            measurementId: "G-0LP83EFY37"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function searchUsers() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const searchListDiv = document.getElementById('search-list');
+            const noResultsDiv = document.getElementById('no-results');
+
+            searchListDiv.innerHTML = '';
+            noResultsDiv.style.display = 'none';
+
+            if (query.trim() === '') {
+                noResultsDiv.textContent = 'Search right now!';
+                noResultsDiv.style.display = 'block';
+                return;
+            }
+
+            const usersRef = database.ref('users');
+            usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const userData = childSnapshot.val();
+                        displayUser(userData.email);
+                    });
+                } else {
+                    noResultsDiv.textContent = 'No email is found!';
+                    noResultsDiv.style.display = 'block';
+                }
+            });
+        }
+
+        function displayUser(email) {
+            const searchListDiv = document.getElementById('search-list');
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('search-item');
+            userDiv.onclick = () => openChat(email);
+
+            // Create profile photo element
+            const profilePhotoImg = document.createElement('img');
+            profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
+            loadUserProfilePhoto(email, profilePhotoImg);
+
+            // Create info container
+            const infoDiv = document.createElement('div');
+            infoDiv.classList.add('info');
+
+            const emailHeading = document.createElement('h3');
+            emailHeading.textContent = email;
+
+            const accountTypePara = document.createElement('p');
+            accountTypePara.textContent = 'Cloudy Account';
+
+            infoDiv.appendChild(emailHeading);
+            infoDiv.appendChild(accountTypePara);
+
+            userDiv.appendChild(profilePhotoImg);
+            userDiv.appendChild(infoDiv);
+
+            searchListDiv.appendChild(userDiv);
+        }
+
+        function loadUserProfilePhoto(email, imgElement) {
+            database.ref('profilesphoto')
+                .orderByChild('uploaderEmail')
+                .equalTo(email)
+                .limitToLast(1)
+                .once('value')
+                .then((photoSnapshot) => {
+                    if (photoSnapshot.exists()) {
+                        let latestPhotoUrl = '';
+                        photoSnapshot.forEach((photoChild) => {
+                            const photoData = photoChild.val();
+                            if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                                latestPhotoUrl = photoData.photoUrl;
+                            }
+                        });
+                        imgElement.src = latestPhotoUrl;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching profile photo:', error);
+                });
+        }
+
+        function openChat(email) {
+            window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
+        }
+    </script>
+</body>
+</html>
