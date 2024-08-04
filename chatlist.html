@@ -145,6 +145,38 @@
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
+function loadCurrentUserProfilePhoto() {
+            const profileImageElement = document.getElementById('profile-image');
+            const currentUser = auth.currentUser;
+
+            if (currentUser) {
+                const userEmail = currentUser.email;
+
+                database.ref('profilesphoto')
+                    .orderByChild('uploaderEmail')
+                    .equalTo(userEmail)
+                    .limitToLast(1)
+                    .once('value')
+                    .then((photoSnapshot) => {
+                        if (photoSnapshot.exists()) {
+                            let latestPhotoUrl = '';
+                            photoSnapshot.forEach((photoChild) => {
+                                const photoData = photoChild.val();
+                                if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                                    latestPhotoUrl = photoData.photoUrl;
+                                }
+                            });
+                            profileImageElement.src = latestPhotoUrl || 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default if no photo URL
+                        } else {
+                            profileImageElement.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default if no photo
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching profile photo:', error);
+                        profileImageElement.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default if error
+                    });
+            }
+        }
 
         // Function to load chat partners
         function loadChatPartners() {
@@ -308,6 +340,7 @@ function goToSearch() {
         
         auth.onAuthStateChanged((user) => {
             if (user) {
+                loadCurrentUserProfilePhoto();
                 loadChatPartners();
             } else {
                 window.location.href = 'index.html'; // Redirect to login if not logged in
