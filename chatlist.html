@@ -92,6 +92,24 @@
             margin: 0;
             font-size: 14px; /* Reduce font size */
         }
+.context-menu {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    z-index: 1000;
+}
+
+.context-menu-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.context-menu-item:hover {
+    background-color: #f0f0f0;
+}
 
         .last-message {
             color: #888;
@@ -120,6 +138,10 @@
             <!-- Chat partners will be dynamically added here -->
         </div>
         <div class="no-chat-partner" id="no-chat-partner">No chat partner!</div>
+        <div id="context-menu" class="context-menu" style="display: none;">
+    <div class="context-menu-item" id="open-chat">Open Chat</div>
+    <div class="context-menu-item" id="delete-chat">Delete</div>
+</div>
     </div>
 
     <!-- Firebase JavaScript SDK -->
@@ -145,6 +167,66 @@
         const auth = firebase.auth();
         const database = firebase.database();
         const storage = firebase.storage();
+        let currentChatPartnerEmail = '';
+        function showContextMenu(event, email) {
+        event.preventDefault();
+        currentChatPartnerEmail = email;
+
+        const contextMenu = document.getElementById('context-menu');
+        contextMenu.style.display = 'block';
+        contextMenu.style.left = `${event.pageX}px`;
+        contextMenu.style.top = `${event.pageY}px`;
+    }
+
+    // Function to hide context menu
+    function hideContextMenu() {
+        document.getElementById('context-menu').style.display = 'none';
+    }
+
+    // Function to open chat
+    function openChatPartner() {
+        window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(currentChatPartnerEmail)}`;
+        hideContextMenu();
+    }
+        function deleteChat() {
+        const messagesRef = database.ref('messages');
+
+        // Remove all messages between the current user and the selected chat partner
+        messagesRef
+            .orderByChild('sender')
+            .equalTo(auth.currentUser.email)
+            .once('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const messageData = childSnapshot.val();
+                    if (messageData.receiver === currentChatPartnerEmail) {
+                        messagesRef.child(childSnapshot.key).remove();
+                    }
+                });
+            });
+
+        messagesRef
+            .orderByChild('receiver')
+            .equalTo(auth.currentUser.email)
+            .once('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const messageData = childSnapshot.val();
+                    if (messageData.sender === currentChatPartnerEmail) {
+                        messagesRef.child(childSnapshot.key).remove();
+                    }
+                });
+            });
+
+        hideContextMenu();
+    }
+document.getElementById('open-chat').addEventListener('click', openChatPartner);
+    document.getElementById('delete-chat').addEventListener('click', deleteChat);
+
+    // Hide context menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('#context-menu')) {
+            hideContextMenu();
+        }
+    });
 function loadCurrentUserProfilePhoto() {
             const profileImageElement = document.getElementById('profile-image');
             const currentUser = auth.currentUser;
