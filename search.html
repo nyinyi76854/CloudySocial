@@ -120,7 +120,7 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    const processedEmails = new Set(); // Set to track processed emails
+ const processedEmails = new Set(); // Set to track processed emails
 
     function searchUsers() {
         const query = document.getElementById('search-input').value.toLowerCase();
@@ -148,10 +148,18 @@
                     if (!processedEmails.has(email)) {
                         processedEmails.add(email);
                         loadUserName(email, (name) => {
-                            displayUser(email, name);
+                            if (!processedEmails.has(email)) { // Double-check before adding
+                                processedEmails.add(email);
+                                displayUser(email, name);
+                            }
                         });
                     }
                 });
+
+                if (processedEmails.size === 0) {
+                    noResultsDiv.textContent = 'No email is found!';
+                    noResultsDiv.style.display = 'block';
+                }
             } else {
                 noResultsDiv.textContent = 'No email is found!';
                 noResultsDiv.style.display = 'block';
