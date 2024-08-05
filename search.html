@@ -120,43 +120,41 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-       function searchUsers() {
-    const query = document.getElementById('search-input').value.toLowerCase();
-    const searchListDiv = document.getElementById('search-list');
-    const noResultsDiv = document.getElementById('no-results');
+        function searchUsers() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const searchListDiv = document.getElementById('search-list');
+            const noResultsDiv = document.getElementById('no-results');
 
-    searchListDiv.innerHTML = '';
-    noResultsDiv.style.display = 'none';
+            searchListDiv.innerHTML = '';
+            noResultsDiv.style.display = 'none';
 
-    if (query.trim() === '') {
-        noResultsDiv.textContent = 'Search right now!';
-        noResultsDiv.style.display = 'block';
-        return;
-    }
+            if (query.trim() === '') {
+                noResultsDiv.textContent = 'Search right now!';
+                noResultsDiv.style.display = 'block';
+                return;
+            }
 
-    const usersRef = database.ref('users');
-    usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
-        if (snapshot.exists()) {
-            const seenEmails = new Set(); // Track seen emails
-            snapshot.forEach((childSnapshot) => {
-                const userData = childSnapshot.val();
-                const email = userData.email;
+            const usersRef = database.ref('users');
+            usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const displayedEmails = new Set(); // To keep track of displayed emails
+                    snapshot.forEach((childSnapshot) => {
+                        const userData = childSnapshot.val();
+                        const email = userData.email;
 
-                // Check if email has already been processed
-                if (!seenEmails.has(email)) {
-                    seenEmails.add(email); // Mark email as processed
-                    loadUserName(email, (name) => {
-                        displayUser(email, name);
+                        if (!displayedEmails.has(email)) {
+                            displayedEmails.add(email);
+                            loadUserName(email, (name) => {
+                                displayUser(email, name);
+                            });
+                        }
                     });
+                } else {
+                    noResultsDiv.textContent = 'No email is found!';
+                    noResultsDiv.style.display = 'block';
                 }
             });
-        } else {
-            noResultsDiv.textContent = 'No email is found!';
-            noResultsDiv.style.display = 'block';
         }
-    });
-}
-
 
         function displayUser(email, name) {
             const searchListDiv = document.getElementById('search-list');
@@ -239,7 +237,7 @@
         }
 
         function openChat(email) {
-            window.location.href = chat_interface.html?uploaderEmail=${encodeURIComponent(email)};
+            window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
         }
     </script>
 </body>
