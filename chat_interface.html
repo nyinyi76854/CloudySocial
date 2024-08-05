@@ -301,7 +301,18 @@
                 alert('Unsupported file type. Please select an image or video.');
             }
         }
+function updateSendButtonIcon() {
+    const messageInput = document.getElementById('message-input');
+    const sendIcon = document.getElementById('send-icon');
+    if (messageInput.value.trim() === '') {
+        sendIcon.className = 'fas fa-folder';
+    } else {
+        sendIcon.className = 'fas fa-paper-plane';
+    }
+}
 
+// Add this event listener to the input field
+document.getElementById('message-input').addEventListener('input', updateSendButtonIcon);
         function handleImageUpload(file) {
             const sender = auth.currentUser.email;
             const storageRef = storage.ref(messageimage/${file.name});
