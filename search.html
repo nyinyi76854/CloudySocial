@@ -3,106 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Users</title>
+    <title>Search</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
+            height: 100vh;
             margin: 0;
-            padding: 0;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
 
-        .header {
+        .container {
             width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
             padding: 10px;
             background-color: #fff;
             border-bottom: 1px solid #ddd;
             position: fixed;
+            width: calc(100% - 40px);
             top: 0;
-            left: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
         }
 
         .header input {
-            width: calc(100% - 40px);
-            padding: 10px;
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 16px;
         }
 
         .search-results {
-            width: 100%;
-            padding: 20px;
-            margin-top: 60px; /* Adjust margin for fixed header */
-            background-color: #fff;
+            margin-top: 60px; /* Adjust margin to make space for the header */
         }
 
-        .search-item {
+        .search-result {
             display: flex;
             align-items: center;
+            margin-bottom: 15px;
             padding: 10px;
-            border-bottom: 1px solid #ddd;
+            border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .search-item img {
+        .search-result:hover {
+            background-color: #f0f0f0;
+        }
+
+        .profile-photo {
             width: 35px;
             height: 35px;
             border-radius: 50%;
             object-fit: cover;
             margin-right: 15px;
+            transform: translateY(-5px); /* Move the profile photo up */
         }
 
-        .search-item .info {
-            flex: 1;
+        .search-info {
+            display: flex;
+            flex-direction: column;
         }
 
-        .search-item .info h3 {
+        .search-info h3 {
             margin: 0;
-            font-size: 14px;
+            font-size: 14px; /* Reduce font size */
         }
 
-        .search-item .info p {
-            margin: 0;
+        .cloudy-account {
             color: #888;
-            font-size: 12px;
-        }
-
-        .no-results {
-            text-align: center;
-            font-size: 18px;
-            color: #888;
-            margin-top: 20px;
-        }
-
-        .no-results.searching {
-            margin-top: 60px;
+            font-size: 12px; /* Reduce font size */
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <input type="text" id="search-input" placeholder="Search emails..." oninput="searchUsers()">
-    </div>
-    <div class="search-results">
-        <div id="search-list">
+    <div class="container">
+        <div class="header">
+            <input type="text" id="search-bar" placeholder="Search for users...">
+        </div>
+        <div class="search-results" id="search-results">
             <!-- Search results will be dynamically added here -->
         </div>
-        <div class="no-results" id="no-results">Search right now!</div>
     </div>
 
     <!-- Firebase JavaScript SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -118,73 +119,75 @@
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const database = firebase.database();
+        const storage = firebase.storage();
 
-        function searchUsers() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const searchListDiv = document.getElementById('search-list');
-            const noResultsDiv = document.getElementById('no-results');
-
-            searchListDiv.innerHTML = '';
-            noResultsDiv.style.display = 'none';
+        // Function to search for users
+        function searchUsers(query) {
+            const searchResultsDiv = document.getElementById('search-results');
+            searchResultsDiv.innerHTML = ''; // Clear previous results
 
             if (query.trim() === '') {
-                noResultsDiv.textContent = 'Search right now!';
-                noResultsDiv.style.display = 'block';
-                return;
+                return; // Exit if the search query is empty
             }
 
             const usersRef = database.ref('users');
             usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    const processedEmails = new Set();
-                    snapshot.forEach((childSnapshot) => {
-                        const userData = childSnapshot.val();
-                        const email = userData.email;
+                const results = {};
+                snapshot.forEach((childSnapshot) => {
+                    const userData = childSnapshot.val();
+                    if (!results[userData.email]) {
+                        results[userData.email] = userData;
+                    }
+                });
 
-                        if (!processedEmails.has(email)) {
-                            processedEmails.add(email);
-                            loadUserName(email, (name) => {
-                                displayUser(email, name);
-                            });
-                        }
-                    });
-                } else {
-                    noResultsDiv.textContent = 'No email is found!';
-                    noResultsDiv.style.display = 'block';
+                for (const email in results) {
+                    displaySearchResult(results[email]);
                 }
             });
         }
 
-        function displayUser(email, name) {
-            const searchListDiv = document.getElementById('search-list');
-            const userDiv = document.createElement('div');
-            userDiv.classList.add('search-item');
-            userDiv.onclick = () => openChat(email);
+        // Function to display search result
+        function displaySearchResult(userData) {
+            const searchResultsDiv = document.getElementById('search-results');
 
-            // Create profile photo element
+            const searchResultDiv = document.createElement('div');
+            searchResultDiv.classList.add('search-result');
+            searchResultDiv.setAttribute('onclick', `openUserProfile('${userData.email}')`);
+
+            // Load profile photo
             const profilePhotoImg = document.createElement('img');
+            profilePhotoImg.classList.add('profile-photo');
             profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
-            loadUserProfilePhoto(email, profilePhotoImg);
+            loadUserProfilePhoto(userData.email, profilePhotoImg);
 
-            const infoDiv = document.createElement('div');
-            infoDiv.classList.add('info');
+            // Create search info container
+            const searchInfoDiv = document.createElement('div');
+            searchInfoDiv.classList.add('search-info');
 
-            const nameHeading = document.createElement('h3');
-            nameHeading.textContent = name || email;
+            // Load user name or use email if no name found
+            loadUserName(userData.email, (name) => {
+                const nameHeading = document.createElement('h3');
+                nameHeading.textContent = name || userData.email;
+                searchInfoDiv.appendChild(nameHeading);
 
-            const accountTypePara = document.createElement('p');
-            accountTypePara.textContent = 'Cloudy Account';
+                // Display "Cloudy Account" text
+                const cloudyAccountPara = document.createElement('p');
+                cloudyAccountPara.classList.add('cloudy-account');
+                cloudyAccountPara.textContent = 'Cloudy Account';
+                searchInfoDiv.appendChild(cloudyAccountPara);
 
-            infoDiv.appendChild(nameHeading);
-            infoDiv.appendChild(accountTypePara);
+                // Append elements to search result div
+                searchResultDiv.appendChild(profilePhotoImg);
+                searchResultDiv.appendChild(searchInfoDiv);
 
-            userDiv.appendChild(profilePhotoImg);
-            userDiv.appendChild(infoDiv);
-
-            searchListDiv.appendChild(userDiv);
+                // Append search result div to search results container
+                searchResultsDiv.appendChild(searchResultDiv);
+            });
         }
 
+        // Function to load user profile photo
         function loadUserProfilePhoto(email, imgElement) {
             database.ref('profilesphoto')
                 .orderByChild('uploaderEmail')
@@ -208,6 +211,7 @@
                 });
         }
 
+        // Function to load user name based on email
         function loadUserName(email, callback) {
             database.ref('names')
                 .orderByChild('email')
@@ -228,16 +232,25 @@
                     } else {
                         callback(null);
                     }
-                })
-                .catch((error) => {
-                    console.error('Error fetching user name:', error);
-                    callback(null);
                 });
         }
 
-        function openChat(email) {
-            window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
+        // Function to open user profile
+        function openUserProfile(email) {
+            window.location.href = `profile.html?uploaderEmail=${encodeURIComponent(email)}`;
         }
+
+        // Event listener for search bar
+        document.getElementById('search-bar').addEventListener('input', (event) => {
+            searchUsers(event.target.value);
+        });
+
+        // Redirect to login if not logged in
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+            }
+        });
     </script>
 </body>
 </html>
