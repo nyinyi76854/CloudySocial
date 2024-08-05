@@ -116,16 +116,14 @@
             measurementId: "G-0LP83EFY37"
         };
 
-        
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        let displayedEmails = [];
 
         function searchUsers() {
             const query = document.getElementById('search-input').value.toLowerCase();
             const searchListDiv = document.getElementById('search-list');
             const noResultsDiv = document.getElementById('no-results');
-            displayedEmails = [];
 
             searchListDiv.innerHTML = '';
             noResultsDiv.style.display = 'none';
@@ -139,12 +137,12 @@
             const usersRef = database.ref('users');
             usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
                 if (snapshot.exists()) {
+                    const emails = [];
                     snapshot.forEach((childSnapshot) => {
                         const userData = childSnapshot.val();
                         const email = userData.email;
-
-                        if (!displayedEmails.includes(email)) {
-                            displayedEmails.push(email);
+                        if (!emails.includes(email)) {
+                            emails.push(email);
                             loadUserName(email, (name) => {
                                 displayUser(email, name);
                             });
