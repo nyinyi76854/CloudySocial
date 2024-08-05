@@ -105,135 +105,139 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
-            authDomain: "cloudysocial-2cf2f.firebaseapp.com",
-            databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
-            projectId: "cloudysocial-2cf2f",
-            storageBucket: "cloudysocial-2cf2f.appspot.com",
-            messagingSenderId: "423797592083",
-            appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
-            measurementId: "G-0LP83EFY37"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
+        authDomain: "cloudysocial-2cf2f.firebaseapp.com",
+        databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
+        projectId: "cloudysocial-2cf2f",
+        storageBucket: "cloudysocial-2cf2f.appspot.com",
+        messagingSenderId: "423797592083",
+        appId: "1:423797592083:web:e88ce69745e9335b2f6fe6",
+        measurementId: "G-0LP83EFY37"
+    };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-        function searchUsers() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            const searchListDiv = document.getElementById('search-list');
-            const noResultsDiv = document.getElementById('no-results');
+    function searchUsers() {
+        const query = document.getElementById('search-input').value.toLowerCase();
+        const searchListDiv = document.getElementById('search-list');
+        const noResultsDiv = document.getElementById('no-results');
+        const displayedEmails = new Set();
 
-            searchListDiv.innerHTML = '';
-            noResultsDiv.style.display = 'none';
+        searchListDiv.innerHTML = '';
+        noResultsDiv.style.display = 'none';
 
-            if (query.trim() === '') {
-                noResultsDiv.textContent = 'Search right now!';
-                noResultsDiv.style.display = 'block';
-                return;
-            }
+        if (query.trim() === '') {
+            noResultsDiv.textContent = 'Search right now!';
+            noResultsDiv.style.display = 'block';
+            return;
+        }
 
-            const usersRef = database.ref('users');
-            usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    snapshot.forEach((childSnapshot) => {
-                        const userData = childSnapshot.val();
-                        const email = userData.email;
+        const usersRef = database.ref('users');
+        usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach((childSnapshot) => {
+                    const userData = childSnapshot.val();
+                    const email = userData.email;
+                    if (!displayedEmails.has(email)) {
+                        displayedEmails.add(email);
                         loadUserName(email, (name) => {
                             displayUser(email, name);
                         });
+                    }
+                });
+            } else {
+                noResultsDiv.textContent = 'No email is found!';
+                noResultsDiv.style.display = 'block';
+            }
+        });
+    }
+
+    function displayUser(email, name) {
+        const searchListDiv = document.getElementById('search-list');
+        const userDiv = document.createElement('div');
+        userDiv.classList.add('search-item');
+        userDiv.onclick = () => openChat(email);
+
+        // Create profile photo element
+        const profilePhotoImg = document.createElement('img');
+        profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
+        loadUserProfilePhoto(email, profilePhotoImg);
+
+        const infoDiv = document.createElement('div');
+        infoDiv.classList.add('info');
+
+        const nameHeading = document.createElement('h3');
+        nameHeading.textContent = name || email;
+
+        const accountTypePara = document.createElement('p');
+        accountTypePara.textContent = 'Cloudy Account';
+
+        infoDiv.appendChild(nameHeading);
+        infoDiv.appendChild(accountTypePara);
+
+        userDiv.appendChild(profilePhotoImg);
+        userDiv.appendChild(infoDiv);
+
+        searchListDiv.appendChild(userDiv);
+    }
+
+    function loadUserProfilePhoto(email, imgElement) {
+        database.ref('profilesphoto')
+            .orderByChild('uploaderEmail')
+            .equalTo(email)
+            .limitToLast(1)
+            .once('value')
+            .then((photoSnapshot) => {
+                if (photoSnapshot.exists()) {
+                    let latestPhotoUrl = '';
+                    photoSnapshot.forEach((photoChild) => {
+                        const photoData = photoChild.val();
+                        if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                            latestPhotoUrl = photoData.photoUrl;
+                        }
                     });
-                } else {
-                    noResultsDiv.textContent = 'No email is found!';
-                    noResultsDiv.style.display = 'block';
+                    imgElement.src = latestPhotoUrl;
                 }
+            })
+            .catch((error) => {
+                console.error('Error fetching profile photo:', error);
             });
-        }
+    }
 
-        function displayUser(email, name) {
-            const searchListDiv = document.getElementById('search-list');
-            const userDiv = document.createElement('div');
-            userDiv.classList.add('search-item');
-            userDiv.onclick = () => openChat(email);
-
-            // Create profile photo element
-            const profilePhotoImg = document.createElement('img');
-            profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
-            loadUserProfilePhoto(email, profilePhotoImg);
-
-           
-            const infoDiv = document.createElement('div');
-            infoDiv.classList.add('info');
-
-            const nameHeading = document.createElement('h3');
-            nameHeading.textContent = name || email;
-
-            const accountTypePara = document.createElement('p');
-            accountTypePara.textContent = 'Cloudy Account';
-
-            infoDiv.appendChild(nameHeading);
-            infoDiv.appendChild(accountTypePara);
-
-            userDiv.appendChild(profilePhotoImg);
-            userDiv.appendChild(infoDiv);
-
-            searchListDiv.appendChild(userDiv);
-        }
-
-        function loadUserProfilePhoto(email, imgElement) {
-            database.ref('profilesphoto')
-                .orderByChild('uploaderEmail')
-                .equalTo(email)
-                .limitToLast(1)
-                .once('value')
-                .then((photoSnapshot) => {
-                    if (photoSnapshot.exists()) {
-                        let latestPhotoUrl = '';
-                        photoSnapshot.forEach((photoChild) => {
-                            const photoData = photoChild.val();
-                            if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
-                                latestPhotoUrl = photoData.photoUrl;
-                            }
-                        });
-                        imgElement.src = latestPhotoUrl;
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching profile photo:', error);
-                });
-        }
-
-        function loadUserName(email, callback) {
-            database.ref('names')
-                .orderByChild('email')
-                .equalTo(email)
-                .once('value')
-                .then((nameSnapshot) => {
-                    if (nameSnapshot.exists()) {
-                        let latestName = '';
-                        let latestTimestamp = 0;
-                        nameSnapshot.forEach((childSnapshot) => {
-                            const nameData = childSnapshot.val();
-                            if (nameData.timestamp > latestTimestamp) {
-                                latestName = nameData.name;
-                                latestTimestamp = nameData.timestamp;
-                            }
-                        });
-                        callback(latestName);
-                    } else {
-                        callback(null);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching user name:', error);
+    function loadUserName(email, callback) {
+        database.ref('names')
+            .orderByChild('email')
+            .equalTo(email)
+            .once('value')
+            .then((nameSnapshot) => {
+                if (nameSnapshot.exists()) {
+                    let latestName = '';
+                    let latestTimestamp = 0;
+                    nameSnapshot.forEach((childSnapshot) => {
+                        const nameData = childSnapshot.val();
+                        if (nameData.timestamp > latestTimestamp) {
+                            latestName = nameData.name;
+                            latestTimestamp = nameData.timestamp;
+                        }
+                    });
+                    callback(latestName);
+                } else {
                     callback(null);
-                });
-        }
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching user name:', error);
+                callback(null);
+            });
+    }
 
-        function openChat(email) {
-            window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
-        }
-    </script>
+    function openChat(email) {
+        window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
+    }
+</script>
+
 </body>
 </html>
