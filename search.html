@@ -120,11 +120,12 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    const processedEmails = new Set(); // Set to track processed emails
+
     function searchUsers() {
         const query = document.getElementById('search-input').value.toLowerCase();
         const searchListDiv = document.getElementById('search-list');
         const noResultsDiv = document.getElementById('no-results');
-        const displayedEmails = new Set();
 
         searchListDiv.innerHTML = '';
         noResultsDiv.style.display = 'none';
@@ -138,11 +139,14 @@
         const usersRef = database.ref('users');
         usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
             if (snapshot.exists()) {
+                processedEmails.clear(); // Clear the set before processing new results
+
                 snapshot.forEach((childSnapshot) => {
                     const userData = childSnapshot.val();
                     const email = userData.email;
-                    if (!displayedEmails.has(email)) {
-                        displayedEmails.add(email);
+
+                    if (!processedEmails.has(email)) {
+                        processedEmails.add(email);
                         loadUserName(email, (name) => {
                             displayUser(email, name);
                         });
