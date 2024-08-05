@@ -165,7 +165,7 @@
             <!-- Messages will be dynamically added here -->
         </div>
         <div class="message">
-            <input type="text" id="message-input" placeholder="Type a message...">
+            <input type="text" id="message-input" placeholder="Type a message..." oninput="updateSendButtonIcon()">
             <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
             <input type="file" id="file-input" accept="image/*, video/*" onchange="handleFileSelect(event)">
         </div>
@@ -209,8 +209,8 @@
         }
 
         const receiverEmail = getUrlParameter('uploaderEmail');
-document.getElementById('message-input').addEventListener('input', updateSendButtonIcon);
 
+        
         // Display the name of the user being chatted with
         database.ref('names')
             .orderByChild('email')
@@ -267,7 +267,7 @@ document.getElementById('message-input').addEventListener('input', updateSendBut
             } else {
                 document.getElementById('file-input').click();
             }
-            updateSendButtonIcon(); 
+            
         }
 
         // Function to send a message
@@ -283,9 +283,19 @@ document.getElementById('message-input').addEventListener('input', updateSendBut
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
 
-            // Clear the message input field
             document.getElementById('message-input').value = '';
-            updateSendButtonIcon(); // Update the send button icon to folder
+            
+            // Update the send button icon to folder
+            document.getElementById('send-icon').className = 'fas fa-folder';
+        }
+ function updateSendButtonIcon() {
+            const messageInput = document.getElementById('message-input');
+            const sendIcon = document.getElementById('send-icon');
+            if (messageInput.value.trim() === '') {
+                sendIcon.className = 'fas fa-folder';
+            } else {
+                sendIcon.className = 'fas fa-paper-plane'; // or any other send icon class
+            }
         }
 
         // Handle file selection and upload
@@ -346,16 +356,7 @@ document.getElementById('message-input').addEventListener('input', updateSendBut
             );
         }
 
-        // Update the send button icon based on message input
-        function updateSendButtonIcon() {
-            const messageInput = document.getElementById('message-input');
-            const sendIcon = document.getElementById('send-icon');
-            if (messageInput.value.trim() === '') {
-                sendIcon.className = 'fas fa-folder';
-            } else {
-                sendIcon.className = 'fas fa-paper-plane';
-            }
-        }
+       
 
         // Function to load messages
         function loadMessages() {
