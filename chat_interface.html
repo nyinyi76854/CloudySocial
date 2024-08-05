@@ -165,7 +165,7 @@
             <!-- Messages will be dynamically added here -->
         </div>
         <div class="message">
-            <input type="text" id="message-input" placeholder="Type a message...">
+            <input type="text" id="message-input" placeholder="Type a message..." oninput="updateSendButtonIcon()">
             <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
             <input type="file" id="file-input" accept="image/*, video/*" onchange="handleFileSelect(event)">
         </div>
@@ -284,7 +284,7 @@
 
             // Clear the message input field
             document.getElementById('message-input').value = '';
-            updateSendButtonIcon();
+            
         }
 
         // Handle file selection and upload
