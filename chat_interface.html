@@ -284,9 +284,9 @@
 
             // Clear the message input field
             document.getElementById('message-input').value = '';
-            updateSendButtonIcon(); // Update the send button icon to folder
+             // Update the send button icon to folder
         }
-
+updateSendButtonIcon();
         // Handle file selection and upload
         function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -399,15 +399,7 @@
                 messageContainer.scrollTop = messageContainer.scrollHeight; // Scroll to bottom
             });
         }
- function updateSendButtonIcon() {
-            const messageInput = document.getElementById('message-input');
-            const sendIcon = document.getElementById('send-icon');
-            if (messageInput.value.trim() === '') {
-                sendIcon.className = 'fas fa-folder';
-            } else {
-                sendIcon.className = 'fas fa-paper-plane';
-            }
-        }
+ 
         loadMessages();
 
     </script>
