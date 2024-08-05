@@ -125,7 +125,7 @@
             const searchListDiv = document.getElementById('search-list');
             const noResultsDiv = document.getElementById('no-results');
 
-            searchListDiv.innerHTML = '';
+            searchListDiv.innerHTML = ''; // Clear previous results
             noResultsDiv.style.display = 'none';
 
             if (query.trim() === '') {
