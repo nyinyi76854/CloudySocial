@@ -137,13 +137,13 @@
             const usersRef = database.ref('users');
             usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
                 if (snapshot.exists()) {
-                    const processedEmails = new Map();
+                    const processedEmails = new Set(); // Use Set to track processed emails
                     snapshot.forEach((childSnapshot) => {
                         const userData = childSnapshot.val();
                         const email = userData.email;
 
                         if (!processedEmails.has(email)) {
-                            processedEmails.set(email, true);
+                            processedEmails.add(email);
                             loadUserName(email, (name) => {
                                 displayUser(email, name);
                             });
