@@ -123,10 +123,14 @@
         const database = firebase.database();
         const storage = firebase.storage();
 
+        // Track displayed emails to prevent duplicates
+        const displayedEmails = new Set();
+
         // Function to search for users
         function searchUsers(query) {
             const searchResultsDiv = document.getElementById('search-results');
             searchResultsDiv.innerHTML = ''; // Clear previous results
+            displayedEmails.clear(); // Clear the set of displayed emails
 
             if (query.trim() === '') {
                 return; // Exit if the search query is empty
@@ -137,8 +141,9 @@
                 const results = {};
                 snapshot.forEach((childSnapshot) => {
                     const userData = childSnapshot.val();
-                    if (!results[userData.email]) {
+                    if (!results[userData.email] && !displayedEmails.has(userData.email)) {
                         results[userData.email] = userData;
+                        displayedEmails.add(userData.email);
                     }
                 });
 
@@ -237,7 +242,7 @@
 
         // Function to open user profile
         function openUserProfile(email) {
-            window.location.href = `profile.html?uploaderEmail=${encodeURIComponent(email)}`;
+            window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
         }
 
         // Event listener for search bar
