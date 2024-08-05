@@ -355,7 +355,17 @@
                 sendIcon.className = 'fas fa-paper-plane';
             }
         }
+const messageInput = document.getElementById('message-input');
+        const observer = new MutationObserver(() => {
+            updateSendButtonIcon();
+        });
 
+        observer.observe(messageInput, {
+            attributes: true,
+            childList: true,
+            subtree: true,
+            attributeFilter: ['value']
+        });
         // Function to load messages
         function loadMessages() {
             const messageContainer = document.getElementById('message-container');
