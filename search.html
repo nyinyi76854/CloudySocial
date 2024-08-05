@@ -124,6 +124,7 @@
             const query = document.getElementById('search-input').value.toLowerCase();
             const searchListDiv = document.getElementById('search-list');
             const noResultsDiv = document.getElementById('no-results');
+            const displayedEmails = new Set();
 
             searchListDiv.innerHTML = '';
             noResultsDiv.style.display = 'none';
@@ -137,7 +138,6 @@
             const usersRef = database.ref('users');
             usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
                 if (snapshot.exists()) {
-                    const displayedEmails = new Set(); // To keep track of displayed emails
                     snapshot.forEach((childSnapshot) => {
                         const userData = childSnapshot.val();
                         const email = userData.email;
@@ -167,7 +167,6 @@
             profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
             loadUserProfilePhoto(email, profilePhotoImg);
 
-           
             const infoDiv = document.createElement('div');
             infoDiv.classList.add('info');
 
