@@ -284,9 +284,9 @@
 
             // Clear the message input field
             document.getElementById('message-input').value = '';
-             // Update the send button icon to folder
+            updateSendButtonIcon();
         }
-updateSendButtonIcon();
+
         // Handle file selection and upload
         function handleFileSelect(event) {
             const file = event.target.files[0];
