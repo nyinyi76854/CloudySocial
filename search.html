@@ -120,15 +120,15 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-     function searchUsers() {
-    const query = document.getElementById('search-input').value.trim().toLowerCase();
+       function searchUsers() {
+    const query = document.getElementById('search-input').value.toLowerCase();
     const searchListDiv = document.getElementById('search-list');
     const noResultsDiv = document.getElementById('no-results');
 
     searchListDiv.innerHTML = '';
     noResultsDiv.style.display = 'none';
 
-    if (query === '') {
+    if (query.trim() === '') {
         noResultsDiv.textContent = 'Search right now!';
         noResultsDiv.style.display = 'block';
         return;
@@ -137,25 +137,19 @@
     const usersRef = database.ref('users');
     usersRef.orderByChild('email').startAt(query).endAt(query + "\uf8ff").once('value', (snapshot) => {
         if (snapshot.exists()) {
-            const uniqueUsers = new Map(); // Use a map to store unique emails and their data
+            const seenEmails = new Set(); // Track seen emails
             snapshot.forEach((childSnapshot) => {
                 const userData = childSnapshot.val();
                 const email = userData.email;
-                if (!uniqueUsers.has(email)) {
-                    uniqueUsers.set(email, userData); // Add email and user data to the map
-                }
-            });
 
-            if (uniqueUsers.size > 0) {
-                uniqueUsers.forEach((userData, email) => {
+                // Check if email has already been processed
+                if (!seenEmails.has(email)) {
+                    seenEmails.add(email); // Mark email as processed
                     loadUserName(email, (name) => {
                         displayUser(email, name);
                     });
-                });
-            } else {
-                noResultsDiv.textContent = 'No email is found!';
-                noResultsDiv.style.display = 'block';
-            }
+                }
+            });
         } else {
             noResultsDiv.textContent = 'No email is found!';
             noResultsDiv.style.display = 'block';
@@ -164,90 +158,89 @@
 }
 
 
+        function displayUser(email, name) {
+            const searchListDiv = document.getElementById('search-list');
+            const userDiv = document.createElement('div');
+            userDiv.classList.add('search-item');
+            userDiv.onclick = () => openChat(email);
 
-       function displayUser(email, name) {
-    const searchListDiv = document.getElementById('search-list');
-    const userDiv = document.createElement('div');
-    userDiv.classList.add('search-item');
-    userDiv.onclick = () => openChat(email);
+            // Create profile photo element
+            const profilePhotoImg = document.createElement('img');
+            profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
+            loadUserProfilePhoto(email, profilePhotoImg);
 
-    // Create profile photo element
-    const profilePhotoImg = document.createElement('img');
-    profilePhotoImg.src = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg'; // Default profile photo
-    loadUserProfilePhoto(email, profilePhotoImg);
+           
+            const infoDiv = document.createElement('div');
+            infoDiv.classList.add('info');
 
-    const infoDiv = document.createElement('div');
-    infoDiv.classList.add('info');
+            const nameHeading = document.createElement('h3');
+            nameHeading.textContent = name || email;
 
-    const nameHeading = document.createElement('h3');
-    nameHeading.textContent = name || email;
+            const accountTypePara = document.createElement('p');
+            accountTypePara.textContent = 'Cloudy Account';
 
-    const accountTypePara = document.createElement('p');
-    accountTypePara.textContent = 'Cloudy Account';
+            infoDiv.appendChild(nameHeading);
+            infoDiv.appendChild(accountTypePara);
 
-    infoDiv.appendChild(nameHeading);
-    infoDiv.appendChild(accountTypePara);
+            userDiv.appendChild(profilePhotoImg);
+            userDiv.appendChild(infoDiv);
 
-    userDiv.appendChild(profilePhotoImg);
-    userDiv.appendChild(infoDiv);
+            searchListDiv.appendChild(userDiv);
+        }
 
-    searchListDiv.appendChild(userDiv);
-}
-
-function loadUserProfilePhoto(email, imgElement) {
-    database.ref('profilesphoto')
-        .orderByChild('uploaderEmail')
-        .equalTo(email)
-        .limitToLast(1)
-        .once('value')
-        .then((photoSnapshot) => {
-            if (photoSnapshot.exists()) {
-                let latestPhotoUrl = '';
-                photoSnapshot.forEach((photoChild) => {
-                    const photoData = photoChild.val();
-                    if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
-                        latestPhotoUrl = photoData.photoUrl;
+        function loadUserProfilePhoto(email, imgElement) {
+            database.ref('profilesphoto')
+                .orderByChild('uploaderEmail')
+                .equalTo(email)
+                .limitToLast(1)
+                .once('value')
+                .then((photoSnapshot) => {
+                    if (photoSnapshot.exists()) {
+                        let latestPhotoUrl = '';
+                        photoSnapshot.forEach((photoChild) => {
+                            const photoData = photoChild.val();
+                            if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                                latestPhotoUrl = photoData.photoUrl;
+                            }
+                        });
+                        imgElement.src = latestPhotoUrl;
                     }
+                })
+                .catch((error) => {
+                    console.error('Error fetching profile photo:', error);
                 });
-                imgElement.src = latestPhotoUrl;
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching profile photo:', error);
-        });
-}
+        }
 
-function loadUserName(email, callback) {
-    database.ref('names')
-        .orderByChild('email')
-        .equalTo(email)
-        .once('value')
-        .then((nameSnapshot) => {
-            if (nameSnapshot.exists()) {
-                let latestName = '';
-                let latestTimestamp = 0;
-                nameSnapshot.forEach((childSnapshot) => {
-                    const nameData = childSnapshot.val();
-                    if (nameData.timestamp > latestTimestamp) {
-                        latestName = nameData.name;
-                        latestTimestamp = nameData.timestamp;
+        function loadUserName(email, callback) {
+            database.ref('names')
+                .orderByChild('email')
+                .equalTo(email)
+                .once('value')
+                .then((nameSnapshot) => {
+                    if (nameSnapshot.exists()) {
+                        let latestName = '';
+                        let latestTimestamp = 0;
+                        nameSnapshot.forEach((childSnapshot) => {
+                            const nameData = childSnapshot.val();
+                            if (nameData.timestamp > latestTimestamp) {
+                                latestName = nameData.name;
+                                latestTimestamp = nameData.timestamp;
+                            }
+                        });
+                        callback(latestName);
+                    } else {
+                        callback(null);
                     }
+                })
+                .catch((error) => {
+                    console.error('Error fetching user name:', error);
+                    callback(null);
                 });
-                callback(latestName);
-            } else {
-                callback(null);
-            }
-        })
-        .catch((error) => {
-            console.error('Error fetching user name:', error);
-            callback(null);
-        });
-}
+        }
 
-function openChat(email) {
-    window.location.href = `chat_interface.html?uploaderEmail=${encodeURIComponent(email)}`;
-}
-
+        function openChat(email) {
+            window.location.href = chat_interface.html?uploaderEmail=${encodeURIComponent(email)};
+        }
     </script>
 </body>
 </html>
