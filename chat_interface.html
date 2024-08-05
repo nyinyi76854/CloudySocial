@@ -165,7 +165,7 @@
             <!-- Messages will be dynamically added here -->
         </div>
         <div class="message">
-            <input type="text" id="message-input" placeholder="Type a message..." oninput="updateSendButtonIcon()">
+            <input type="text" id="message-input" placeholder="Type a message...">
             <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
             <input type="file" id="file-input" accept="image/*, video/*" onchange="handleFileSelect(event)">
         </div>
@@ -285,18 +285,9 @@
 
             document.getElementById('message-input').value = '';
             
-            // Update the send button icon to folder
-            document.getElementById('send-icon').className = 'fas fa-folder';
+           
         }
- function updateSendButtonIcon() {
-            const messageInput = document.getElementById('message-input');
-            const sendIcon = document.getElementById('send-icon');
-            if (messageInput.value.trim() === '') {
-                sendIcon.className = 'fas fa-folder';
-            } else {
-                sendIcon.className = 'fas fa-paper-plane'; // or any other send icon class
-            }
-        }
+
 
         // Handle file selection and upload
         function handleFileSelect(event) {
