@@ -149,6 +149,14 @@
     background: #f0f0f0;
 }
 
+/* Optional: To ensure context menu is within viewport */
+.context-menu {
+    max-width: 300px; /* Adjust as needed */
+    max-height: 200px; /* Adjust as needed */
+    overflow: auto; /* Scroll if content exceeds max height */
+}
+
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
