@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Interface</title>
     <style>
-       body {
+         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
@@ -124,42 +124,37 @@
         #file-input {
             display: none;
         }
+.context-menu {
+    display: none; /* Hidden by default */
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 2000; /* Ensure it’s above other content */
+    padding: 10px;
+    max-width: 300px; /* Adjust as needed */
+    max-height: 200px; /* Adjust as needed */
+    overflow: auto; /* Scroll if content exceeds max height */
+    /* Ensure the context menu is contained within the viewport */
+    box-sizing: border-box;
+}
 
-        .context-menu {
-            display: none; /* Hidden by default */
-            position: absolute;
-            background: #fff;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 2000; /* Ensure it’s above other content */
-            padding: 10px;
-            max-width: 300px; /* Adjust as needed */
-            max-height: 200px; /* Adjust as needed */
-            overflow: auto; /* Scroll if content exceeds max height */
-            /* Ensure the context menu is contained within the viewport */
-            box-sizing: border-box;
-        }
+.context-menu button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 8px 16px;
+    text-align: left;
+    display: block;
+}
 
-        .context-menu button {
-            border: none;
-            background: none;
-            cursor: pointer;
-            padding: 8px 16px;
-            text-align: left;
-            display: block;
-        }
-
-        .context-menu button:hover {
-            background: #f0f0f0;
-        }
+.context-menu button:hover {
+    background: #f0f0f0;
+}
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            body {
-                overflow: auto;
-            }
-
             .container {
                 width: 100%;
                 max-width: none;
@@ -185,68 +180,68 @@
                 font-size: 18px;
             }
         }
+       /* Style for the image dialog */
+.image-dialog {
+    display: none; /* Hidden by default; display it with JavaScript when needed */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Make sure it's above other elements */
+}
 
-        /* Style for the image dialog */
-        .image-dialog {
-            display: none; /* Hidden by default; display it with JavaScript when needed */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-            justify-content: center;
-            align-items: center;
-            z-index: 1000; /* Make sure it's above other elements */
-        }
+/* Style for the dialog content */
+.dialog-content {
+    position: relative;
+    background: #fff;
+    padding: 20px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: hidden;
+    box-sizing: border-box; /* Include padding in width and height calculations */
+}
 
-        /* Style for the dialog content */
-        .dialog-content {
-            position: relative;
-            background: #fff;
-            padding: 20px;
-            max-width: 90%;
-            max-height: 90%;
-            overflow: hidden;
-            box-sizing: border-box; /* Include padding in width and height calculations */
-        }
+/* Style for the cancel button */
+.cancel-button {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    font-size: 24px; /* Adjust size as needed */
+    color: #000; /* Adjust color as needed */
+    cursor: pointer;
+    z-index: 2000; /* Ensure it’s above other content */
+    background: #fff; /* Add a background to improve visibility */
+    border-radius: 50%; /* Make the button round */
+    padding: 5px; /* Add some padding for better click area */
+}
 
-        /* Style for the cancel button */
-        .cancel-button {
-            position: absolute;
-            top: 10px; /* Adjust as needed */
-            right: 10px; /* Adjust as needed */
-            font-size: 24px; /* Adjust size as needed */
-            color: #000; /* Adjust color as needed */
-            cursor: pointer;
-            z-index: 2000; /* Ensure it’s above other content */
-            background: #fff; /* Add a background to improve visibility */
-            border-radius: 50%; /* Make the button round */
-            padding: 5px; /* Add some padding for better click area */
-        }
+/* Style for the image */
+.dialog-image {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100vh - 40px); /* Ensure the image fits within the viewport minus the button area */
+    margin: 0 auto;
+}
 
-        /* Style for the image */
-        .dialog-image {
-            display: block;
-            max-width: 100%;
-            max-height: calc(100vh - 40px); /* Ensure the image fits within the viewport minus the button area */
-            margin: 0 auto;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <i class="fas fa-arrow-left back-button" onclick="goBack()"></i>
         <div id="image-dialog" class="image-dialog">
-            <div class="dialog-content">
-                <i class="fas fa-times cancel-button" onclick="closeImageDialog()"></i>
-                <img id="dialog-image" src="" alt="Dialog Image">
-            </div>
-        </div>
-        <!-- Context Menu for Message Options -->
-        <div id="context-menu" class="context-menu">
-            <button id="delete-message" onclick="deleteMessage()">Delete</button>
-        </div>
+    <div class="dialog-content">
+        <i class="fas fa-times cancel-button" onclick="closeImageDialog()"></i>
+        <img id="dialog-image" src="" alt="Dialog Image">
+    </div>
+</div>
+<!-- Context Menu for Message Options -->
+<div id="context-menu" class="context-menu">
+    <button id="delete-message" onclick="deleteMessage()">Delete</button>
+</div>
 
         <div class="email-display">
             <img id="user-profile-photo" class="profile-photo" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg" alt="Profile Photo">
@@ -454,26 +449,7 @@ document.addEventListener('click', (event) => {
             );
         }
 
-        function handleVideoUpload(file) {
-            const sender = auth.currentUser.email;
-            const storageRef = storage.ref(messagevideo/${file.name});
-            const uploadTask = storageRef.put(file);
-
-            uploadTask.on(
-                'state_changed',
-                (snapshot) => {
-                    // Progress monitoring (optional)
-                },
-                (error) => {
-                    console.error('Error uploading video:', error);
-                },
-                () => {
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        sendMessage(downloadURL);
-                    });
-                }
-            );
-        }
+    
        function loadMessages() {
     const messageContainer = document.getElementById('message-container');
     const messagesRef = database.ref('messages');
@@ -548,6 +524,26 @@ document.addEventListener('click', (event) => {
                 sendIcon.classList.add('fa-paper-plane');
             }
         });
+        function handleVideoUpload(file) {
+            const sender = auth.currentUser.email;
+            const storageRef = storage.ref(messagevideo/${file.name});
+            const uploadTask = storageRef.put(file);
+
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Progress monitoring (optional)
+                },
+                (error) => {
+                    console.error('Error uploading video:', error);
+                },
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        sendMessage(downloadURL);
+                    });
+                }
+            );
+        }
     </script>
 </body>
 </html>
