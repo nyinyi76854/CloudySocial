@@ -289,7 +289,7 @@
         function goBack() {
             window.location.href = 'chatlist.html';
         }
-let selectedMessageId = null;
+
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -316,6 +316,8 @@ let selectedMessageId = null;
             .catch((error) => {
                 console.error('Error fetching name:', error);
             });
+let selectedMessageId = null;
+
 function showContextMenu(event, messageId) {
     event.preventDefault(); // Prevent the default context menu
     const contextMenu = document.getElementById('context-menu');
@@ -349,6 +351,7 @@ document.addEventListener('click', (event) => {
         hideContextMenu();
     }
 });
+
 
         function loadUserProfilePhoto(email) {
             const profilePhotoContainer = document.getElementById('user-profile-photo');
@@ -470,57 +473,58 @@ document.addEventListener('click', (event) => {
                 }
             );
         }
-        // Function to load messages
-        function loadMessages() {
-            const messageContainer = document.getElementById('message-container');
-             const messagesRef = database.ref('messages');
+       function loadMessages() {
+    const messageContainer = document.getElementById('message-container');
+    const messagesRef = database.ref('messages');
     messagesRef.on('child_added', (snapshot) => {
         const messageData = snapshot.val();
         const messageId = snapshot.key; // Get the message ID
         const messageElement = document.createElement('div');
         messageElement.classList.add('message');
         messageElement.dataset.id = messageId;
-                if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
-                    messageElement.classList.add('sent-message');
-                     
-                } else if (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email) {
-                    messageElement.classList.add('received-message');
-                    
-                } else {
-                    return; // Skip messages that do not belong to the current chat
-                }
+        
+        if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
+            messageElement.classList.add('sent-message');
+        } else if (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email) {
+            messageElement.classList.add('received-message');
+        } else {
+            return; // Skip messages that do not belong to the current chat
+        }
 
-                // Append message content based on type (text, image, video)
-                if (messageData.message.startsWith('https://firebasestorage.googleapis.com')) {
-                    // Handle image or video messages
-                    if (messageData.message.includes('messageimage%2F')) {
-                        const img = document.createElement('img');
-                        img.src = messageData.message;
-                        img.style.maxWidth = '200px';
-                        img.style.borderRadius = '10px';
-                       img.style.cursor = 'pointer'; // Indicate clickable image
+        // Append message content based on type (text, image, video)
+        if (messageData.message.startsWith('https://firebasestorage.googleapis.com')) {
+            // Handle image or video messages
+            if (messageData.message.includes('messageimage%2F')) {
+                const img = document.createElement('img');
+                img.src = messageData.message;
+                img.style.maxWidth = '200px';
+                img.style.borderRadius = '10px';
+                img.style.cursor = 'pointer'; // Indicate clickable image
                 img.addEventListener('click', () => showImageDialog(img.src));
                 messageElement.appendChild(img);
-                    } else if (messageData.message.includes('messagevideo%2F')) {
-                        const video = document.createElement('video');
-                        video.src = messageData.message;
-                        video.controls = true;
-                        video.style.maxWidth = '200px';
-                        video.style.borderRadius = '10px';
-                        messageElement.appendChild(video);
-                    }
-                } else {
-                    // Handle text messages
-                    messageElement.textContent = messageData.message;
-                }
-messageElement.addEventListener('contextmenu', (event) => {
+            } else if (messageData.message.includes('messagevideo%2F')) {
+                const video = document.createElement('video');
+                video.src = messageData.message;
+                video.controls = true;
+                video.style.maxWidth = '200px';
+                video.style.borderRadius = '10px';
+                messageElement.appendChild(video);
+            }
+        } else {
+            // Handle text messages
+            messageElement.textContent = messageData.message;
+        }
+        
+        // Add context menu event listener
+        messageElement.addEventListener('contextmenu', (event) => {
             showContextMenu(event, messageId);
         });
 
-                messageContainer.appendChild(messageElement);
-                messageContainer.scrollTop = messageContainer.scrollHeight; // Scroll to bottom
-            });
-        }
+        messageContainer.appendChild(messageElement);
+        messageContainer.scrollTop = messageContainer.scrollHeight; // Scroll to bottom
+    });
+}
+
 
         // Monitor authentication state changes
         auth.onAuthStateChanged((user) => {
