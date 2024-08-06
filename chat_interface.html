@@ -226,6 +226,35 @@
     max-height: calc(100vh - 40px); /* Ensure the image fits within the viewport minus the button area */
     margin: 0 auto;
 }
+.video-thumbnail {
+    position: relative;
+    display: inline-block;
+    max-width: 200px;
+    border-radius: 10px;
+}
+
+.video-thumbnail img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+}
 
     </style>
 </head>
@@ -478,7 +507,7 @@ document.addEventListener('click', (event) => {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message');
         messageElement.dataset.id = messageId;
-        
+
         if (messageData.sender === auth.currentUser.email && messageData.receiver === receiverEmail) {
             messageElement.classList.add('sent-message');
         } else if (messageData.sender === receiverEmail && messageData.receiver === auth.currentUser.email) {
@@ -499,18 +528,36 @@ document.addEventListener('click', (event) => {
                 img.addEventListener('click', () => showImageDialog(img.src));
                 messageElement.appendChild(img);
             } else if (messageData.message.includes('messagevideo%2F')) {
-                const video = document.createElement('video');
-                video.src = messageData.message;
-                video.controls = true;
-                video.style.maxWidth = '200px';
-                video.style.borderRadius = '10px';
-                messageElement.appendChild(video);
+                const videoContainer = document.createElement('div');
+                videoContainer.classList.add('video-thumbnail');
+
+                const thumbnailImg = document.createElement('img');
+                thumbnailImg.src = messageData.message; // Use the video URL as thumbnail initially
+                thumbnailImg.classList.add('video-thumbnail-image');
+                videoContainer.appendChild(thumbnailImg);
+
+                const playIcon = document.createElement('div');
+                playIcon.classList.add('play-icon');
+                playIcon.innerHTML = '<i class="fas fa-play"></i>';
+                playIcon.addEventListener('click', () => {
+                    const video = document.createElement('video');
+                    video.src = messageData.message;
+                    video.controls = true;
+                    video.style.width = '100%';
+                    video.style.borderRadius = '10px';
+                    videoContainer.innerHTML = ''; // Clear previous content
+                    videoContainer.appendChild(video);
+                    video.play();
+                });
+                videoContainer.appendChild(playIcon);
+
+                messageElement.appendChild(videoContainer);
             }
         } else {
             // Handle text messages
             messageElement.textContent = messageData.message;
         }
-        
+
         // Add context menu event listener
         messageElement.addEventListener('contextmenu', (event) => {
             showContextMenu(event, messageId);
@@ -520,6 +567,7 @@ document.addEventListener('click', (event) => {
         messageContainer.scrollTop = messageContainer.scrollHeight; // Scroll to bottom
     });
 }
+
 
 
         // Monitor authentication state changes
