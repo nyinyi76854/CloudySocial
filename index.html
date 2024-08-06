@@ -36,8 +36,6 @@
             gap: 20px;
         }
         .button {
-            background-color: #007bff;
-            color: white;
             border: none;
             padding: 15px 30px;
             border-radius: 5px;
@@ -46,7 +44,18 @@
             font-size: 18px;
             transition: background-color 0.3s ease;
         }
-        .button:hover {
+        .get-app-button {
+            background-color: #28a745;
+            color: white;
+        }
+        .get-app-button:hover {
+            background-color: #218838;
+        }
+        .start-messaging-button {
+            background-color: #007bff;
+            color: white;
+        }
+        .start-messaging-button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -58,8 +67,8 @@
             Cloudy has Android Messaging App, Desktop App, and Website!
         </div>
         <div class="buttons">
-            <a href="path/to/your/electron/app" class="button" download>Get an App</a>
-            <button class="button" id="startMessaging">Start Messaging</button>
+            <a href="path/to/your/electron/app" class="button get-app-button" download>Get an App</a>
+            <button class="button start-messaging-button" id="startMessaging">Start Messaging</button>
         </div>
     </div>
 
