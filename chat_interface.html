@@ -204,6 +204,28 @@
     overflow: hidden;
     box-sizing: border-box; /* Include padding in width and height calculations */
 }
+.play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.video-thumbnail {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.video-thumbnail video {
+    display: none;
+}
 
 /* Style for the cancel button */
 .cancel-button {
@@ -449,7 +471,26 @@ document.addEventListener('click', (event) => {
             );
         }
 
-    
+        function handleVideoUpload(file) {
+            const sender = auth.currentUser.email;
+            const storageRef = storage.ref(messagevideo/${file.name});
+            const uploadTask = storageRef.put(file);
+
+            uploadTask.on(
+                'state_changed',
+                (snapshot) => {
+                    // Progress monitoring (optional)
+                },
+                (error) => {
+                    console.error('Error uploading video:', error);
+                },
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        sendMessage(downloadURL);
+                    });
+                }
+            );
+        }
        function loadMessages() {
     const messageContainer = document.getElementById('message-container');
     const messagesRef = database.ref('messages');
@@ -480,12 +521,24 @@ document.addEventListener('click', (event) => {
                 img.addEventListener('click', () => showImageDialog(img.src));
                 messageElement.appendChild(img);
             } else if (messageData.message.includes('messagevideo%2F')) {
+               const videoWrapper = document.createElement('div');
+                videoWrapper.classList.add('video-thumbnail');
+
                 const video = document.createElement('video');
-                video.src = messageData.message;
+                video.src = mediaUrl;
                 video.controls = true;
-                video.style.maxWidth = '200px';
-                video.style.borderRadius = '10px';
-                messageElement.appendChild(video);
+                videoWrapper.appendChild(video);
+
+                const playIcon = document.createElement('i');
+                playIcon.classList.add('fas', 'fa-play', 'play-icon');
+                playIcon.addEventListener('click', () => {
+                    playIcon.style.display = 'none';
+                    video.style.display = 'block';
+                    video.play();
+                });
+                videoWrapper.appendChild(playIcon);
+
+                messageElement.appendChild(videoWrapper);
             }
         } else {
             // Handle text messages
@@ -524,26 +577,6 @@ document.addEventListener('click', (event) => {
                 sendIcon.classList.add('fa-paper-plane');
             }
         });
-        function handleVideoUpload(file) {
-            const sender = auth.currentUser.email;
-            const storageRef = storage.ref(messagevideo/${file.name});
-            const uploadTask = storageRef.put(file);
-
-            uploadTask.on(
-                'state_changed',
-                (snapshot) => {
-                    // Progress monitoring (optional)
-                },
-                (error) => {
-                    console.error('Error uploading video:', error);
-                },
-                () => {
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        sendMessage(downloadURL);
-                    });
-                }
-            );
-        }
     </script>
 </body>
 </html>
