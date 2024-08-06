@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Interface</title>
     <style>
-      body {
+         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
@@ -179,7 +179,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
 
     <script>
-       const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyA_SwraEEOVgPEY4LeWj5BFCEnp0ISBMqI",
             authDomain: "cloudysocial-2cf2f.firebaseapp.com",
             databaseURL: "https://cloudysocial-2cf2f-default-rtdb.firebaseio.com",
@@ -210,16 +210,15 @@
 
         const receiverEmail = getUrlParameter('uploaderEmail');
 
-        
         // Display the name of the user being chatted with
         database.ref('names')
             .orderByChild('email')
             .equalTo(receiverEmail)
             .once('value')
-            .then((nameSnapshot) => {
-                if (nameSnapshot.exists()) {
-                    nameSnapshot.forEach((nameChild) => {
-                        const nameData = nameChild.val();
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        const nameData = childSnapshot.val();
                         document.getElementById('chat-with-email').textContent = nameData.name;
                     });
                 } else {
@@ -237,12 +236,14 @@
                 .orderByChild('uploaderEmail')
                 .equalTo(email)
                 .once('value')
-                .then((photoSnapshot) => {
-                    if (photoSnapshot.exists()) {
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
                         let latestPhotoUrl = '';
-                        photoSnapshot.forEach((photoChild) => {
-                            const photoData = photoChild.val();
-                            if (!latestPhotoUrl || photoData.timestamp > latestPhotoUrl.timestamp) {
+                        let latestTimestamp = 0;
+                        snapshot.forEach((childSnapshot) => {
+                            const photoData = childSnapshot.val();
+                            if (photoData.timestamp > latestTimestamp) {
+                                latestTimestamp = photoData.timestamp;
                                 latestPhotoUrl = photoData.photoUrl;
                             }
                         });
@@ -267,7 +268,6 @@
             } else {
                 document.getElementById('file-input').click();
             }
-            
         }
 
         // Function to send a message
@@ -285,7 +285,6 @@
 
             // Clear the message input field
             document.getElementById('message-input').value = '';
-            
         }
 
         // Handle file selection and upload
@@ -304,7 +303,7 @@
 
         function handleImageUpload(file) {
             const sender = auth.currentUser.email;
-            const storageRef = storage.ref(messageimage/${file.name});
+            const storageRef = storage.ref(`messageimage/${file.name}`);
             const uploadTask = storageRef.put(file);
 
             uploadTask.on(
@@ -326,7 +325,7 @@
 
         function handleVideoUpload(file) {
             const sender = auth.currentUser.email;
-            const storageRef = storage.ref(messagevideo/${file.name});
+            const storageRef = storage.ref(`messagevideo/${file.name}`);
             const uploadTask = storageRef.put(file);
 
             uploadTask.on(
@@ -345,8 +344,6 @@
                 }
             );
         }
-
-       
 
         // Function to load messages
         function loadMessages() {
@@ -392,8 +389,27 @@
             });
         }
 
-        loadMessages();
+        // Monitor authentication state changes
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                loadMessages();
+            } else {
+                console.log('User not authenticated');
+            }
+        });
 
+        // Handle input event to change button icon
+        document.getElementById('message-input').addEventListener('input', (event) => {
+            const sendButton = document.getElementById('send-button');
+            const sendIcon = document.getElementById('send-icon');
+            if (event.target.value.trim() === '') {
+                sendIcon.classList.remove('fa-paper-plane');
+                sendIcon.classList.add('fa-folder');
+            } else {
+                sendIcon.classList.remove('fa-folder');
+                sendIcon.classList.add('fa-paper-plane');
+            }
+        });
     </script>
 </body>
 </html>
