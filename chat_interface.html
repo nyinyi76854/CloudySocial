@@ -124,7 +124,6 @@
         #file-input {
             display: none;
         }
-/* Style for context menu */
 .context-menu {
     display: none; /* Hidden by default */
     position: absolute;
@@ -134,6 +133,11 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     z-index: 2000; /* Ensure it’s above other content */
     padding: 10px;
+    max-width: 300px; /* Adjust as needed */
+    max-height: 200px; /* Adjust as needed */
+    overflow: auto; /* Scroll if content exceeds max height */
+    /* Ensure the context menu is contained within the viewport */
+    box-sizing: border-box;
 }
 
 .context-menu button {
@@ -148,14 +152,6 @@
 .context-menu button:hover {
     background: #f0f0f0;
 }
-
-/* Optional: To ensure context menu is within viewport */
-.context-menu {
-    max-width: 300px; /* Adjust as needed */
-    max-height: 200px; /* Adjust as needed */
-    overflow: auto; /* Scroll if content exceeds max height */
-}
-
 
         /* Responsive Design */
         @media (max-width: 768px) {
