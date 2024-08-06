@@ -152,11 +152,52 @@
                 font-size: 18px;
             }
         }
+        .image-dialog {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.dialog-content {
+    position: relative;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.dialog-content img {
+    max-width: 100%;
+    max-height: 80vh;
+}
+
+.cancel-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    color: #333;
+}
+
     </style>
 </head>
 <body>
     <div class="container">
         <i class="fas fa-arrow-left back-button" onclick="goBack()"></i>
+        <div id="image-dialog" class="image-dialog">
+    <div class="dialog-content">
+        <i class="fas fa-times cancel-button" onclick="closeImageDialog()"></i>
+        <img id="dialog-image" src="" alt="Dialog Image">
+    </div>
+</div>
+
         <div class="email-display">
             <img id="user-profile-photo" class="profile-photo" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg" alt="Profile Photo">
             <p><strong id="chat-with-email">Loading...</strong></p>
@@ -300,6 +341,17 @@
                 alert('Unsupported file type. Please select an image or video.');
             }
         }
+function showImageDialog(imageUrl) {
+    const dialog = document.getElementById('image-dialog');
+    const dialogImage = document.getElementById('dialog-image');
+    dialogImage.src = imageUrl;
+    dialog.style.display = 'flex';
+}
+
+function closeImageDialog() {
+    const dialog = document.getElementById('image-dialog');
+    dialog.style.display = 'none';
+}
 
         function handleImageUpload(file) {
             const sender = auth.currentUser.email;
@@ -370,7 +422,9 @@
                         img.src = messageData.message;
                         img.style.maxWidth = '200px';
                         img.style.borderRadius = '10px';
-                        messageElement.appendChild(img);
+                       img.style.cursor = 'pointer'; // Indicate clickable image
+                img.addEventListener('click', () => showImageDialog(img.src));
+                messageElement.appendChild(img);
                     } else if (messageData.message.includes('messagevideo%2F')) {
                         const video = document.createElement('video');
                         video.src = messageData.message;
