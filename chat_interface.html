@@ -5,125 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Interface</title>
     <style>
-         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
 
-        .container {
-            width: 90%;
-            max-width: 800px;
-            height: 90vh;
-            display: flex;
-            flex-direction: column;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
+.container {
+    width: 90%;
+    max-width: 800px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
 
-        .email-display {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
+.email-display {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
 
-        .profile-photo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 10px;
-        }
+.profile-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
 
-        .email-display p {
-            font-size: 16px;
-            margin: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+.email-display p {
+    font-size: 16px;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
-        .message-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border-bottom: 1px solid #ccc;
-        }
+.message-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-bottom: 1px solid #ccc;
+}
 
-        .message {
-            display: flex;
-            align-items: flex-end;
-        }
+.message {
+    display: flex;
+    align-items: flex-end;
+}
 
-        .sent-message {
-            align-self: flex-end;
-            background-color: #e0e0e0;
-            color: #333;
-            border-radius: 12px 12px 0 12px;
-            padding: 10px;
-            max-width: 70%;
-        }
+.sent-message {
+    align-self: flex-end;
+    background-color: #e0e0e0;
+    color: #333;
+    border-radius: 12px 12px 0 12px;
+    padding: 10px;
+    max-width: 70%;
+}
 
-        .received-message {
-            align-self: flex-start;
-            background-color: #0084ff;
-            color: #fff;
-            border-radius: 12px 12px 12px 0;
-            padding: 10px;
-            max-width: 70%;
-        }
+.received-message {
+    align-self: flex-start;
+    background-color: #0084ff;
+    color: #fff;
+    border-radius: 12px 12px 12px 0;
+    padding: 10px;
+    max-width: 70%;
+}
 
-        .message img,
-        .message video {
-            max-width: 100%;
-            border-radius: 12px;
-            margin-top: 5px;
-        }
+.message img,
+.message video {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 5px;
+}
 
-        .message video {
-            width: 100%;
-            height: auto;
-        }
+.message video {
+    width: 100%;
+    height: auto;
+}
 
-        .message input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px 0 0 4px;
-            margin-right: -5px;
-        }
+.message input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    margin-right: -5px;
+}
 
-        .message button {
-            width: 40px;
-            height: 40px;
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: 5px;
-        }
+.message button {
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+}
 
-        .message button i {
-            font-size: 20px;
-            color: #007bff;
-        }
+.message button i {
+    font-size: 20px;
+    color: #007bff;
+}
 
-        #file-input {
-            display: none;
-        }
+#file-input {
+    display: none;
+}
+
 .context-menu {
     display: none; /* Hidden by default */
     position: absolute;
@@ -153,34 +154,35 @@
     background: #f0f0f0;
 }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                width: 100%;
-                max-width: none;
-                height: 100vh;
-                border-radius: 0;
-            }
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        width: 100%;
+        max-width: none;
+        height: 100vh;
+        border-radius: 0;
+    }
 
-            .email-display p {
-                font-size: 14px;
-            }
+    .email-display p {
+        font-size: 14px;
+    }
 
-            .sent-message,
-            .received-message {
-                max-width: 90%;
-            }
+    .sent-message,
+    .received-message {
+        max-width: 90%;
+    }
 
-            .message input[type="text"] {
-                font-size: 14px;
-                padding: 8px;
-            }
+    .message input[type="text"] {
+        font-size: 14px;
+        padding: 8px;
+    }
 
-            .message button i {
-                font-size: 18px;
-            }
-        }
-       /* Style for the image dialog */
+    .message button i {
+        font-size: 18px;
+    }
+}
+
+/* Style for the image dialog */
 .image-dialog {
     display: none; /* Hidden by default; display it with JavaScript when needed */
     position: fixed;
@@ -226,6 +228,7 @@
     max-height: calc(100vh - 40px); /* Ensure the image fits within the viewport minus the button area */
     margin: 0 auto;
 }
+
 
     </style>
 </head>
