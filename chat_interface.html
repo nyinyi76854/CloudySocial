@@ -152,7 +152,7 @@
                 font-size: 18px;
             }
         }
-        /* Style for the image dialog */
+       /* Style for the image dialog */
 .image-dialog {
     display: none; /* Hidden by default; display it with JavaScript when needed */
     position: fixed;
@@ -174,6 +174,7 @@
     max-width: 90%;
     max-height: 90%;
     overflow: hidden;
+    box-sizing: border-box; /* Include padding in width and height calculations */
 }
 
 /* Style for the cancel button */
@@ -184,17 +185,19 @@
     font-size: 24px; /* Adjust size as needed */
     color: #000; /* Adjust color as needed */
     cursor: pointer;
-    z-index: 2000; /* Make sure it's above other content */
+    z-index: 2000; /* Ensure it’s above other content */
+    background: #fff; /* Add a background to improve visibility */
+    border-radius: 50%; /* Make the button round */
+    padding: 5px; /* Add some padding for better click area */
 }
 
 /* Style for the image */
 .dialog-image {
     display: block;
     max-width: 100%;
-    max-height: 80vh; /* Ensure the image fits within the viewport */
+    max-height: calc(100vh - 40px); /* Ensure the image fits within the viewport minus the button area */
     margin: 0 auto;
 }
-
 
     </style>
 </head>
