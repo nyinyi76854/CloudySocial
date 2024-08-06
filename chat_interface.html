@@ -15,57 +15,7 @@
             height: 100vh;
             overflow: hidden;
         }
-.context-menu {
-        position: absolute;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        display: none;
-        z-index: 1000;
-    }
 
-    .context-menu ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    .context-menu li {
-        padding: 10px;
-        cursor: pointer;
-    }
-
-    .context-menu li:hover {
-        background-color: #f0f0f0;
-    }
-
-    /* Styles for selected state */
-    .selected-message {
-        background-color: #d0d0d0;
-    }
-
-    .message-options {
-        display: none;
-        justify-content: space-between;
-        padding: 10px;
-        background-color: #f4f4f4;
-        border-top: 1px solid #ccc;
-    }
-
-    .message-options button {
-        border: none;
-        background: none;
-        cursor: pointer;
-    }
-
-    .message-options button i {
-        font-size: 20px;
-        color: #007bff;
-    }
-
-    .hidden {
-        display: none;
-    }
         .container {
             width: 90%;
             max-width: 800px;
@@ -211,10 +161,6 @@
             <img id="user-profile-photo" class="profile-photo" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/user.svg" alt="Profile Photo">
             <p><strong id="chat-with-email">Loading...</strong></p>
         </div>
-        <div class="message-options" id="message-options">
-            <button onclick="deleteSelectedMessages()"><i class="fas fa-trash-alt"></i></button>
-            <button onclick="copySelectedMessages()"><i class="fas fa-copy"></i></button>
-        </div>
         <div class="message-container" id="message-container">
             <!-- Messages will be dynamically added here -->
         </div>
@@ -222,14 +168,6 @@
             <input type="text" id="message-input" placeholder="Type a message...">
             <button id="send-button" onclick="handleSendClick()"><i id="send-icon" class="fas fa-folder"></i></button>
             <input type="file" id="file-input" accept="image/*, video/*" onchange="handleFileSelect(event)">
-        </div>
-        <div class="context-menu" id="context-menu">
-            <ul>
-                <li onclick="handleDelete()">Delete <i class="fas fa-trash-alt"></i></li>
-                <li onclick="handleCopy()">Copy <i class="fas fa-copy"></i></li>
-                <li onclick="handleSelect()">Select <i class="fas fa-check"></i></li>
-                <li onclick="handleEdit()">Edit <i class="fas fa-edit"></i></li>
-            </ul>
         </div>
     </div>
 
@@ -261,123 +199,7 @@
         function goBack() {
             window.location.href = 'chatlist.html';
         }
-let selectedMessages = new Set();
-document.addEventListener('contextmenu', (event) => {
-        event.preventDefault();
-        if (event.target.classList.contains('sent-message')) {
-            const messageElement = event.target;
-            const contextMenu = document.getElementById('context-menu');
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = `${event.pageX}px`;
-            contextMenu.style.top = `${event.pageY}px`;
-            contextMenu.dataset.messageId = messageElement.dataset.messageId;
-        } else {
-            hideContextMenu();
-        }
-    });
 
-    // Hide context menu on click anywhere else
-    document.addEventListener('click', () => {
-        hideContextMenu();
-    });
-
-    function hideContextMenu() {
-        document.getElementById('context-menu').style.display = 'none';
-    }
-
-    function handleDelete() {
-        const messageId = document.getElementById('context-menu').dataset.messageId;
-        database.ref(`messages/${messageId}`).remove()
-            .then(() => {
-                console.log('Message deleted successfully');
-                hideContextMenu();
-            })
-            .catch((error) => {
-                console.error('Error deleting message:', error);
-            });
-    }
-
-    function handleCopy() {
-        const messageId = document.getElementById('context-menu').dataset.messageId;
-        const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-        const messageText = messageElement.textContent;
-        navigator.clipboard.writeText(messageText)
-            .then(() => {
-                console.log('Message copied to clipboard');
-                hideContextMenu();
-            })
-            .catch((error) => {
-                console.error('Error copying message:', error);
-            });
-    }
-
-    function handleSelect() {
-        const messageId = document.getElementById('context-menu').dataset.messageId;
-        const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-        if (selectedMessages.has(messageId)) {
-            messageElement.classList.remove('selected-message');
-            selectedMessages.delete(messageId);
-        } else {
-            messageElement.classList.add('selected-message');
-            selectedMessages.add(messageId);
-        }
-        updateMessageOptionsVisibility();
-        hideContextMenu();
-    }
-
-    function handleEdit() {
-        // Implement edit functionality here
-        hideContextMenu();
-    }
-
-    function updateMessageOptionsVisibility() {
-        const emailDisplay = document.getElementById('email-display');
-        const messageOptions = document.getElementById('message-options');
-        if (selectedMessages.size > 0) {
-            emailDisplay.classList.add('hidden');
-            messageOptions.classList.remove('hidden');
-        } else {
-            emailDisplay.classList.remove('hidden');
-            messageOptions.classList.add('hidden');
-        }
-    }
-
-    function deleteSelectedMessages() {
-        selectedMessages.forEach((messageId) => {
-            database.ref(`messages/${messageId}`).remove()
-                .then(() => {
-                    console.log('Message deleted successfully');
-                    const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-                    if (messageElement) {
-                        messageElement.remove();
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error deleting message:', error);
-                });
-        });
-        selectedMessages.clear();
-        updateMessageOptionsVisibility();
-    }
-
-    function copySelectedMessages() {
-        let messageTexts = '';
-        selectedMessages.forEach((messageId) => {
-            const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
-            if (messageElement) {
-                messageTexts += messageElement.textContent + '\n';
-            }
-        });
-        navigator.clipboard.writeText(messageTexts)
-            .then(() => {
-                console.log('Messages copied to clipboard');
-            })
-            .catch((error) => {
-                console.error('Error copying messages:', error);
-            });
-        selectedMessages.clear();
-        updateMessageOptionsVisibility();
-    }
         // Function to retrieve URL parameters
         function getUrlParameter(name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
@@ -481,7 +303,7 @@ document.addEventListener('contextmenu', (event) => {
 
         function handleImageUpload(file) {
             const sender = auth.currentUser.email;
-            const storageRef = storage.ref(`messageimage/${file.name}`);
+            const storageRef = storage.ref(messageimage/${file.name});
             const uploadTask = storageRef.put(file);
 
             uploadTask.on(
@@ -503,7 +325,7 @@ document.addEventListener('contextmenu', (event) => {
 
         function handleVideoUpload(file) {
             const sender = auth.currentUser.email;
-            const storageRef = storage.ref(`messagevideo/${file.name}`);
+            const storageRef = storage.ref(messagevideo/${file.name});
             const uploadTask = storageRef.put(file);
 
             uploadTask.on(
