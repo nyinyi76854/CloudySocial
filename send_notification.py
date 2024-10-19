@@ -1,16 +1,14 @@
 import os
 import json
 import requests
-import google.auth
+from google.oauth2 import service_account
 from google.auth.transport.requests import Request
 
-# Get credentials from the service account JSON stored in GitHub secrets
+# Function to get the access token from service account
 def get_access_token():
-    # Load the service account key from environment variable
     service_account_info = json.loads(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
-    credentials = google.auth.credentials.with_scopes_if_required(
-        google.auth.load_credentials_from_info(service_account_info),
-        scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    credentials = service_account.Credentials.from_service_account_info(
+        service_account_info, scopes=["https://www.googleapis.com/auth/firebase.messaging"]
     )
     credentials.refresh(Request())
     return credentials.token
