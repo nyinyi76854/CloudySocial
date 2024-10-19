@@ -1,7 +1,7 @@
 name: Send FCM Notification
 
 on:
-  workflow_dispatch:  # You can trigger it manually via GitHub UI or other events
+  workflow_dispatch:  # Trigger manually from the GitHub UI
 
 jobs:
   send-notification:
@@ -19,9 +19,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install requests  # Install the requests library
+        pip install requests google-auth
 
-    - name: Send FCM notification
+    - name: Run Python script to send notification
       run: python send_notification.py
       env:
-        FCM_SERVER_KEY: ${{ secrets.FCM_SERVER_KEY }}
+        GOOGLE_APPLICATION_CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
