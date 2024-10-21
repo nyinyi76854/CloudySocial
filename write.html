@@ -3,58 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I Love Khin</title>
+    <title>Write Lines</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 100px;
+            margin: 20px;
         }
-
-        .love-container {
-            font-size: 40px;
-            color: red;
+        h1 {
+            color: #4CAF50;
         }
-
-        .love-container span {
-            font-size: 50px;
+        p {
+            font-size: 14px;
+            line-height: 1.5;
         }
-
-        #empty-lines {
-            margin-top: 50px;
+        .line {
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
-    <div class="love-container">
-        <span>❤️</span> I love Khin <span>❤️</span>
-    </div>
 
-    <!-- Container for lines to be written -->
-    <div id="empty-lines"></div>
+    <h1>I love Khin</h1>
+    <div id="linesContainer"></div>
 
     <script>
-        const emptyLinesContainer = document.getElementById('empty-lines');
-        let lineCount = 0;
-        const totalLines = 200;
+        const linesContainer = document.getElementById('linesContainer');
 
-        function writeLine() {
-            if (lineCount < totalLines) {
-                // Create a new line
-                const newLine = document.createElement('div');
-                newLine.textContent = `Writing line ${lineCount + 1}...`;
-                emptyLinesContainer.appendChild(newLine);
-
-                // Increment line count
-                lineCount++;
-
-                // Delay the writing of the next line
-                setTimeout(writeLine, 50); // 50ms delay between lines
-            }
+        // Generate 200 lines
+        for (let i = 1; i <= 200; i++) {
+            const lineElement = document.createElement('p');
+            lineElement.className = 'line';
+            lineElement.textContent = `This is line number ${i}`;
+            linesContainer.appendChild(lineElement);
         }
-
-        // Start writing lines
-        writeLine();
     </script>
+
 </body>
 </html>
