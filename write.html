@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I Love Khin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .love-container {
+            font-size: 40px;
+            color: red;
+        }
+
+        .love-container span {
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="love-container">
+        <span>❤️</span> I love Khin <span>❤️</span>
+    </div>
+
+    <!-- 200 lines of empty space -->
+    <div id="empty-lines"></div>
+
+    <script>
+        // Add 200 empty lines dynamically using JavaScript
+        const emptyLinesContainer = document.getElementById('empty-lines');
+        for (let i = 0; i < 200; i++) {
+            emptyLinesContainer.innerHTML += '<br>';
+        }
+    </script>
+</body>
+</html>
