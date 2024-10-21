@@ -19,6 +19,10 @@
         .love-container span {
             font-size: 50px;
         }
+
+        #empty-lines {
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
@@ -26,15 +30,31 @@
         <span>❤️</span> I love Khin <span>❤️</span>
     </div>
 
-    <!-- 200 lines of empty space -->
+    <!-- Container for lines to be written -->
     <div id="empty-lines"></div>
 
     <script>
-        // Add 200 empty lines dynamically using JavaScript
         const emptyLinesContainer = document.getElementById('empty-lines');
-        for (let i = 0; i < 200; i++) {
-            emptyLinesContainer.innerHTML += '<br>';
+        let lineCount = 0;
+        const totalLines = 200;
+
+        function writeLine() {
+            if (lineCount < totalLines) {
+                // Create a new line
+                const newLine = document.createElement('div');
+                newLine.textContent = `Writing line ${lineCount + 1}...`;
+                emptyLinesContainer.appendChild(newLine);
+
+                // Increment line count
+                lineCount++;
+
+                // Delay the writing of the next line
+                setTimeout(writeLine, 50); // 50ms delay between lines
+            }
         }
+
+        // Start writing lines
+        writeLine();
     </script>
 </body>
 </html>
